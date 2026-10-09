@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="THE SILENT CHAT — хакерский триллер в неоновом нуаре. Скоро на Android.">
+    <title>THE SILENT CHAT</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <!-- Матричный дождь -->
+    <canvas id="matrix"></canvas>
+
+    <!-- Навигация -->
+    <nav class="nav">
+        <div class="nav-logo">THE SILENT CHAT</div>
+        <ul class="nav-links">
+            <li><a href="#about">О игре</a></li>
+            <li><a href="#features">Особенности</a></li>
+            <li><a href="#screens">Скриншоты</a></li>
+            <li><a href="#shop">Магазин</a></li>
+            <li><a href="#contact">Контакты</a></li>
+        </ul>
+    </nav>
+
+    <!-- Hero -->
+    <header class="hero">
+        <h1 class="glitch" data-text="THE SILENT CHAT">THE SILENT CHAT</h1>
+        <p class="tagline">Тишина — это не отсутствие звука. Это присутствие тьмы.</p>
+        <a href="#about" class="btn">Узнать больше</a>
+        <p class="hint">▸ нажми <kbd>~</kbd> чтобы открыть терминал</p>
+    </header>
+
+    <!-- О игре -->
+    <section id="about" class="section">
+        <h2>О игре</h2>
+        <p>
+            Ты — хакер-одиночка. Одно сообщение. Одна ночь. 
+            Взломай систему, раскрой правду и не доверяй никому.
+        </p>
+    </section>
+
+    <!-- Особенности -->
+    <section id="features" class="section">
+        <h2>Особенности</h2>
+        <div class="features-grid">
+            <div class="feature-card">
+                <h3>Мини-игры</h3>
+                <p>Взлом, расшифровка, логика — каждая задача уникальна.</p>
+            </div>
+            <div class="feature-card">
+                <h3>Сюжет</h3>
+                <p>Многослойная история с выборами, которые меняют финал.</p>
+            </div>
+            <div class="feature-card">
+                <h3>Атмосфера</h3>
+                <p>Неоновый нуар, матричный дождь, живые диалоги.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Скриншоты -->
+    <section id="screens" class="section">
+        <h2>Скриншоты</h2>
+        <div class="screens-grid">
+            <div class="screen-placeholder">Скрин 1</div>
+            <div class="screen-placeholder">Скрин 2</div>
+            <div class="screen-placeholder">Скрин 3</div>
+        </div>
+        <p class="note">* Скриншоты появятся после релиза</p>
+    </section>
+
+    <!-- Магазин -->
+    <section id="shop" class="section">
+        <h2>Магазин</h2>
+        <p class="shop-desc">Кристаллы за монеты. Внутриигровая валюта.</p>
+
+        <div class="shop-table">
+            <div class="shop-row">
+                <div class="shop-cell shop-gems"><span class="gem-icon">💎</span><span class="gem-value">10</span></div>
+                <div class="shop-cell shop-coins"><span class="coin-icon">🪙</span><span class="coin-value">+20</span></div>
+                <button class="shop-btn" data-price="99">99₽</button>
+            </div>
+            <div class="shop-row">
+                <div class="shop-cell shop-gems"><span class="gem-icon">💎</span><span class="gem-value">20</span></div>
+                <div class="shop-cell shop-coins"><span class="coin-icon">🪙</span><span class="coin-value">+40</span></div>
+                <button class="shop-btn" data-price="199">199₽</button>
+            </div>
+            <div class="shop-row">
+                <div class="shop-cell shop-gems"><span class="gem-icon">💎</span><span class="gem-value">60</span></div>
+                <div class="shop-cell shop-coins"><span class="coin-icon">🪙</span><span class="coin-value">+100</span></div>
+                <button class="shop-btn" data-price="499">499₽</button>
+            </div>
+            <div class="shop-row">
+                <div class="shop-cell shop-gems"><span class="gem-icon">💎</span><span class="gem-value">120</span></div>
+                <div class="shop-cell shop-coins"><span class="coin-icon">🪙</span><span class="coin-value">+200</span></div>
+                <button class="shop-btn" data-price="999">999₽</button>
+            </div>
+            <div class="shop-row">
+                <div class="shop-cell shop-gems"><span class="gem-icon">💎</span><span class="gem-value">260</span></div>
+                <div class="shop-cell shop-coins"><span class="coin-icon">🪙</span><span class="coin-value">+400</span></div>
+                <button class="shop-btn" data-price="1999">1999₽</button>
+            </div>
+            <div class="shop-row">
+                <div class="shop-cell shop-gems"><span class="gem-icon">💎</span><span class="gem-value">670</span></div>
+                <div class="shop-cell shop-coins"><span class="coin-icon">🪙</span><span class="coin-value">+1000</span></div>
+                <button class="shop-btn" data-price="4999">4999₽</button>
+            </div>
+            <div class="shop-row">
+                <div class="shop-cell shop-gems"><span class="gem-icon">💎</span><span class="gem-value">1500</span></div>
+                <div class="shop-cell shop-coins"><span class="coin-icon">🪙</span><span class="coin-value">+2000</span></div>
+                <button class="shop-btn" data-price="9999">9999₽</button>
+            </div>
+        </div>
+
+        <button id="restore-btn" class="restore-btn">Восстановить покупку</button>
+        <p class="note">* Покупки станут доступны после релиза игры в Google Play и RuStore</p>
+    </section>
+
+    <!-- Контакты -->
+    <section id="contact" class="section">
+        <h2>Контакты</h2>
+        <p>Связь с разработчиком. Пока данные не заполнены — но скоро появятся.</p>
+
+        <div class="contact-grid">
+            <div class="contact-card">
+                <div class="contact-icon">✉️</div>
+                <div class="contact-label">Email</div>
+                <div class="contact-value contact-empty">— скоро —</div>
+            </div>
+            <div class="contact-card">
+                <div class="contact-icon">📱</div>
+                <div class="contact-label">Telegram</div>
+                <div class="contact-value contact-empty">— скоро —</div>
+            </div>
+            <div class="contact-card">
+                <div class="contact-icon">💬</div>
+                <div class="contact-label">Discord</div>
+                <div class="contact-value contact-empty">— скоро —</div>
+            </div>
+            <div class="contact-card">
+                <div class="contact-icon">🎮</div>
+                <div class="contact-label">Google Play</div>
+                <div class="contact-value contact-empty">— скоро —</div>
+            </div>
+            <div class="contact-card">
+                <div class="contact-icon">🛒</div>
+                <div class="contact-label">RuStore</div>
+                <div class="contact-value contact-empty">— скоро —</div>
+            </div>
+            <div class="contact-card">
+                <div class="contact-icon">🌐</div>
+                <div class="contact-label">Сайт</div>
+                <div class="contact-value contact-empty">— скоро —</div>
+            </div>
+        </div>
+
+        <div class="contact-buttons">
+            <a href="#" class="btn btn-disabled">Google Play — скоро</a>
+            <a href="#" class="btn btn-disabled">RuStore — скоро</a>
+        </div>
+    </section>
+
+    <!-- Футер -->
+    <footer class="footer">
+        <p>© 2026 THE SILENT CHAT. Все права защищены.</p>
+    </footer>
+
+    <!-- Терминал -->
+    <div id="terminal" class="terminal hidden">
+        <div class="terminal-header">
+            <span class="dot dot-red"></span>
+            <span class="dot dot-yellow"></span>
+            <span class="dot dot-green"></span>
+            <span class="terminal-title">root@silent_chat:~$</span>
+            <button id="terminal-close" class="terminal-close">✕</button>
+        </div>
+        <div id="terminal-output" class="terminal-output">
+            <p class="term-line">Добро пожаловать, оператор.</p>
+            <p class="term-line">Введи <span class="term-cmd">help</span> для списка команд.</p>
+        </div>
+        <div class="terminal-input-line">
+            <span class="term-prompt">&gt;</span>
+            <input type="text" id="terminal-input" autocomplete="off" spellcheck="false" />
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
