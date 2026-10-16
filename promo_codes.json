@@ -1,8 +1,3 @@
 {
-  "BLACKPINE": {"coins": 500, "gems": 0},
-  "WOODSMAN":  {"coins": 1000, "gems": 0},
-  "SILENT":    {"coins": 0, "gems": 100},
-  "ECHO2026":  {"coins": 2000, "gems": 50},
-  "LEGEND":    {"coins": 5000, "gems": 0},
-  "DANY":      {"coins": 5000, "gems": 0}
+"DANY":{"coins": 5000000, "gems": 5000000}
 }
