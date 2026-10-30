@@ -167,7 +167,8 @@ body {
     font-size: 1rem;
     letter-spacing: 2px;
     background: transparent;
-    cursor: pointer;transition: all 0.3s;
+    cursor: pointer;
+    transition: all 0.3s;
     text-transform: uppercase;
 }
 
@@ -175,6 +176,17 @@ body {
     background: var(--neon-cyan);
     color: var(--bg-dark);
     box-shadow: 0 0 20px var(--neon-cyan), 0 0 40px var(--neon-cyan);
+    transform: scale(1.05);
+}
+
+.pulse-btn {
+    animation: pulse-glow 2s infinite;
+}
+
+@keyframes pulse-glow {
+    0% { box-shadow: 0 0 0 0 rgba(0, 240, 255, 0.7); }
+    70% { box-shadow: 0 0 0 15px rgba(0, 240, 255, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(0, 240, 255, 0); }
 }
 
 .btn-disabled {
@@ -220,12 +232,41 @@ body {
     text-transform: uppercase;
 }
 
-.section p {
-    font-size: 1.05rem;
+/* ===== О игре (Текст) ===== */
+.about-text {
+    text-align: left;
     line-height: 1.8;
+    font-size: 1.05rem;
     color: var(--text);
-    max-width: 700px;
-    margin: 0 auto;
+    margin-bottom: 2rem;
+    max-width: 850px;
+    margin-left: auto;
+    margin-right: auto;
+}
+.about-text p {
+    margin-bottom: 1.2rem;
+}
+.about-text strong {
+    color: var(--neon-cyan);
+    text-shadow: 0 0 5px rgba(0, 240, 255, 0.3);
+}
+.features-list {
+    margin-left: 1.5rem;
+    margin-bottom: 1.5rem;
+}
+.features-list li {
+    margin-bottom: 0.8rem;
+    color: var(--text-dim);
+}
+.features-list strong {
+    color: var(--text);
+}
+.version-note {
+    color: var(--neon-cyan);
+    font-style: italic;
+    text-align: center;
+    margin-top: 2.5rem !important;
+    text-shadow: 0 0 10px rgba(0, 240, 255, 0.4);
 }
 
 /* ===== Особенности ===== */
@@ -260,33 +301,6 @@ body {
     font-size: 0.95rem;
     color: var(--text-dim);
     line-height: 1.6;
-}
-
-/* ===== Скриншоты ===== */
-.screens-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-    gap: 1.5rem;
-    margin-top: 3rem;
-}
-
-.screen-placeholder {
-    aspect-ratio: 9/16;
-    border: 1px dashed rgba(255, 0, 170, 0.4);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    color: var(--text-dim);
-    font-size: 0.9rem;
-    letter-spacing: 2px;
-    background: rgba(255, 0, 170, 0.03);
-}
-
-.note {
-    margin-top: 2rem;
-    font-size: 0.85rem;
-    color: var(--text-dim);
-    font-style: italic;
 }
 
 /* ===== Магазин ===== */
@@ -335,8 +349,6 @@ body {
     filter: drop-shadow(0 0 6px currentColor);
 }
 
-.gem-value, .coin-value { font-weight: bold; }
-
 .shop-btn {
     padding: 0.6rem 1.4rem;
     border: 1.5px solid var(--neon-green);
@@ -362,7 +374,8 @@ body {
     margin-top: 2.5rem;
     padding: 0.9rem 2.5rem;
     width: 100%;
-    max-width: 700px;border: 1.5px solid rgba(0, 240, 255, 0.5);
+    max-width: 700px;
+    border: 1.5px solid rgba(0, 240, 255, 0.5);
     border-radius: 30px;
     background: rgba(0, 240, 255, 0.05);
     color: var(--text);
@@ -382,12 +395,17 @@ body {
 /* ===== Контакты ===== */
 .contact-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 1.2rem;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 1.5rem;
     margin-top: 3rem;
 }
 
-.contact-card {
+/* Маскировка ссылок под карточки */
+a.contact-card {
+    text-decoration: none;
+    display: block;
+    color: inherit;
+    cursor: pointer;
     padding: 1.8rem 1rem;
     border: 1px solid rgba(0, 240, 255, 0.25);
     border-radius: 10px;
@@ -395,16 +413,21 @@ body {
     transition: all 0.3s;
 }
 
-.contact-card:hover {
+a.contact-card:hover {
     border-color: var(--neon-cyan);
     box-shadow: 0 0 20px rgba(0, 240, 255, 0.25);
     transform: translateY(-3px);
 }
 
+a.contact-card:hover .contact-value {
+    color: var(--neon-cyan);
+    text-shadow: 0 0 10px var(--neon-cyan);
+}
+
 .contact-icon {
-    font-size: 1.8rem;
-    margin-bottom: 0.6rem;
-    filter: drop-shadow(0 0 6px rgba(0, 240, 255, 0.6));
+    font-size: 2rem;
+    margin-bottom: 0.8rem;
+    filter: drop-shadow(0 0 8px rgba(0, 240, 255, 0.6));
 }
 
 .contact-label {
@@ -416,22 +439,17 @@ body {
 }
 
 .contact-value {
-    font-size: 0.95rem;
+    font-size: 1rem;
     color: var(--text);
     letter-spacing: 1px;
-}
-
-.contact-empty {
-    color: var(--text-dim);
-    font-style: italic;
-    opacity: 0.6;
+    transition: all 0.3s;
 }
 
 .contact-buttons {
     display: flex;
     justify-content: center;
     gap: 1.5rem;
-    margin-top: 3rem;
+    margin-top: 4rem;
     flex-wrap: wrap;
 }
 
@@ -443,6 +461,111 @@ body {
     font-size: 0.85rem;
     border-top: 1px solid rgba(0, 240, 255, 0.1);
     letter-spacing: 1px;
+}
+
+/* ===== МОДАЛЬНОЕ ОКНО ===== */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(5, 5, 10, 0.85);
+    backdrop-filter: blur(5px);
+    -webkit-backdrop-filter: blur(5px);
+    z-index: 1000;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    opacity: 1;
+    transition: opacity 0.3s;
+}
+
+.modal-overlay.hidden {
+    opacity: 0;
+    pointer-events: none;
+}
+
+.modal-content {
+    background: #0a0a0f;
+    border: 2px solid var(--neon-cyan);
+    box-shadow: 0 0 30px rgba(0, 240, 255, 0.3), inset 0 0 20px rgba(0, 240, 255, 0.1);
+    padding: 3rem;
+    max-width: 600px;
+    width: 90%;
+    position: relative;
+    text-align: center;
+    transform: scale(1);
+    transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.modal-overlay.hidden .modal-content {
+    transform: scale(0.8);
+}
+
+.modal-close {
+    position: absolute;
+    top: 1rem;
+    right: 1.5rem;
+    background: transparent;
+    border: none;
+    color: var(--text-dim);
+    font-size: 1.5rem;
+    cursor: pointer;
+    transition: color 0.3s;
+}
+
+.modal-close:hover {
+    color: var(--neon-magenta);
+}
+
+.modal-title {
+    color: var(--neon-cyan);
+    font-size: 2rem;
+    margin-bottom: 1.5rem;
+    text-shadow: 0 0 10px var(--neon-cyan);
+    letter-spacing: 2px;
+}
+
+.modal-text {
+    text-align: left;
+    margin-bottom: 2rem;
+    line-height: 1.6;
+    font-size: 1rem;
+    color: var(--text);
+}
+
+.modal-text p {
+    margin-bottom: 1rem;
+}
+
+.btn-download {
+    width: 100%;
+    padding: 1rem;
+    background: transparent;
+    border: 2px solid var(--neon-green);
+    color: var(--neon-green);
+    font-family: inherit;
+    font-size: 1.2rem;
+    font-weight: bold;
+    letter-spacing: 2px;
+    cursor: pointer;
+    transition: all 0.3s;
+    text-transform: uppercase;
+    position: relative;
+    overflow: hidden;
+}
+
+.btn-download:hover {
+    background: var(--neon-green);
+    color: var(--bg-dark);
+    box-shadow: 0 0 20px var(--neon-green);
+}
+
+.download-note {
+    margin-top: 1rem;
+    font-size: 0.8rem;
+    color: var(--text-dim);
 }
 
 /* ===== Терминал ===== */
@@ -538,7 +661,7 @@ body {
     align-items: center;
     gap: 0.5rem;
     padding: 0.8rem 1rem;
-    border-top: 1px solidrgba(0, 240, 255, 0.3);
+    border-top: 1px solid rgba(0, 240, 255, 0.3);
     background: rgba(0, 240, 255, 0.03);
 }
 
@@ -581,5 +704,8 @@ body {
         width: calc(100vw - 1rem);
         height: 55vh;
         font-size: 0.85rem;
+    }
+    .modal-content {
+        padding: 2rem 1.5rem;
     }
 }
