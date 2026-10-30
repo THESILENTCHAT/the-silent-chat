@@ -1,711 +1,339 @@
-/* ===== Сброс ===== */
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-}
-
-:root {
-    --neon-cyan: #00f0ff;
-    --neon-magenta: #ff00aa;
-    --neon-green: #27c93f;
-    --bg-dark: #0a0a0f;
-    --text: #e0e0e0;
-    --text-dim: #888;
-}
-
-html {
-    scroll-behavior: smooth;
-}
-
-body {
-    background: var(--bg-dark);
-    color: var(--text);
-    font-family: 'Courier New', monospace;
-    overflow-x: hidden;
-}
-
-/* ===== Матричный дождь ===== */
-#matrix {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    z-index: -1;
-    opacity: 0.22;
-}
-
-/* ===== Навигация ===== */
-.nav {
-    position: fixed;
-    top: 0;
-    width: 100%;
-    padding: 1rem 2rem;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    background: rgba(10, 10, 15, 0.85);
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
-    z-index: 100;
-    border-bottom: 1px solid rgba(0, 240, 255, 0.2);
-}
-
-.nav-logo {
-    font-weight: bold;
-    font-size: 1.2rem;
-    color: var(--neon-cyan);
-    text-shadow: 0 0 10px var(--neon-cyan);
-    letter-spacing: 2px;
-}
-
-.nav-links {
-    display: flex;
-    list-style: none;
-    gap: 1.8rem;
-}
-
-.nav-links a {
-    color: var(--text);
-    text-decoration: none;
-    transition: all 0.3s;
-    font-size: 0.9rem;
-    letter-spacing: 1px;
-}
-
-.nav-links a:hover {
-    color: var(--neon-cyan);
-    text-shadow: 0 0 10px var(--neon-cyan);
-}
-
-/* ===== Hero ===== */
-.hero {
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    text-align: center;
-    padding: 0 2rem;
-}
-
-.hero h1 {
-    font-size: clamp(2rem, 8vw, 5rem);
-    letter-spacing: 4px;
-    color: var(--neon-cyan);
-    text-shadow: 0 0 10px var(--neon-cyan), 0 0 30px var(--neon-cyan), 0 0 60px rgba(0, 240, 255, 0.5);
-    margin-bottom: 1.5rem;
-}
-
-.tagline {
-    font-size: clamp(0.9rem, 2vw, 1.2rem);
-    color: var(--text-dim);
-    max-width: 600px;
-    margin-bottom: 3rem;
-    letter-spacing: 1px;
-}
-
-/* ===== Glitch ===== */
-.glitch {
-    position: relative;
-    display: inline-block;
-}
-
-.glitch::before,
-.glitch::after {
-    content: attr(data-text);
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    overflow: hidden;
-    pointer-events: none;
-}
-
-.glitch::before {
-    color: var(--neon-magenta);
-    animation: glitch-1 2.5s infinite linear alternate-reverse;
-    z-index: -1;
-}
-
-.glitch::after {
-    color: var(--neon-cyan);
-    animation: glitch-2 3s infinite linear alternate-reverse;
-    z-index: -2;
-}
-
-@keyframes glitch-1 {
-    0%   { transform: translate(0, 0);       clip-path: inset(0 0 0 0); }
-    10%  { transform: translate(-3px, -2px); clip-path: inset(10% 0 60% 0); }
-    20%  { transform: translate(2px, 1px);   clip-path: inset(40% 0 20% 0); }
-    30%  { transform: translate(-2px, 2px);  clip-path: inset(0 0 0 0); }
-    40%  { transform: translate(3px, -1px);  clip-path: inset(60% 0 10% 0); }
-    50%  { transform: translate(0, 0);       clip-path: inset(0 0 0 0); }
-    100% { transform: translate(0, 0);       clip-path: inset(0 0 0 0); }
-}
-
-@keyframes glitch-2 {
-    0%   { transform: translate(0, 0);       clip-path: inset(0 0 0 0); }
-    15%  { transform: translate(3px, 2px);   clip-path: inset(20% 0 40% 0); }
-    25%  { transform: translate(-2px, -1px); clip-path: inset(50% 0 30% 0); }
-    35%  { transform: translate(2px, 1px);   clip-path: inset(0 0 0 0); }
-    45%  { transform: translate(-3px, 2px);  clip-path: inset(30% 0 50% 0); }
-    55%  { transform: translate(0, 0);       clip-path: inset(0 0 0 0); }
-    100% { transform: translate(0, 0);       clip-path: inset(0 0 0 0); }
-}
-
-/* ===== Кнопки ===== */
-.btn {
-    display: inline-block;
-    padding: 0.9rem 2.5rem;
-    border: 2px solid var(--neon-cyan);
-    color: var(--neon-cyan);
-    text-decoration: none;
-    font-family: inherit;
-    font-size: 1rem;
-    letter-spacing: 2px;
-    background: transparent;
-    cursor: pointer;
-    transition: all 0.3s;
-    text-transform: uppercase;
-}
-
-.btn:hover {
-    background: var(--neon-cyan);
-    color: var(--bg-dark);
-    box-shadow: 0 0 20px var(--neon-cyan), 0 0 40px var(--neon-cyan);
-    transform: scale(1.05);
-}
-
-.pulse-btn {
-    animation: pulse-glow 2s infinite;
-}
-
-@keyframes pulse-glow {
-    0% { box-shadow: 0 0 0 0 rgba(0, 240, 255, 0.7); }
-    70% { box-shadow: 0 0 0 15px rgba(0, 240, 255, 0); }
-    100% { box-shadow: 0 0 0 0 rgba(0, 240, 255, 0); }
-}
-
-.btn-disabled {
-    border-color: var(--text-dim);
-    color: var(--text-dim);
-    pointer-events: none;
-    opacity: 0.6;
-}
-
-/* ===== Hint ===== */
-.hint {
-    margin-top: 3rem;
-    font-size: 0.8rem;
-    color: var(--text-dim);
-    letter-spacing: 1px;
-    opacity: 0.7;
-}
-
-.hint kbd {
-    background: rgba(0, 240, 255, 0.1);
-    border: 1px solid var(--neon-cyan);
-    color: var(--neon-cyan);
-    padding: 0.1rem 0.5rem;
-    font-family: inherit;
-    font-size: 0.85rem;
-    border-radius: 3px;
-}
-
-/* ===== Секции ===== */
-.section {
-    padding: 6rem 2rem;
-    max-width: 1100px;
-    margin: 0 auto;
-    text-align: center;
-}
-
-.section h2 {
-    font-size: clamp(1.5rem, 4vw, 2.5rem);
-    color: var(--neon-magenta);
-    text-shadow: 0 0 15px var(--neon-magenta);
-    letter-spacing: 3px;
-    margin-bottom: 2rem;
-    text-transform: uppercase;
-}
-
-/* ===== О игре (Текст) ===== */
-.about-text {
-    text-align: left;
-    line-height: 1.8;
-    font-size: 1.05rem;
-    color: var(--text);
-    margin-bottom: 2rem;
-    max-width: 850px;
-    margin-left: auto;
-    margin-right: auto;
-}
-.about-text p {
-    margin-bottom: 1.2rem;
-}
-.about-text strong {
-    color: var(--neon-cyan);
-    text-shadow: 0 0 5px rgba(0, 240, 255, 0.3);
-}
-.features-list {
-    margin-left: 1.5rem;
-    margin-bottom: 1.5rem;
-}
-.features-list li {
-    margin-bottom: 0.8rem;
-    color: var(--text-dim);
-}
-.features-list strong {
-    color: var(--text);
-}
-.version-note {
-    color: var(--neon-cyan);
-    font-style: italic;
-    text-align: center;
-    margin-top: 2.5rem !important;
-    text-shadow: 0 0 10px rgba(0, 240, 255, 0.4);
-}
-
-/* ===== Особенности ===== */
-.features-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-    gap: 2rem;
-    margin-top: 3rem;
-}
-
-.feature-card {
-    padding: 2rem;
-    border: 1px solid rgba(0, 240, 255, 0.3);
-    background: rgba(0, 240, 255, 0.03);
-    transition: all 0.3s;
-}
-
-.feature-card:hover {
-    border-color: var(--neon-cyan);
-    box-shadow: 0 0 25px rgba(0, 240, 255, 0.3);
-    transform: translateY(-5px);
-}
-
-.feature-card h3 {
-    color: var(--neon-cyan);
-    margin-bottom: 1rem;
-    letter-spacing: 2px;
-    text-shadow: 0 0 10px var(--neon-cyan);
-}
-
-.feature-card p {
-    font-size: 0.95rem;
-    color: var(--text-dim);
-    line-height: 1.6;
-}
-
-/* ===== Магазин ===== */
-.shop-desc {
-    margin-bottom: 2rem;
-    color: var(--text-dim);
-}
-
-.shop-table {
-    display: flex;
-    flex-direction: column;
-    gap: 0.9rem;
-    margin-top: 1rem;
-}
-
-.shop-row {
-    display: grid;
-    grid-template-columns: 1fr 1fr auto;
-    align-items: center;
-    gap: 1rem;
-    padding: 0.9rem 1.4rem;
-    border: 1.5px solid rgba(0, 240, 255, 0.35);
-    background: rgba(0, 100, 200, 0.08);
-    border-radius: 10px;
-    transition: all 0.3s;
-}
-
-.shop-row:hover {
-    border-color: var(--neon-cyan);
-    box-shadow: 0 0 20px rgba(0, 240, 255, 0.3);
-}
-
-.shop-cell {
-    display: flex;
-    align-items: center;
-    gap: 0.6rem;
-    font-size: 1.05rem;
-    letter-spacing: 1px;
-}
-
-.shop-gems { justify-content: flex-start; color: #c8a8ff; }
-.shop-coins { justify-content: flex-start; color: #ffd76a; }
-
-.gem-icon, .coin-icon {
-    font-size: 1.4rem;
-    filter: drop-shadow(0 0 6px currentColor);
-}
-
-.shop-btn {
-    padding: 0.6rem 1.4rem;
-    border: 1.5px solid var(--neon-green);
-    border-radius: 20px;
-    background: rgba(39, 201, 63, 0.15);
-    color: #6effa0;
-    font-family: inherit;
-    font-size: 0.95rem;
-    letter-spacing: 1px;
-    cursor: pointer;
-    transition: all 0.3s;
-    font-weight: bold;
-    min-width: 90px;
-}
-
-.shop-btn:hover {
-    background: var(--neon-green);
-    color: #0a0a0f;
-    box-shadow: 0 0 20px var(--neon-green);
-}
-
-.restore-btn {
-    margin-top: 2.5rem;
-    padding: 0.9rem 2.5rem;
-    width: 100%;
-    max-width: 700px;
-    border: 1.5px solid rgba(0, 240, 255, 0.5);
-    border-radius: 30px;
-    background: rgba(0, 240, 255, 0.05);
-    color: var(--text);
-    font-family: inherit;
-    font-size: 1rem;
-    letter-spacing: 2px;
-    cursor: pointer;
-    transition: all 0.3s;
-}
-
-.restore-btn:hover {
-    border-color: var(--neon-cyan);
-    box-shadow: 0 0 25px rgba(0, 240, 255, 0.4);
-    color: var(--neon-cyan);
-}
-
-/* ===== Контакты ===== */
-.contact-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-    gap: 1.5rem;
-    margin-top: 3rem;
-}
-
-/* Маскировка ссылок под карточки */
-a.contact-card {
-    text-decoration: none;
-    display: block;
-    color: inherit;
-    cursor: pointer;
-    padding: 1.8rem 1rem;
-    border: 1px solid rgba(0, 240, 255, 0.25);
-    border-radius: 10px;
-    background: rgba(0, 240, 255, 0.03);
-    transition: all 0.3s;
-}
-
-a.contact-card:hover {
-    border-color: var(--neon-cyan);
-    box-shadow: 0 0 20px rgba(0, 240, 255, 0.25);
-    transform: translateY(-3px);
-}
-
-a.contact-card:hover .contact-value {
-    color: var(--neon-cyan);
-    text-shadow: 0 0 10px var(--neon-cyan);
-}
-
-.contact-icon {
-    font-size: 2rem;
-    margin-bottom: 0.8rem;
-    filter: drop-shadow(0 0 8px rgba(0, 240, 255, 0.6));
-}
-
-.contact-label {
-    font-size: 0.8rem;
-    color: var(--text-dim);
-    letter-spacing: 2px;
-    text-transform: uppercase;
-    margin-bottom: 0.5rem;
-}
-
-.contact-value {
-    font-size: 1rem;
-    color: var(--text);
-    letter-spacing: 1px;
-    transition: all 0.3s;
-}
-
-.contact-buttons {
-    display: flex;
-    justify-content: center;
-    gap: 1.5rem;
-    margin-top: 4rem;
-    flex-wrap: wrap;
-}
-
-/* ===== Футер ===== */
-.footer {
-    padding: 2rem;
-    text-align: center;
-    color: var(--text-dim);
-    font-size: 0.85rem;
-    border-top: 1px solid rgba(0, 240, 255, 0.1);
-    letter-spacing: 1px;
-}
-
-/* ===== МОДАЛЬНОЕ ОКНО ===== */
-.modal-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(5, 5, 10, 0.85);
-    backdrop-filter: blur(5px);
-    -webkit-backdrop-filter: blur(5px);
-    z-index: 1000;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    opacity: 1;
-    transition: opacity 0.3s;
-}
-
-.modal-overlay.hidden {
-    opacity: 0;
-    pointer-events: none;
-}
-
-.modal-content {
-    background: #0a0a0f;
-    border: 2px solid var(--neon-cyan);
-    box-shadow: 0 0 30px rgba(0, 240, 255, 0.3), inset 0 0 20px rgba(0, 240, 255, 0.1);
-    padding: 3rem;
-    max-width: 600px;
-    width: 90%;
-    position: relative;
-    text-align: center;
-    transform: scale(1);
-    transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-}
-
-.modal-overlay.hidden .modal-content {
-    transform: scale(0.8);
-}
-
-.modal-close {
-    position: absolute;
-    top: 1rem;
-    right: 1.5rem;
-    background: transparent;
-    border: none;
-    color: var(--text-dim);
-    font-size: 1.5rem;
-    cursor: pointer;
-    transition: color 0.3s;
-}
-
-.modal-close:hover {
-    color: var(--neon-magenta);
-}
-
-.modal-title {
-    color: var(--neon-cyan);
-    font-size: 2rem;
-    margin-bottom: 1.5rem;
-    text-shadow: 0 0 10px var(--neon-cyan);
-    letter-spacing: 2px;
-}
-
-.modal-text {
-    text-align: left;
-    margin-bottom: 2rem;
-    line-height: 1.6;
-    font-size: 1rem;
-    color: var(--text);
-}
-
-.modal-text p {
-    margin-bottom: 1rem;
-}
-
-.btn-download {
-    width: 100%;
-    padding: 1rem;
-    background: transparent;
-    border: 2px solid var(--neon-green);
-    color: var(--neon-green);
-    font-family: inherit;
-    font-size: 1.2rem;
-    font-weight: bold;
-    letter-spacing: 2px;
-    cursor: pointer;
-    transition: all 0.3s;
-    text-transform: uppercase;
-    position: relative;
-    overflow: hidden;
-}
-
-.btn-download:hover {
-    background: var(--neon-green);
-    color: var(--bg-dark);
-    box-shadow: 0 0 20px var(--neon-green);
-}
-
-.download-note {
-    margin-top: 1rem;
-    font-size: 0.8rem;
-    color: var(--text-dim);
-}
-
-/* ===== Терминал ===== */
-.terminal {
-    position: fixed;
-    bottom: 2rem;
-    right: 2rem;
-    width: min(560px, calc(100vw - 4rem));
-    height: min(420px, calc(100vh - 4rem));
-    background: rgba(5, 5, 10, 0.96);
-    border: 1px solid var(--neon-cyan);
-    box-shadow: 0 0 20px rgba(0, 240, 255, 0.4), 0 0 60px rgba(0, 240, 255, 0.15);
-    display: flex;
-    flex-direction: column;
-    z-index: 999;
-    font-family: 'Courier New', monospace;
-    font-size: 0.9rem;
-    transition: opacity 0.2s, transform 0.2s;
-}
-
-.terminal.hidden {
-    opacity: 0;
-    transform: translateY(20px);
-    pointer-events: none;
-}
-
-.terminal-header {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    padding: 0.6rem 1rem;
-    background: rgba(0, 240, 255, 0.08);
-    border-bottom: 1px solid rgba(0, 240, 255, 0.3);
-    user-select: none;
-}
-
-.dot {
-    width: 11px;
-    height: 11px;
-    border-radius: 50%;
-    display: inline-block;
-}
-
-.dot-red    { background: #ff5f56; box-shadow: 0 0 6px #ff5f56; }
-.dot-yellow { background: #ffbd2e; box-shadow: 0 0 6px #ffbd2e; }
-.dot-green  { background: #27c93f; box-shadow: 0 0 6px #27c93f; }
-
-.terminal-title {
-    margin-left: auto;
-    margin-right: auto;
-    color: var(--text-dim);
-    font-size: 0.75rem;
-    letter-spacing: 1px;
-}
-
-.terminal-close {
-    background: transparent;
-    border: none;
-    color: var(--text-dim);
-    cursor: pointer;
-    font-size: 1rem;
-    padding: 0 0.3rem;
-    transition: color 0.2s;
-}
-
-.terminal-close:hover { color: var(--neon-magenta); }
-
-.terminal-output {
-    flex: 1;
-    overflow-y: auto;
-    padding: 1rem;
-    color: var(--text);
-    line-height: 1.6;
-    scrollbar-width: thin;
-    scrollbar-color: var(--neon-cyan) transparent;
-}
-
-.terminal-output::-webkit-scrollbar { width: 6px; }
-.terminal-output::-webkit-scrollbar-thumb { background: rgba(0, 240, 255, 0.4); }
-
-.term-line {
-    margin-bottom: 0.3rem;
-    word-wrap: break-word;
-}
-
-.term-cmd { color: var(--neon-cyan); text-shadow: 0 0 6px var(--neon-cyan); }
-.term-error { color: #ff5f56; }
-.term-success { color: var(--neon-green); text-shadow: 0 0 6px var(--neon-green); }
-.term-dim { color: var(--text-dim); }
-
-.terminal-input-line {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    padding: 0.8rem 1rem;
-    border-top: 1px solid rgba(0, 240, 255, 0.3);
-    background: rgba(0, 240, 255, 0.03);
-}
-
-.term-prompt {
-    color: var(--neon-cyan);
-    font-weight: bold;
-    text-shadow: 0 0 6px var(--neon-cyan);
-}
-
-#terminal-input {
-    flex: 1;
-    background: transparent;
-    border: none;
-    outline: none;
-    color: var(--text);
-    font-family: inherit;
-    font-size: inherit;
-    caret-color: var(--neon-cyan);
-}
-
-/* ===== Адаптив ===== */
-@media (max-width: 768px) {
-    .nav { padding: 0.8rem 1rem; }
-    .nav-links { display: none; }
-    .section { padding: 4rem 1.5rem; }
-    .shop-row {
-        grid-template-columns: 1fr 1fr;
-        gap: 0.6rem;
-        padding: 0.8rem 1rem;
-    }
-    .shop-btn {
-        grid-column: 1 / -1;
-        justify-self: center;
-        min-width: 120px;
-    }
-    .shop-cell { font-size: 0.95rem; }
-    .terminal {
-        bottom: 0.5rem;
-        right: 0.5rem;
-        width: calc(100vw - 1rem);
-        height: 55vh;
-        font-size: 0.85rem;
-    }
-    .modal-content {
-        padding: 2rem 1.5rem;
+// ===== МАТРИЧНЫЙ ДОЖДЬ =====
+const canvas = document.getElementById('matrix');
+const ctx = canvas.getContext('2d');
+
+let width, height;
+let columns, drops;
+const fontSize = 16;
+const chars = 'アイウエオカキクケコサシスセソタチツテトナニヌネノハヒフヘホ0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ@#$%&*+=<>/\\';
+
+function initMatrix() {
+    width = canvas.width = window.innerWidth;
+    height = canvas.height = window.innerHeight;
+    columns = Math.floor(width / fontSize);
+    drops = new Array(columns).fill(1);
+}
+
+function drawMatrix() {
+    ctx.fillStyle = 'rgba(10, 10, 15, 0.06)';
+    ctx.fillRect(0, 0, width, height);
+    ctx.font = fontSize + 'px monospace';
+
+    for (let i = 0; i < drops.length; i++) {
+        const char = chars.charAt(Math.floor(Math.random() * chars.length));
+        if (i % 8 === 0) {
+            ctx.fillStyle = '#ff00aa';
+        } else {
+            ctx.fillStyle = '#00f0ff';
+        }
+        ctx.fillText(char, i * fontSize, drops[i] * fontSize);
+
+        if (drops[i] * fontSize > height && Math.random() > 0.975) {
+            drops[i] = 0;
+        }
+        drops[i]++;
     }
 }
+
+initMatrix();
+window.addEventListener('resize', initMatrix);
+setInterval(drawMatrix, 50);
+
+// ===== ПЛАВНЫЙ СКРОЛЛ =====
+document.querySelectorAll('a[href^="#"]').forEach(link => {
+    link.addEventListener('click', e => {
+        const target = document.querySelector(link.getAttribute('href'));
+        if (target) {
+            e.preventDefault();
+            target.scrollIntoView({ behavior: 'smooth' });
+        }
+    });
+});
+
+// ===== ПОЯВЛЕНИЕ СЕКЦИЙ =====
+const observer = new IntersectionObserver(entries => {
+    entries.forEach(entry => {
+        if (entry.isIntersecting) {
+            entry.target.style.opacity = '1';
+            entry.target.style.transform = 'translateY(0)';
+        }
+    });
+}, { threshold: 0.1 });
+
+document.querySelectorAll('.section').forEach(section => {
+    section.style.opacity = '0';
+    section.style.transform = 'translateY(30px)';
+    section.style.transition = 'all 0.8s ease-out';
+    observer.observe(section);
+});
+
+// ===== МОДАЛЬНОЕ ОКНО СКАЧИВАНИЯ =====
+const downloadModal = document.getElementById('download-modal');
+
+function openDownloadModal() {
+    downloadModal.classList.remove('hidden');
+}
+
+function closeDownloadModal() {
+    downloadModal.classList.add('hidden');
+}
+
+// Закрытие по клику вне окна
+downloadModal.addEventListener('click', (e) => {
+    if (e.target === downloadModal) {
+        closeDownloadModal();
+    }
+});
+
+// Имитация скачивания
+function startDownload(btn) {
+    const originalText = btn.textContent;
+    btn.textContent = 'Скачивание... 0%';
+    btn.style.pointerEvents = 'none';
+    
+    let progress = 0;
+    const interval = setInterval(() => {
+        progress += Math.random() * 15;
+        if (progress >= 100) {
+            progress = 100;
+            clearInterval(interval);
+            btn.textContent = 'ФАЙЛ СКАЧАН (Заглушка)';
+            btn.style.borderColor = 'var(--neon-cyan)';
+            btn.style.color = 'var(--neon-cyan)';
+            
+            setTimeout(() => {
+                btn.textContent = originalText;
+                btn.style.pointerEvents = 'auto';
+                btn.style.borderColor = 'var(--neon-green)';
+                btn.style.color = 'var(--neon-green)';
+            }, 3000);
+        } else {
+            btn.textContent = `Скачивание... ${Math.floor(progress)}%`;
+        }
+    }, 200);
+}
+
+// ===== ТЕРМИНАЛ =====
+const terminal = document.getElementById('terminal');
+const termInput = document.getElementById('terminal-input');
+const termOutput = document.getElementById('terminal-output');
+const termClose = document.getElementById('terminal-close');
+
+let commandHistory = [];
+let historyIndex = -1;
+
+function isTerminalOpen() {
+    return !terminal.classList.contains('hidden');
+}
+
+function openTerminal() {
+    terminal.classList.remove('hidden');
+    setTimeout(() => termInput.focus(), 50);
+}
+
+function closeTerminal() {
+    terminal.classList.add('hidden');
+}
+
+document.addEventListener('keydown', e => {
+    if ((e.key === '~' || e.key === '`') && !isTerminalOpen()) {
+        e.preventDefault();
+        openTerminal();
+    }
+    if (e.key === 'Escape') {
+        if (isTerminalOpen()) closeTerminal();
+        if (!downloadModal.classList.contains('hidden')) closeDownloadModal();
+    }
+});
+
+termClose.addEventListener('click', closeTerminal);
+
+termInput.addEventListener('keydown', e => {
+    if (e.key === 'Enter') {
+        const cmd = termInput.value.trim();
+        if (cmd) {
+            commandHistory.push(cmd);
+            historyIndex = commandHistory.length;
+            printLine('<span class="term-prompt">&gt;</span> ' + escapeHtml(cmd));
+            handleCommand(cmd);
+        }
+        termInput.value = '';
+    }
+    if (e.key === 'ArrowUp') {
+        e.preventDefault();
+        if (historyIndex > 0) {
+            historyIndex--;
+            termInput.value = commandHistory[historyIndex];
+        }
+    }
+    if (e.key === 'ArrowDown') {
+        e.preventDefault();
+        if (historyIndex < commandHistory.length - 1) {
+            historyIndex++;
+            termInput.value = commandHistory[historyIndex];
+        } else {
+            historyIndex = commandHistory.length;
+            termInput.value = '';
+        }
+    }
+});
+
+function printLine(html) {
+    const p = document.createElement('p');
+    p.className = 'term-line';
+    p.innerHTML = html;
+    termOutput.appendChild(p);
+    termOutput.scrollTop = termOutput.scrollHeight;
+}
+
+function escapeHtml(str) {
+    return str.replace(/[&<>"]/g, ch => ({
+        '&': '&amp;', '<': '&lt;', '>': '&gt;',
+        '"': '&quot;', "'": '&#39;'
+    }[ch]));
+}
+
+// ===== КОМАНДЫ =====
+const commands = {
+    help: () => {
+        printLine('<span class="term-dim">Доступные команды:</span>');
+        printLine('  <span class="term-cmd">help</span>       — этот список');
+        printLine('  <span class="term-cmd">about</span>      — об игре');
+        printLine('  <span class="term-cmd">status</span>     — статус проекта');
+        printLine('  <span class="term-cmd">shop</span>       — цены магазина');
+        printLine('  <span class="term-cmd">contact</span>    — контакты');
+        printLine('  <span class="term-cmd">whoami</span>     — кто ты');
+        printLine('  <span class="term-cmd">decode</span>     — расшифровать сообщение');
+        printLine('  <span class="term-cmd">logo</span>       — ASCII-логотип');
+        printLine('  <span class="term-cmd">clear</span>      — очистить экран');
+        printLine('  <span class="term-cmd">exit</span>       — закрыть терминал');
+        printLine('<span class="term-dim">Секретные коды принимаются напрямую.</span>');
+    },
+
+    about: () => {
+        printLine('THE SILENT CHAT');
+        printLine('Хакерский триллер в неоновом нуаре.');
+        printLine('Одно сообщение. Одна ночь. Никаких свидетелей.');
+    },
+
+    status: () => {
+        printLine('<span class="term-dim">Проверка систем...</span>');
+        setTimeout(() => printLine('  [OK] Движок: <span class="term-success">Godot 4.7.2</span>'), 200);
+        setTimeout(() => printLine('  [OK] Платформа: <span class="term-success">Android</span>'), 400);
+        setTimeout(() => printLine('  [..] Релиз: <span class="term-cmd">в разработке</span>'), 600);
+    },
+
+    shop: () => {
+        printLine('<span class="term-dim">Пакеты кристаллов:</span>');
+        printLine('  💎10   → 🪙+20   — 99₽');
+        printLine('  💎20   → 🪙+40   — 199₽');
+        printLine('  💎60   → 🪙+100  — 499₽');
+        printLine('  💎120  → 🪙+200  — 999₽');
+        printLine('  💎260  → 🪙+400  — 1999₽');
+        printLine('  💎670  → 🪙+1000 — 4999₽');
+        printLine('  💎1500 → 🪙+2000 — 9999₽');
+        printLine('<span class="term-dim">Покупки — после релиза.</span>');
+    },
+
+    contact: () => {
+        printLine('<span class="term-dim">Каналы связи:</span>');
+        printLine('  Email:    <span class="term-cmd">— скоро —</span>');
+        printLine('  Telegram: <span class="term-cmd">— скоро —</span>');
+        printLine('  Discord:  <span class="term-cmd">— скоро —</span>');
+    },
+
+    whoami: () => {
+        printLine('Гость. Пока что.');
+        printLine('<span class="term-dim">Введи правильный код — узнаешь больше.</span>');
+    },
+
+    decode: () => {
+        printLine('<span class="term-dim">Зашифрованное сообщение:</span>');
+        printLine('<span class="term-cmd">19 8 5 12 12</span>');
+        printLine('<span class="term-dim">Подсказка: A=1, B=2, ...</span>');
+    },
+
+    logo: () => {
+        const art = [
+            '  ████████╗███████╗ ██████╗',
+            '  ╚══██╔══╝██╔════╝██╔════╝',
+            '     ██║   ███████╗██║     ',
+            '     ██║   ╚════██║██║     ',
+            '     ██║   ███████║╚██████╗',
+            '     ╚═╝   ╚══════╝ ╚═════╝'
+        ];
+        art.forEach(line => printLine('<span class="term-cmd">' + line + '</span>'));
+        printLine('<span class="term-dim">THE SILENT CHAT</span>');
+    },
+
+    clear: () => {
+        termOutput.innerHTML = '';
+    },
+
+    exit: () => {
+        closeTerminal();
+    }
+};
+
+// ===== СЕКРЕТНЫЕ КОДЫ =====
+const secrets = {
+    'silent': () => {
+        printLine('<span class="term-success">✓ Код принят. Добро пожаловать в круг.</span>');
+        printLine('Секрет: в игре будет концовка, которую можно получить только');
+        printLine('пройдя все мини-игры без единой ошибки.');
+    },
+    '1337': () => {
+        printLine('<span class="term-success">✓ Элитный доступ подтверждён.</span>');
+        printLine('<span class="term-dim">Ты знаешь, что делаешь.</span>');
+    },
+    'shell': () => {
+        printLine('<span class="term-success">✓ Доступ к shell открыт.</span>');
+        printLine('$ sudo unlock --everything');
+        printLine('<span class="term-dim">Ты чувствуешь, что здесь что-то не так...</span>');
+    }
+};
+
+function handleCommand(raw) {
+    const cmd = raw.toLowerCase().trim();
+
+    if (commands[cmd]) {
+        commands[cmd]();
+        return;
+    }
+    if (secrets[cmd]) {
+        secrets[cmd]();
+        return;
+    }
+
+    printLine('<span class="term-error">command not found: ' + escapeHtml(cmd) + '</span>');
+    printLine('<span class="term-dim">Введи help для списка команд.</span>');
+}
+
+// ===== МАГАЗИН (заглушка покупки) =====
+document.querySelectorAll('.shop-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+        const price = btn.dataset.price;
+        btn.textContent = 'Скоро...';
+        btn.style.opacity = '0.6';
+        btn.disabled = true;
+        setTimeout(() => {
+            btn.textContent = price + '₽';
+            btn.style.opacity = '1';
+            btn.disabled = false;
+        }, 1500);
+    });
+});
+
+document.getElementById('restore-btn').addEventListener('click', function () {
+    const original = this.textContent;
+    this.textContent = 'Ищем покупки...';
+    setTimeout(() => {
+        this.textContent = 'Покупок не найдено';
+        setTimeout(() => { this.textContent = original; }, 1500);
+    }, 1200);
+});
+
+// Фокус в терминал при клике
+document.addEventListener('click', () => {
+    if (isTerminalOpen()) termInput.focus();
+});
