@@ -18,7 +18,6 @@
         <ul class="nav-links">
             <li><a href="#about">О игре</a></li>
             <li><a href="#features">Особенности</a></li>
-            <li><a href="#screens">Скриншоты</a></li>
             <li><a href="#shop">Магазин</a></li>
             <li><a href="#contact">Контакты</a></li>
         </ul>
@@ -28,17 +27,28 @@
     <header class="hero">
         <h1 class="glitch" data-text="THE SILENT CHAT">THE SILENT CHAT</h1>
         <p class="tagline">Тишина — это не отсутствие звука. Это присутствие тьмы.</p>
-        <a href="#about" class="btn">Узнать больше</a>
+        <button class="btn pulse-btn" onclick="openDownloadModal()">СКАЧАТЬ ИГРУ</button>
         <p class="hint">▸ нажми <kbd>~</kbd> чтобы открыть терминал</p>
     </header>
 
     <!-- О игре -->
     <section id="about" class="section">
         <h2>О игре</h2>
-        <p>
-            Ты — хакер-одиночка. Одно сообщение. Одна ночь. 
-            Взломай систему, раскрой правду и не доверяй никому.
-        </p>
+        <div class="about-text">
+            <p><strong>THE SILENT CHAT</strong><br>Одно сообщение. Одна ночь. Никаких свидетелей.</p>
+            <p>Добро пожаловать в The Silent Chat — мрачный психологический триллер, который разворачивается прямо на экране вашего смартфона. Здесь нет героев. Есть только вы, ваш терминал и голос в темноте, который знает о вас слишком много.</p>
+            <p><strong>Ваша история:</strong><br>Вы — Данил. Сломленный человек с терминальной стадией рака, живущий в дождливом городе, где солнце давно перестало появляться. Вы отгородились от мира, утопая в депрессивном рэпе и собственных мыслях. Вы просто ждете конца. Но в 3:47 ночи ваш телефон вибрирует.</p>
+            <p>Сообщение от вашего лучшего друга Димы. Он в панике. Его бывшая девушка пропала, её квартира залита кровью, а на стене кровавыми буквами выведено страшное послание. Это не просто преступление. Это привет из прошлого, которое вы и Дима поклялись похоронить пять лет назад.</p>
+            <p><strong>Что вас ждет?</strong></p>
+            <ul class="features-list">
+                <li><strong>Иммерсивный геймплей:</strong> Вы не просто читаете текст. Вы — часть системы. Вводите сообщения, выбираете, кому верить, а кому лгать, и решаете, как отреагировать на истерику друга.</li>
+                <li><strong>Психологическое давление:</strong> Игра играет с вашим восприятием. Вы не знаете, кто говорит правду, а кто водит вас за нос. Паранойя сгущается с каждым новым диалогом.</li>
+                <li><strong>Мини-игры и взлом:</strong> Взламывайте защищенные сети, расшифровывайте скрытые коды и ищите улики, чтобы собрать пазл воедино. Каждая задача — это шаг к правде, но правда может вас убить.</li>
+                <li><strong>Мрачная атмосфера нуара:</strong> Дождь, неоновый свет, депрессивные биты и черный юмор главного героя. Игра погружает вас в состояние липкого, непреодолимого страха.</li>
+            </ul>
+            <p><strong>Сможете ли вы спасти тех, кто вам дорог?</strong><br>Или тьма, которую вы пытались забыть, уже постучалась в вашу дверь? Помните: в этой игре вы не можете доверять никому. Даже самому себе.</p>
+            <p class="version-note">* Episode 1 наконец-то вышел в релиз.</p>
+        </div>
     </section>
 
     <!-- Особенности -->
@@ -58,17 +68,6 @@
                 <p>Неоновый нуар, матричный дождь, живые диалоги.</p>
             </div>
         </div>
-    </section>
-
-    <!-- Скриншоты -->
-    <section id="screens" class="section">
-        <h2>Скриншоты</h2>
-        <div class="screens-grid">
-            <div class="screen-placeholder">Скрин 1</div>
-            <div class="screen-placeholder">Скрин 2</div>
-            <div class="screen-placeholder">Скрин 3</div>
-        </div>
-        <p class="note">* Скриншоты появятся после релиза</p>
     </section>
 
     <!-- Магазин -->
@@ -121,39 +120,29 @@
     <!-- Контакты -->
     <section id="contact" class="section">
         <h2>Контакты</h2>
-        <p>Связь с разработчиком. Пока данные не заполнены — но скоро появятся.</p>
+        <p>Связь с разработчиком и наши соцсети.</p>
 
         <div class="contact-grid">
-            <div class="contact-card">
+            <!-- Email -->
+            <a href="mailto:tscstudiogame@gmail.com" class="contact-card">
                 <div class="contact-icon">✉️</div>
                 <div class="contact-label">Email</div>
-                <div class="contact-value contact-empty">— скоро —</div>
-            </div>
-            <div class="contact-card">
+                <div class="contact-value">tscstudiogame@gmail.com</div>
+            </a>
+            
+            <!-- Telegram -->
+            <a href="https://t.me/tscofficialbot" target="_blank" class="contact-card">
                 <div class="contact-icon">📱</div>
-                <div class="contact-label">Telegram</div>
-                <div class="contact-value contact-empty">— скоро —</div>
-            </div>
-            <div class="contact-card">
-                <div class="contact-icon">💬</div>
-                <div class="contact-label">Discord</div>
-                <div class="contact-value contact-empty">— скоро —</div>
-            </div>
-            <div class="contact-card">
-                <div class="contact-icon">🎮</div>
-                <div class="contact-label">Google Play</div>
-                <div class="contact-value contact-empty">— скоро —</div>
-            </div>
-            <div class="contact-card">
-                <div class="contact-icon">🛒</div>
-                <div class="contact-label">RuStore</div>
-                <div class="contact-value contact-empty">— скоро —</div>
-            </div>
-            <div class="contact-card">
-                <div class="contact-icon">🌐</div>
-                <div class="contact-label">Сайт</div>
-                <div class="contact-value contact-empty">— скоро —</div>
-            </div>
+                <div class="contact-label">Telegram Бот</div>
+                <div class="contact-value">@tscofficialbot</div>
+            </a>
+            
+            <!-- TikTok -->
+            <a href="https://tiktok.com/@the.silent.chat2" target="_blank" class="contact-card">
+                <div class="contact-icon">🎵</div>
+                <div class="contact-label">TikTok</div>
+                <div class="contact-value">@the.silent.chat2</div>
+            </a>
         </div>
 
         <div class="contact-buttons">
@@ -166,6 +155,21 @@
     <footer class="footer">
         <p>© 2026 THE SILENT CHAT. Все права защищены.</p>
     </footer>
+
+    <!-- МОДАЛЬНОЕ ОКНО СКАЧИВАНИЯ -->
+    <div id="download-modal" class="modal-overlay hidden">
+        <div class="modal-content">
+            <button class="modal-close" onclick="closeDownloadModal()">✕</button>
+            <h2 class="modal-title">THE SILENT CHAT</h2>
+            <div class="modal-text">
+                <p><strong>Добро пожаловать в цифровой кошмар.</strong></p>
+                <p>Вы — анонимный хакер, втянутый в опасную игру с безжалостным кукловодом. Взламывайте защищенные сети, расшифровывайте скрытые коды и принимайте решения, от которых зависит не только ваша жизнь, но и судьбы тех, кто вам дорог.</p>
+                <p>В этой игре нет героев. Есть только вы, ваш терминал и голос в темноте, который знает о вас слишком много. Сможете ли вы найти выход из цифрового лабиринта, пока он не нашел вас первым?</p>
+            </div>
+            <button class="btn-download" onclick="startDownload(this)">СКАЧАТЬ APK</button>
+            <p class="download-note">* Версия 1.0 | Требуется Android 8.0+</p>
+        </div>
+    </div>
 
     <!-- Терминал -->
     <div id="terminal" class="terminal hidden">
