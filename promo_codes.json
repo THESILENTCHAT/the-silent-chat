@@ -1,6 +1,69 @@
 {
-  "DANY": {
-    "coins": 5000000,
-    "gems": 5000000
-  }
+  "TSC-X81K2M": {"coins": 20, "gems": 10},
+  "TSC-P39Q7R": {"coins": 20, "gems": 10},
+  "TSC-Z14W5V": {"coins": 20, "gems": 10},
+  "TSC-M92N4B": {"coins": 20, "gems": 10},
+  "TSC-C65V8X": {"coins": 20, "gems": 10},
+  "TSC-L11K3J": {"coins": 20, "gems": 10},
+  "TSC-H77F2D": {"coins": 20, "gems": 10},
+  "TSC-G88T5R": {"coins": 20, "gems": 10},
+
+  "TSC-Q29W8E": {"coins": 40, "gems": 20},
+  "TSC-R31T7Y": {"coins": 40, "gems": 20},
+  "TSC-U56I9O": {"coins": 40, "gems": 20},
+  "TSC-I22P4A": {"coins": 40, "gems": 20},
+  "TSC-O44S6D": {"coins": 40, "gems": 20},
+  "TSC-F99G1H": {"coins": 40, "gems": 20},
+  "TSC-J33K5L": {"coins": 40, "gems": 20},
+  "TSC-K55Z2X": {"coins": 40, "gems": 20},
+
+  "TSC-V10B3N": {"coins": 100, "gems": 60},
+  "TSC-B66M8C": {"coins": 100, "gems": 60},
+  "TSC-N88X1Z": {"coins": 100, "gems": 60},
+  "TSC-A77L2K": {"coins": 100, "gems": 60},
+  "TSC-S99J4H": {"coins": 100, "gems": 60},
+  "TSC-D11F6G": {"coins": 100, "gems": 60},
+  "TSC-W22Q5E": {"coins": 100, "gems": 60},
+  "TSC-E44R3T": {"coins": 100, "gems": 60},
+
+  "TSC-Y55U7I": {"coins": 200, "gems": 120},
+  "TSC-T66O9P": {"coins": 200, "gems": 120},
+  "TSC-P11A2S": {"coins": 200, "gems": 120},
+  "TSC-Q33D5F": {"coins": 200, "gems": 120},
+  "TSC-R77G8H": {"coins": 200, "gems": 120},
+  "TSC-U88J1K": {"coins": 200, "gems": 120},
+  "TSC-I99L4Z": {"coins": 200, "gems": 120},
+  "TSC-O22X3C": {"coins": 200, "gems": 120},
+
+  "TSC-F44V6B": {"coins": 400, "gems": 260},
+  "TSC-J55N8M": {"coins": 400, "gems": 260},
+  "TSC-K66Q1W": {"coins": 400, "gems": 260},
+  "TSC-L77E3R": {"coins": 400, "gems": 260},
+  "TSC-Z88T5Y": {"coins": 400, "gems": 260},
+  "TSC-X99U7I": {"coins": 400, "gems": 260},
+  "TSC-C11O9P": {"coins": 400, "gems": 260},
+  "TSC-V22A1S": {"coins": 400, "gems": 260},
+
+  "TSC-B33D4F": {"coins": 1000, "gems": 670},
+  "TSC-N44G6H": {"coins": 1000, "gems": 670},
+  "TSC-M55J8K": {"coins": 1000, "gems": 670},
+  "TSC-A66L1Z": {"coins": 1000, "gems": 670},
+  "TSC-S77X3C": {"coins": 1000, "gems": 670},
+  "TSC-D88V5B": {"coins": 1000, "gems": 670},
+  "TSC-W99N7M": {"coins": 1000, "gems": 670},
+  "TSC-E11Q9W": {"coins": 1000, "gems": 670},
+
+  "TSC-R22E4R": {"coins": 2000, "gems": 1500},
+  "TSC-U33T6Y": {"coins": 2000, "gems": 1500},
+  "TSC-I44U8I": {"coins": 2000, "gems": 1500},
+  "TSC-O55O1P": {"coins": 2000, "gems": 1500},
+  "TSC-P66A3S": {"coins": 2000, "gems": 1500},
+  "TSC-Q77D5F": {"coins": 2000, "gems": 1500},
+  "TSC-Y88G7H": {"coins": 2000, "gems": 1500},
+  "TSC-T99J9K": {"coins": 2000, "gems": 1500},
+
+  "TSC-ADMIN1": {"coins": 999999, "gems": 999999},
+  "TSC-VIP777": {"coins": 5000, "gems": 5000},
+  "TSC-FREE50": {"coins": 50, "gems": 50},
+  "TSC-EVENT1": {"coins": 100, "gems": 100}
 }
