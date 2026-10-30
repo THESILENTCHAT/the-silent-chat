@@ -57,12 +57,10 @@ document.querySelectorAll('.section').forEach(section => {
 
 // ===== ПЕРЕВОДЧИК (RU / EN) =====
 function changeLang(lang) {
-    // Меняем активную кнопку
     document.getElementById('btn-ru').classList.remove('active');
     document.getElementById('btn-en').classList.remove('active');
     document.getElementById(`btn-${lang}`).classList.add('active');
 
-    // Проходимся по всем элементам с data-ru и data-en
     document.querySelectorAll('[data-ru][data-en]').forEach(el => {
         if (lang === 'en') {
             el.innerHTML = el.getAttribute('data-en');
@@ -71,7 +69,6 @@ function changeLang(lang) {
         }
     });
 
-    // Меняем атрибут lang у html
     document.documentElement.lang = lang;
 }
 
@@ -166,7 +163,7 @@ function handleCommand(raw) {
 
 document.addEventListener('click', () => { if (isTerminalOpen()) termInput.focus(); });
 
-// Запуск магазина (заглушка восстановления)
+// Запуск магазина (заглушка)
 document.getElementById('restore-btn').addEventListener('click', function () {
     const original = this.textContent;
     this.textContent = 'Ищем покупки...';
