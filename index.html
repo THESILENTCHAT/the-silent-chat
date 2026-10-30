@@ -9,135 +9,163 @@
 </head>
 <body>
 
-    <!-- Матричный дождь -->
     <canvas id="matrix"></canvas>
 
     <!-- Навигация -->
     <nav class="nav">
         <div class="nav-logo">THE SILENT CHAT</div>
         <ul class="nav-links">
-            <li><a href="#about">О игре</a></li>
-            <li><a href="#features">Особенности</a></li>
-            <li><a href="#shop">Магазин</a></li>
-            <li><a href="#contact">Контакты</a></li>
+            <li><a href="#about" data-ru="О игре" data-en="About">О игре</a></li>
+            <li><a href="#tracker" data-ru="Трекер" data-en="Tracker">Трекер</a></li>
+            <li><a href="#features" data-ru="Особенности" data-en="Features">Особенности</a></li>
+            <li><a href="#shop" data-ru="Магазин" data-en="Shop">Магазин</a></li>
+            <li><a href="#contact" data-ru="Контакты" data-en="Contacts">Контакты</a></li>
         </ul>
+        <div class="lang-switch">
+            <button onclick="changeLang('ru')" class="lang-btn active" id="btn-ru">RU</button>
+            <button onclick="changeLang('en')" class="lang-btn" id="btn-en">EN</button>
+        </div>
     </nav>
 
     <!-- Hero -->
     <header class="hero">
         <h1 class="glitch" data-text="THE SILENT CHAT">THE SILENT CHAT</h1>
-        <p class="tagline">Тишина — это не отсутствие звука. Это присутствие тьмы.</p>
-        <button class="btn pulse-btn" onclick="openDownloadModal()">СКАЧАТЬ ИГРУ</button>
-        <p class="hint">▸ нажми <kbd>~</kbd> чтобы открыть терминал</p>
+        <p class="tagline" data-ru="Тишина — это не отсутствие звука. Это присутствие тьмы." data-en="Silence is not the absence of sound. It is the presence of darkness.">Тишина — это не отсутствие звука. Это присутствие тьмы.</p>
+        <button class="btn pulse-btn" onclick="openDownloadModal()" data-ru="СКАЧАТЬ ИГРУ" data-en="DOWNLOAD GAME">СКАЧАТЬ ИГРУ</button>
+        <p class="hint" data-ru="▸ нажми ~ чтобы открыть терминал" data-en="▸ press ~ to open terminal">▸ нажми <kbd>~</kbd> чтобы открыть терминал</p>
     </header>
 
     <!-- О игре -->
     <section id="about" class="section">
-        <h2>О игре</h2>
+        <h2 data-ru="О игре" data-en="About the game">О игре</h2>
         <div class="about-text">
-            <p><strong>THE SILENT CHAT</strong><br>Одно сообщение. Одна ночь. Никаких свидетелей.</p>
-            <p>Добро пожаловать в The Silent Chat — мрачный психологический триллер, который разворачивается прямо на экране вашего смартфона. Здесь нет героев. Есть только вы, ваш терминал и голос в темноте, который знает о вас слишком много.</p>
-            <p><strong>Ваша история:</strong><br>Вы — Данил. Сломленный человек с терминальной стадией рака, живущий в дождливом городе, где солнце давно перестало появляться. Вы отгородились от мира, утопая в депрессивном рэпе и собственных мыслях. Вы просто ждете конца. Но в 3:47 ночи ваш телефон вибрирует.</p>
-            <p>Сообщение от вашего лучшего друга Димы. Он в панике. Его бывшая девушка пропала, её квартира залита кровью, а на стене кровавыми буквами выведено страшное послание. Это не просто преступление. Это привет из прошлого, которое вы и Дима поклялись похоронить пять лет назад.</p>
-            <p><strong>Что вас ждет?</strong></p>
-            <ul class="features-list">
-                <li><strong>Иммерсивный геймплей:</strong> Вы не просто читаете текст. Вы — часть системы. Вводите сообщения, выбираете, кому верить, а кому лгать, и решаете, как отреагировать на истерику друга.</li>
-                <li><strong>Психологическое давление:</strong> Игра играет с вашим восприятием. Вы не знаете, кто говорит правду, а кто водит вас за нос. Паранойя сгущается с каждым новым диалогом.</li>
-                <li><strong>Мини-игры и взлом:</strong> Взламывайте защищенные сети, расшифровывайте скрытые коды и ищите улики, чтобы собрать пазл воедино. Каждая задача — это шаг к правде, но правда может вас убить.</li>
-                <li><strong>Мрачная атмосфера нуара:</strong> Дождь, неоновый свет, депрессивные биты и черный юмор главного героя. Игра погружает вас в состояние липкого, непреодолимого страха.</li>
-            </ul>
-            <p><strong>Сможете ли вы спасти тех, кто вам дорог?</strong><br>Или тьма, которую вы пытались забыть, уже постучалась в вашу дверь? Помните: в этой игре вы не можете доверять никому. Даже самому себе.</p>
-            <p class="version-note">* Episode 1 наконец-то вышел в релиз.</p>
+            <p><strong>THE SILENT CHAT</strong><br><span data-ru="Одно сообщение. Одна ночь. Никаких свидетелей." data-en="One message. One night. No witnesses.">Одно сообщение. Одна ночь. Никаких свидетелей.</span></p>
+            <p data-ru="Добро пожаловать в The Silent Chat — мрачный психологический триллер, который разворачивается прямо на экране вашего смартфона. Здесь нет героев. Есть только вы, ваш терминал и голос в темноте, который знает о вас слишком много." data-en="Welcome to The Silent Chat — a dark psychological thriller unfolding right on your smartphone screen. There are no heroes here. Only you, your terminal, and a voice in the dark that knows too much about you.">Добро пожаловать в The Silent Chat — мрачный психологический триллер, который разворачивается прямо на экране вашего смартфона. Здесь нет героев. Есть только вы, ваш терминал и голос в темноте, который знает о вас слишком много.</p>
+            <p><strong data-ru="Ваша история:" data-en="Your story:">Ваша история:</strong><br>
+            <span data-ru="Вы — Данил. Сломленный человек с терминальной стадией рака, живущий в дождливом городе, где солнце давно перестало появляться. Вы отгородились от мира, утопая в депрессивном рэпе и собственных мыслях. Вы просто ждете конца. Но в 3:47 ночи ваш телефон вибрирует." data-en="You are Danil. A broken man with terminal cancer, living in a rainy city where the sun has long stopped appearing. You have shut yourself off from the world, drowning in depressive rap and your own thoughts. You are just waiting for the end. But at 3:47 AM your phone vibrates.">Вы — Данил. Сломленный человек с терминальной стадией рака, живущий в дождливом городе, где солнце давно перестало появляться. Вы отгородились от мира, утопая в депрессивном рэпе и собственных мыслях. Вы просто ждете конца. Но в 3:47 ночи ваш телефон вибрирует.</span></p>
+            <p data-ru="Сообщение от вашего лучшего друга Димы. Он в панике. Его бывшая девушка пропала, её квартира залита кровью, а на стене кровавыми буквами выведено страшное послание. Это не просто преступление. Это привет из прошлого, которое вы и Дима поклялись похоронить пять лет назад." data-en="A message from your best friend Dima. He is in a panic. His ex-girlfriend has disappeared, her apartment is flooded with blood, and a terrible message is written in blood on the wall. This is not just a crime. This is a greeting from the past that you and Dima swore to bury five years ago.">Сообщение от вашего лучшего друга Димы. Он в панике. Его бывшая девушка пропала, её квартира залита кровью, а на стене кровавыми буквами выведено страшное послание. Это не просто преступление. Это привет из прошлого, которое вы и Дима поклялись похоронить пять лет назад.</p>
+            <p class="version-note" data-ru="* Episode 1 наконец-то вышел в релиз." data-en="* Episode 1 is finally released.">* Episode 1 наконец-то вышел в релиз.</p>
+        </div>
+    </section>
+
+    <!-- TSC TRACKER (ПРОГРЕСС-БАРЫ) -->
+    <section id="tracker" class="section">
+        <h2 data-ru="TSC TRACKER" data-en="TSC TRACKER">TSC TRACKER</h2>
+        <div class="tracker-container">
+            
+            <div class="tracker-item">
+                <div class="tracker-info"><span data-ru="Эпизод 1" data-en="Episode 1">Эпизод 1</span><span>100%</span></div>
+                <div class="progress-bar"><div class="progress-fill" style="width: 100%;"></div></div>
+            </div>
+
+            <div class="tracker-item">
+                <div class="tracker-info"><span data-ru="Эпизод 2" data-en="Episode 2">Эпизод 2</span><span>0%</span></div>
+                <div class="progress-bar"><div class="progress-fill" style="width: 0%;"></div></div>
+            </div>
+
+            <div class="tracker-item">
+                <div class="tracker-info"><span data-ru="Ивентовые сюжеты" data-en="Event Stories">Ивентовые сюжеты</span><span>0%</span></div>
+                <div class="progress-bar"><div class="progress-fill" style="width: 0%;"></div></div>
+            </div>
+
+            <div class="tracker-item">
+                <div class="tracker-info"><span data-ru="Новогодний сюжет" data-en="New Year Story">Новогодний сюжет</span><span>5%</span></div>
+                <div class="progress-bar"><div class="progress-fill" style="width: 5%;"></div></div>
+            </div>
+
+        </div>
+
+        <div class="news-box">
+            <p data-ru="Вся информация и новости в нашем Telegram-канале!" data-en="All information and news in our Telegram channel!">Вся информация и новости в нашем Telegram-канале!</p>
+            <a href="https://t.me/+QKsTczQT9l82ZGNi" target="_blank" class="btn" data-ru="СЛЕДИТЬ ЗА РАЗРАБОТКОЙ" data-en="FOLLOW DEVELOPMENT">СЛЕДИТЬ ЗА РАЗРАБОТКОЙ</a>
         </div>
     </section>
 
     <!-- Особенности -->
     <section id="features" class="section">
-        <h2>Особенности</h2>
+        <h2 data-ru="Особенности" data-en="Features">Особенности</h2>
         <div class="features-grid">
             <div class="feature-card">
-                <h3>Мини-игры</h3>
-                <p>Взлом, расшифровка, логика — каждая задача уникальна.</p>
+                <h3 data-ru="Мини-игры" data-en="Mini-games">Мини-игры</h3>
+                <p data-ru="Взлом, расшифровка, логика — каждая задача уникальна." data-en="Hacking, decryption, logic — each task is unique.">Взлом, расшифровка, логика — каждая задача уникальна.</p>
             </div>
             <div class="feature-card">
-                <h3>Сюжет</h3>
-                <p>Многослойная история с выборами, которые меняют финал.</p>
+                <h3 data-ru="Сюжет" data-en="Story">Сюжет</h3>
+                <p data-ru="Многослойная история с выборами, которые меняют финал." data-en="A multi-layered story with choices that change the ending.">Многослойная история с выборами, которые меняют финал.</p>
             </div>
             <div class="feature-card">
-                <h3>Атмосфера</h3>
-                <p>Неоновый нуар, матричный дождь, живые диалоги.</p>
+                <h3 data-ru="Атмосфера" data-en="Atmosphere">Атмосфера</h3>
+                <p data-ru="Неоновый нуар, матричный дождь, живые диалоги." data-en="Neon noir, matrix rain, live dialogues.">Неоновый нуар, матричный дождь, живые диалоги.</p>
             </div>
         </div>
     </section>
 
     <!-- Магазин -->
     <section id="shop" class="section">
-        <h2>Магазин</h2>
-        <p class="shop-desc">Кристаллы за монеты. Внутриигровая валюта.</p>
+        <h2 data-ru="Магазин" data-en="Shop">Магазин</h2>
+        <p class="shop-desc" data-ru="Кристаллы за монеты. Внутриигровая валюта." data-en="Crystals for coins. In-game currency.">Кристаллы за монеты. Внутриигровая валюта.</p>
 
         <div class="shop-table">
+            <!-- ССЫЛКИ НА БОТА ВМЕСТО КНОПОК -->
             <div class="shop-row">
                 <div class="shop-cell shop-gems"><span class="gem-icon">💎</span><span class="gem-value">10</span></div>
                 <div class="shop-cell shop-coins"><span class="coin-icon">🪙</span><span class="coin-value">+20</span></div>
-                <button class="shop-btn" data-price="99">99₽</button>
+                <a href="https://t.me/tscofficialbot" target="_blank" class="shop-btn">99₽</a>
             </div>
             <div class="shop-row">
                 <div class="shop-cell shop-gems"><span class="gem-icon">💎</span><span class="gem-value">20</span></div>
                 <div class="shop-cell shop-coins"><span class="coin-icon">🪙</span><span class="coin-value">+40</span></div>
-                <button class="shop-btn" data-price="199">199₽</button>
+                <a href="https://t.me/tscofficialbot" target="_blank" class="shop-btn">199₽</a>
             </div>
             <div class="shop-row">
                 <div class="shop-cell shop-gems"><span class="gem-icon">💎</span><span class="gem-value">60</span></div>
                 <div class="shop-cell shop-coins"><span class="coin-icon">🪙</span><span class="coin-value">+100</span></div>
-                <button class="shop-btn" data-price="499">499₽</button>
+                <a href="https://t.me/tscofficialbot" target="_blank" class="shop-btn">499₽</a>
             </div>
             <div class="shop-row">
                 <div class="shop-cell shop-gems"><span class="gem-icon">💎</span><span class="gem-value">120</span></div>
                 <div class="shop-cell shop-coins"><span class="coin-icon">🪙</span><span class="coin-value">+200</span></div>
-                <button class="shop-btn" data-price="999">999₽</button>
+                <a href="https://t.me/tscofficialbot" target="_blank" class="shop-btn">999₽</a>
             </div>
             <div class="shop-row">
                 <div class="shop-cell shop-gems"><span class="gem-icon">💎</span><span class="gem-value">260</span></div>
                 <div class="shop-cell shop-coins"><span class="coin-icon">🪙</span><span class="coin-value">+400</span></div>
-                <button class="shop-btn" data-price="1999">1999₽</button>
+                <a href="https://t.me/tscofficialbot" target="_blank" class="shop-btn">1999₽</a>
             </div>
             <div class="shop-row">
                 <div class="shop-cell shop-gems"><span class="gem-icon">💎</span><span class="gem-value">670</span></div>
                 <div class="shop-cell shop-coins"><span class="coin-icon">🪙</span><span class="coin-value">+1000</span></div>
-                <button class="shop-btn" data-price="4999">4999₽</button>
+                <a href="https://t.me/tscofficialbot" target="_blank" class="shop-btn">4999₽</a>
             </div>
             <div class="shop-row">
                 <div class="shop-cell shop-gems"><span class="gem-icon">💎</span><span class="gem-value">1500</span></div>
                 <div class="shop-cell shop-coins"><span class="coin-icon">🪙</span><span class="coin-value">+2000</span></div>
-                <button class="shop-btn" data-price="9999">9999₽</button>
+                <a href="https://t.me/tscofficialbot" target="_blank" class="shop-btn">9999₽</a>
             </div>
         </div>
 
-        <button id="restore-btn" class="restore-btn">Восстановить покупку</button>
-        <p class="note">* Покупки станут доступны после релиза игры в Google Play и RuStore</p>
+        <button id="restore-btn" class="restore-btn" data-ru="Восстановить покупку" data-en="Restore purchase">Восстановить покупку</button>
+        <p class="note" data-ru="* Все покупки проходят через Telegram-бот" data-en="* All purchases are made through the Telegram bot">* Все покупки проходят через Telegram-бот</p>
     </section>
 
     <!-- Контакты -->
     <section id="contact" class="section">
-        <h2>Контакты</h2>
-        <p>Связь с разработчиком и наши соцсети.</p>
+        <h2 data-ru="Контакты" data-en="Contacts">Контакты</h2>
+        <p data-ru="Связь с разработчиком и наши соцсети." data-en="Contact the developer and our social networks.">Связь с разработчиком и наши соцсети.</p>
 
         <div class="contact-grid">
-            <!-- Email -->
             <a href="mailto:tscstudiogame@gmail.com" class="contact-card">
                 <div class="contact-icon">✉️</div>
                 <div class="contact-label">Email</div>
                 <div class="contact-value">tscstudiogame@gmail.com</div>
             </a>
             
-            <!-- Telegram -->
             <a href="https://t.me/tscofficialbot" target="_blank" class="contact-card">
                 <div class="contact-icon">📱</div>
-                <div class="contact-label">Telegram Бот</div>
+                <div class="contact-label" data-ru="Telegram Бот" data-en="Telegram Bot">Telegram Бот</div>
                 <div class="contact-value">@tscofficialbot</div>
             </a>
             
-            <!-- TikTok -->
             <a href="https://tiktok.com/@the.silent.chat2" target="_blank" class="contact-card">
                 <div class="contact-icon">🎵</div>
                 <div class="contact-label">TikTok</div>
@@ -146,14 +174,13 @@
         </div>
 
         <div class="contact-buttons">
-            <a href="#" class="btn btn-disabled">Google Play — скоро</a>
-            <a href="#" class="btn btn-disabled">RuStore — скоро</a>
+            <a href="#" class="btn btn-disabled" data-ru="Google Play — скоро" data-en="Google Play — soon">Google Play — скоро</a>
+            <a href="#" class="btn btn-disabled" data-ru="RuStore — скоро" data-en="RuStore — soon">RuStore — скоро</a>
         </div>
     </section>
 
-    <!-- Футер -->
     <footer class="footer">
-        <p>© 2026 THE SILENT CHAT. Все права защищены.</p>
+        <p>© 2026 THE SILENT CHAT. <span data-ru="Все права защищены." data-en="All rights reserved.">Все права защищены.</span></p>
     </footer>
 
     <!-- МОДАЛЬНОЕ ОКНО СКАЧИВАНИЯ -->
@@ -162,12 +189,12 @@
             <button class="modal-close" onclick="closeDownloadModal()">✕</button>
             <h2 class="modal-title">THE SILENT CHAT</h2>
             <div class="modal-text">
-                <p><strong>Добро пожаловать в цифровой кошмар.</strong></p>
-                <p>Вы — анонимный хакер, втянутый в опасную игру с безжалостным кукловодом. Взламывайте защищенные сети, расшифровывайте скрытые коды и принимайте решения, от которых зависит не только ваша жизнь, но и судьбы тех, кто вам дорог.</p>
-                <p>В этой игре нет героев. Есть только вы, ваш терминал и голос в темноте, который знает о вас слишком много. Сможете ли вы найти выход из цифрового лабиринта, пока он не нашел вас первым?</p>
+                <p><strong data-ru="Добро пожаловать в цифровой кошмар." data-en="Welcome to the digital nightmare.">Добро пожаловать в цифровой кошмар.</strong></p>
+                <p data-ru="Вы — анонимный хакер, втянутый в опасную игру с безжалостным кукловодом. Взламывайте защищенные сети, расшифровывайте скрытые коды и принимайте решения, от которых зависит не только ваша жизнь, но и судьбы тех, кто вам дорог." data-en="You are an anonymous hacker drawn into a dangerous game with a ruthless puppeteer. Hack secure networks, decrypt hidden codes, and make decisions that determine not only your life but also the fates of those you care about.">Вы — анонимный хакер, втянутый в опасную игру с безжалостным кукловодом. Взламывайте защищенные сети, расшифровывайте скрытые коды и принимайте решения, от которых зависит не только ваша жизнь, но и судьбы тех, кто вам дорог.</p>
+                <p data-ru="В этой игре нет героев. Есть только вы, ваш терминал и голос в темноте, который знает о вас слишком много. Сможете ли вы найти выход из цифрового лабиринта, пока он не нашел вас первым?" data-en="There are no heroes in this game. Only you, your terminal, and a voice in the dark that knows too much about you. Can you find a way out of the digital labyrinth before it finds you first?">В этой игре нет героев. Есть только вы, ваш терминал и голос в темноте, который знает о вас слишком много. Сможете ли вы найти выход из цифрового лабиринта, пока он не нашел вас первым?</p>
             </div>
-            <button class="btn-download" onclick="startDownload(this)">СКАЧАТЬ APK</button>
-            <p class="download-note">* Версия 1.0 | Требуется Android 8.0+</p>
+            <button class="btn-download" onclick="startDownload(this)" data-ru="СКАЧАТЬ APK" data-en="DOWNLOAD APK">СКАЧАТЬ APK</button>
+            <p class="download-note" data-ru="* Версия 1.0 | Требуется Android 8.0+" data-en="* Version 1.0 | Android 8.0+ required">* Версия 1.0 | Требуется Android 8.0+</p>
         </div>
     </div>
 
