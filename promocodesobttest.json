@@ -8,6 +8,12 @@
     "code": "ONE-SUPER",
     "coins": 1000,
     "gems": 100
+  },
+  "+7 7 206 289": {
+    "code": "TEST-OBT117",
+    "achievement": "obt_tester",
+    "coins": 500,
+    "gems": 50
   }
 }
 
