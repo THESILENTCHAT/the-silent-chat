@@ -1,17 +1,17 @@
 {
-  "+7 7 206 289": {
-    "code": "ONE-VIP",
+  "ONE-VIP": {
+    "phone": "+7 7 206 289",
     "coins": 500,
     "gems": 50
   },
-  "+7 7 499 930": {
-    "code": "ONE-VIKA",
+  "ONE-SUPER": {
+    "phone": "+7 7 206 289",
+    "achievement": "donate",
     "coins": 1000,
     "gems": 100
   },
-  "+7 7 206 289": {
-    "code": "ONE-SUPER",
-    "achievement": "donate",
+  "ONE-VIKA": {
+    "phone": "+7 7 499 930",
     "coins": 1000,
     "gems": 100
   }
