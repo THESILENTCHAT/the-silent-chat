@@ -49,34 +49,25 @@
         </div>
     </section>
 
-    <!-- TSC TRACKER (ИСПРАВЛЕНО) -->
+    <!-- TSC TRACKER -->
     <section id="tracker" class="section">
         <h2 data-ru="TSC TRACKER" data-en="TSC TRACKER">TSC TRACKER</h2>
         <div class="tracker-container">
-            
-            <!-- Эпизод 1 -->
             <div class="tracker-item">
                 <div class="tracker-info"><span data-ru="Эпизод 1" data-en="Episode 1">Эпизод 1</span><span>100%</span></div>
                 <div class="progress-bar"><div class="progress-fill" style="width: 100%;"></div></div>
             </div>
-
-            <!-- Эпизод 2 -->
             <div class="tracker-item">
                 <div class="tracker-info"><span data-ru="Эпизод 2" data-en="Episode 2">Эпизод 2</span><span>0%</span></div>
                 <div class="progress-bar"><div class="progress-fill" style="width: 0%;"></div></div>
             </div>
-
-            <!-- Ивентовые сюжеты (Просто заголовок) -->
             <div class="tracker-header">
                 <span data-ru="Ивентовые сюжеты" data-en="Event Stories">Ивентовые сюжеты</span>
             </div>
-
-            <!-- Новогодний сюжет (Под ним) -->
             <div class="tracker-item sub-item">
                 <div class="tracker-info"><span data-ru="Новогодний сюжет" data-en="New Year Story">Новогодний сюжет</span><span>5%</span></div>
                 <div class="progress-bar"><div class="progress-fill" style="width: 5%;"></div></div>
             </div>
-
         </div>
 
         <div class="news-box">
@@ -187,18 +178,50 @@
         <p>© 2026 THE SILENT CHAT. <span data-ru="Все права защищены." data-en="All rights reserved.">Все права защищены.</span></p>
     </footer>
 
-    <!-- МОДАЛЬНОЕ ОКНО СКАЧИВАНИЯ -->
+    <!-- МОДАЛЬНОЕ ОКНО СКАЧИВАНИЯ (ОБНОВЛЕНО) -->
     <div id="download-modal" class="modal-overlay hidden">
         <div class="modal-content">
             <button class="modal-close" onclick="closeDownloadModal()">✕</button>
             <h2 class="modal-title">THE SILENT CHAT</h2>
-            <div class="modal-text">
-                <p><strong data-ru="Добро пожаловать в цифровой кошмар." data-en="Welcome to the digital nightmare.">Добро пожаловать в цифровой кошмар.</strong></p>
-                <p data-ru="Вы — анонимный хакер, втянутый в опасную игру с безжалостным кукловодом. Взламывайте защищенные сети, расшифровывайте скрытые коды и принимайте решения, от которых зависит не только ваша жизнь, но и судьбы тех, кто вам дорог." data-en="You are an anonymous hacker drawn into a dangerous game with a ruthless puppeteer. Hack secure networks, decrypt hidden codes, and make decisions that determine not only your life but also the fates of those you care about.">Вы — анонимный хакер, втянутый в опасную игру с безжалостным кукловодом. Взламывайте защищенные сети, расшифровывайте скрытые коды и принимайте решения, от которых зависит не только ваша жизнь, но и судьбы тех, кто вам дорог.</p>
-                <p data-ru="В этой игре нет героев. Есть только вы, ваш терминал и голос в темноте, который знает о вас слишком много. Сможете ли вы найти выход из цифрового лабиринта, пока он не нашел вас первым?" data-en="There are no heroes in this game. Only you, your terminal, and a voice in the dark that knows too much about you. Can you find a way out of the digital labyrinth before it finds you first?">В этой игре нет героев. Есть только вы, ваш терминал и голос в темноте, который знает о вас слишком много. Сможете ли вы найти выход из цифрового лабиринта, пока он не нашел вас первым?</p>
+            
+            <!-- Экран 1: Начальный текст и кнопка скачать -->
+            <div id="dl-step-1">
+                <div class="modal-text">
+                    <p><strong data-ru="Добро пожаловать в цифровой кошмар." data-en="Welcome to the digital nightmare.">Добро пожаловать в цифровой кошмар.</strong></p>
+                    <p data-ru="Вы — анонимный хакер, втянутый в опасную игру с безжалостным кукловодом. Сможете ли вы найти выход из цифрового лабиринта, пока он не нашел вас первым?" data-en="You are an anonymous hacker drawn into a dangerous game...">Вы — анонимный хакер, втянутый в опасную игру с безжалостным кукловодом. Сможете ли вы найти выход из цифрового лабиринта, пока он не нашел вас первым?</p>
+                </div>
+                <button class="btn-download" onclick="startLoading(this)" data-ru="СКАЧАТЬ ИГРУ" data-en="DOWNLOAD GAME">СКАЧАТЬ ИГРУ</button>
             </div>
-            <button class="btn-download" onclick="startDownload(this)" data-ru="СКАЧАТЬ APK" data-en="DOWNLOAD APK">СКАЧАТЬ APK</button>
-            <p class="download-note" data-ru="* Версия 1.0 | Требуется Android 8.0+" data-en="* Version 1.0 | Android 8.0+ required">* Версия 1.0 | Требуется Android 8.0+</p>
+
+            <!-- Экран 2: Выбор платформы -->
+            <div id="dl-step-2" class="hidden">
+                <p style="margin-bottom: 1.5rem; font-size: 1.1rem;" data-ru="Выберите вашу платформу:" data-en="Choose your platform:">Выберите вашу платформу:</p>
+                <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
+                    <button class="btn-os" onclick="chooseAndroid()">🤖 Android</button>
+                    <button class="btn-os" onclick="chooseIos()">🍏 iPhone (iOS)</button>
+                </div>
+            </div>
+
+            <!-- Экран 3: Для Android (Скачивание APK) -->
+            <div id="dl-step-android" class="hidden">
+                <p style="color: var(--neon-green); margin-bottom: 1.5rem; font-size: 1.1rem;" data-ru="Файл готов к загрузке!" data-en="File ready for download!">Файл готов к загрузке!</p>
+                <!-- ВАЖНО: Сюда вставь путь к своему APK файлу -->
+                <a href="TheSilentChat.apk" download class="btn-download" style="display: block; text-decoration: none;" data-ru="СКАЧАТЬ APK" data-en="DOWNLOAD APK">СКАЧАТЬ APK</a>
+                <p class="download-note" data-ru="* Версия 1.0 | Требуется Android 8.0+" data-en="* Version 1.0 | Android 8.0+ required">* Версия 1.0 | Требуется Android 8.0+</p>
+            </div>
+
+            <!-- Экран 4: Для iPhone (Игра в браузере) -->
+            <div id="dl-step-ios" class="hidden">
+                <p style="color: var(--neon-magenta); margin-bottom: 1.5rem; font-size: 1.1rem; font-weight: bold;" data-ru="Извините, вы пока не можете скачать файл на iPhone." data-en="Sorry, you cannot download the file on iPhone yet.">
+                    Извините, вы пока не можете скачать файл на iPhone.
+                </p>
+                <p style="margin-bottom: 1.5rem; color: var(--text-dim);" data-ru="Но вы можете сыграть прямо сейчас в браузере!" data-en="But you can play right now in your browser!">
+                    Но вы можете сыграть прямо сейчас в браузере!
+                </p>
+                <!-- ВАЖНО: Ссылка ведет на папку с игрой Godot -->
+                <a href="game/index.html" target="_blank" class="btn-download" style="display: block; text-decoration: none; border-color: var(--neon-cyan); color: var(--neon-cyan);" data-ru="ИГРАТЬ НА САЙТЕ" data-en="PLAY ON SITE">ИГРАТЬ НА САЙТЕ</a>
+            </div>
+
         </div>
     </div>
 
