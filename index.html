@@ -17,6 +17,7 @@
         <div class="nav-logo">THE SILENT CHAT</div>
         <ul class="nav-links">
             <li><a href="#about" data-ru="О игре" data-en="About">О игре</a></li>
+            <li><a href="#updates" data-ru="Обновления" data-en="Updates">Обновления</a></li>
             <li><a href="#tracker" data-ru="Трекер" data-en="Tracker">Трекер</a></li>
             <li><a href="#features" data-ru="Особенности" data-en="Features">Особенности</a></li>
             <li><a href="#shop" data-ru="Магазин" data-en="Shop">Магазин</a></li>
@@ -32,47 +33,73 @@
     <header class="hero">
         <h1 class="glitch" data-text="THE SILENT CHAT">THE SILENT CHAT</h1>
         <p class="tagline" data-ru="Тишина — это не отсутствие звука. Это присутствие тьмы." data-en="Silence is not the absence of sound. It is the presence of darkness.">Тишина — это не отсутствие звука. Это присутствие тьмы.</p>
-        <button class="btn pulse-btn" onclick="openDownloadModal()" data-ru="СКАЧАТЬ ИГРУ" data-en="DOWNLOAD GAME">СКАЧАТЬ ИГРУ</button>
+        <!-- 1. Изменена кнопка в шапке -->
+        <button class="btn pulse-btn" onclick="openDownloadModal()" data-ru="ПОИГРАТЬ НА УСТРОЙСТВАХ APPLE" data-en="PLAY ON APPLE DEVICES">ПОИГРАТЬ НА УСТРОЙСТВАХ APPLE</button>
         <p class="hint" data-ru="▸ нажми ~ чтобы открыть терминал" data-en="▸ press ~ to open terminal">▸ нажми <kbd>~</kbd> чтобы открыть терминал</p>
     </header>
 
-    <!-- О игре -->
+    <!-- 2. Об игре (Без спойлеров) -->
     <section id="about" class="section">
         <h2 data-ru="О игре" data-en="About the game">О игре</h2>
         <div class="about-text">
             <p><strong>THE SILENT CHAT</strong><br><span data-ru="Одно сообщение. Одна ночь. Никаких свидетелей." data-en="One message. One night. No witnesses.">Одно сообщение. Одна ночь. Никаких свидетелей.</span></p>
-            <p data-ru="Добро пожаловать в The Silent Chat — мрачный психологический триллер, который разворачивается прямо на экране вашего смартфона. Здесь нет героев. Есть только вы, ваш терминал и голос в темноте, который знает о вас слишком много." data-en="Welcome to The Silent Chat — a dark psychological thriller unfolding right on your smartphone screen. There are no heroes here. Only you, your terminal, and a voice in the dark that knows too much about you.">Добро пожаловать в The Silent Chat — мрачный психологический триллер, который разворачивается прямо на экране вашего смартфона. Здесь нет героев. Есть только вы, ваш терминал и голос в темноте, который знает о вас слишком много.</p>
-            <p><strong data-ru="Ваша история:" data-en="Your story:">Ваша история:</strong><br>
-            <span data-ru="Вы — Данил. Сломленный человек с терминальной стадией рака, живущий в дождливом городе, где солнце давно перестало появляться. Вы отгородились от мира, утопая в депрессивном рэпе и собственных мыслях. Вы просто ждете конца. Но в 3:47 ночи ваш телефон вибрирует." data-en="You are Danil. A broken man with terminal cancer, living in a rainy city where the sun has long stopped appearing. You have shut yourself off from the world, drowning in depressive rap and your own thoughts. You are just waiting for the end. But at 3:47 AM your phone vibrates.">Вы — Данил. Сломленный человек с терминальной стадией рака, живущий в дождливом городе, где солнце давно перестало появляться. Вы отгородились от мира, утопая в депрессивном рэпе и собственных мыслях. Вы просто ждете конца. Но в 3:47 ночи ваш телефон вибрирует.</span></p>
-            <p data-ru="Сообщение от вашего лучшего друга Димы. Он в панике. Его бывшая девушка пропала, её квартира залита кровью, а на стене кровавыми буквами выведено страшное послание. Это не просто преступление. Это привет из прошлого, которое вы и Дима поклялись похоронить пять лет назад." data-en="A message from your best friend Dima. He is in a panic. His ex-girlfriend has disappeared, her apartment is flooded with blood, and a terrible message is written in blood on the wall. This is not just a crime. This is a greeting from the past that you and Dima swore to bury five years ago.">Сообщение от вашего лучшего друга Димы. Он в панике. Его бывшая девушка пропала, её квартира залита кровью, а на стене кровавыми буквами выведено страшное послание. Это не просто преступление. Это привет из прошлого, которое вы и Дима поклялись похоронить пять лет назад.</p>
-            <p class="version-note" data-ru="* Episode 1 наконец-то вышел в релиз." data-en="* Episode 1 is finally released.">* Episode 1 наконец-то вышел в релиз.</p>
+            <p data-ru="Добро пожаловать в The Silent Chat — мрачный психологический триллер, который разворачивается прямо на экране вашего смартфона. Здесь нет привычных героев и открытых миров. Есть только вы, ваш терминал и голос в темноте, который знает о вас слишком много." data-en="Welcome to The Silent Chat — a dark psychological thriller unfolding right on your smartphone screen. There are no familiar heroes or open worlds here. Only you, your terminal, and a voice in the dark that knows too much about you.">Добро пожаловать в The Silent Chat — мрачный психологический триллер, который разворачивается прямо на экране вашего смартфона. Здесь нет привычных героев и открытых миров. Есть только вы, ваш терминал и голос в темноте, который знает о вас слишком много.</p>
+            
+            <p data-ru="Дождливый город, где солнце давно перестало появляться. Вы отгородились от мира, утопая в депрессивном ритме и собственных мыслях. Вы просто ждете, что будет дальше. Но однажды ночью, ровно в 3:47, ваш телефон вибрирует." data-en="A rainy city where the sun has long stopped appearing. You have shut yourself off from the world, drowning in a depressive rhythm and your own thoughts. You are just waiting for what comes next. But one night, exactly at 3:47 AM, your phone vibrates.">Дождливый город, где солнце давно перестало появляться. Вы отгородились от мира, утопая в депрессивном ритме и собственных мыслях. Вы просто ждете, что будет дальше. Но однажды ночью, ровно в 3:47, ваш телефон вибрирует.</p>
+
+            <p data-ru="Сообщение от старого друга переворачивает всё с ног на голову. Исчезновение. Следы, которые лучше было бы не находить. И страшное послание, которое станет приветом из прошлого, что вы поклялись похоронить много лет назад. Это не просто преступление. Это игра на выживание, где каждое ваше слово имеет последствия. Сможете ли вы разгадать загадку, не доверяя никому? Даже тем, кого знаете много лет." data-en="A message from an old friend turns everything upside down. A disappearance. Traces that would be better left unfound. And a terrible message that becomes a greeting from a past you swore to bury years ago. This is not just a crime. It's a survival game where every word you say has consequences. Can you solve the mystery without trusting anyone? Even those you've known for years.">Сообщение от старого друга переворачивает всё с ног на голову. Исчезновение. Следы, которые лучше было бы не находить. И страшное послание, которое станет приветом из прошлого, что вы поклялись похоронить много лет назад. Это не просто преступление. Это игра на выживание, где каждое ваше слово имеет последствия. Сможете ли вы разгадать загадку, не доверяя никому? Даже тем, кого знаете много лет.</p>
         </div>
     </section>
 
-    <!-- TSC TRACKER (ИСПРАВЛЕНО) -->
+    <!-- 3. НОВЫЙ БЛОК: Версия и Будущие обновления -->
+    <section id="updates" class="section">
+        <h2 data-ru="Версия: 1.0" data-en="Version: 1.0">Версия: 1.0</h2>
+        
+        <div class="updates-container">
+            <div class="update-card">
+                <h3 data-ru="ЧТО НОВОГО" data-en="WHAT'S NEW">ЧТО НОВОГО</h3>
+                <ul class="update-list">
+                    <li data-ru="Игра стала доступна для всех игроков!" data-en="The game is now available for all players!">Игра стала доступна для всех игроков!</li>
+                    <li data-ru="Эпизод 1 полностью готов." data-en="Episode 1 is completely finished.">Эпизод 1 полностью готов.</li>
+                </ul>
+                <div class="episode-title">
+                    <span data-ru="EPISODE 1:" data-en="EPISODE 1:">EPISODE 1:</span><br>
+                    <strong>DEAD MEN DON'T LIE</strong>
+                </div>
+            </div>
+
+            <div class="update-card future">
+                <h3 data-ru="В БУДУЩИХ ОБНОВЛЕНИЯХ" data-en="IN FUTURE UPDATES">В БУДУЩИХ ОБНОВЛЕНИЯХ</h3>
+                <ul class="update-list future-list">
+                    <li data-ru="Фон шапки профиля" data-en="Profile header background">Фон шапки профиля</li>
+                    <li data-ru="Фон чата" data-en="Chat background">Фон чата</li>
+                    <li data-ru="Рамки для аватаров" data-en="Avatar frames">Рамки для аватаров</li>
+                    <li data-ru="Аккаунт в игре (синхронизация)" data-en="In-game account (sync)">Аккаунт в игре (синхронизация)</li>
+                    <li data-ru="И многое другое..." data-en="And much more...">И многое другое...</li>
+                </ul>
+            </div>
+        </div>
+    </section>
+
     <!-- TSC TRACKER -->
     <section id="tracker" class="section">
         <h2 data-ru="TSC TRACKER" data-en="TSC TRACKER">TSC TRACKER</h2>
         <div class="tracker-container">
             
-            <!-- Эпизод 1 -->
             <div class="tracker-item">
                 <div class="tracker-info"><span data-ru="Эпизод 1" data-en="Episode 1">Эпизод 1</span><span>100%</span></div>
                 <div class="progress-bar"><div class="progress-fill" style="width: 100%;"></div></div>
             </div>
 
-            <!-- Эпизод 2 -->
             <div class="tracker-item">
                 <div class="tracker-info"><span data-ru="Эпизод 2" data-en="Episode 2">Эпизод 2</span><span>0%</span></div>
                 <div class="progress-bar"><div class="progress-fill" style="width: 0%;"></div></div>
             </div>
 
-            <!-- Ивентовые сюжеты (Просто заголовок) -->
             <div class="tracker-header">
                 <span data-ru="Ивентовые сюжеты" data-en="Event Stories">Ивентовые сюжеты</span>
             </div>
 
-            <!-- Новогодний сюжет (Под ним) -->
             <div class="tracker-item sub-item">
                 <div class="tracker-info"><span data-ru="Новогодний сюжет" data-en="New Year Story">Новогодний сюжет</span><span>5%</span></div>
                 <div class="progress-bar"><div class="progress-fill" style="width: 5%;"></div></div>
@@ -179,7 +206,9 @@
 
         <div class="contact-buttons">
             <a href="#" class="btn btn-disabled" data-ru="Google Play — скоро" data-en="Google Play — soon">Google Play — скоро</a>
-            <a href="#" class="btn btn-disabled" data-ru="RuStore — скоро" data-en="RuStore — soon">RuStore — скоро</a>
+            
+            <!-- 4. Обновленная кнопка RuStore. ВСТАВЬ ССЫЛКУ ВМЕСТО # -->
+            <a href="#" target="_blank" class="btn" data-ru="RuStore — Скачать" data-en="RuStore — Download">RuStore — Скачать</a>
         </div>
     </section>
 
@@ -189,26 +218,20 @@
     </footer>
 
     <!-- МОДАЛЬНОЕ ОКНО СКАЧИВАНИЯ -->
-    <!-- МОДАЛЬНОЕ ОКНО СКАЧИВАНИЯ (ОБНОВЛЕНО) -->
     <div id="download-modal" class="modal-overlay hidden">
         <div class="modal-content">
             <button class="modal-close" onclick="closeDownloadModal()">✕</button>
             <h2 class="modal-title">THE SILENT CHAT</h2>
-            <div class="modal-text">
-                <p><strong data-ru="Добро пожаловать в цифровой кошмар." data-en="Welcome to the digital nightmare.">Добро пожаловать в цифровой кошмар.</strong></p>
-                <p data-ru="Вы — анонимный хакер, втянутый в опасную игру с безжалостным кукловодом. Взламывайте защищенные сети, расшифровывайте скрытые коды и принимайте решения, от которых зависит не только ваша жизнь, но и судьбы тех, кто вам дорог." data-en="You are an anonymous hacker drawn into a dangerous game with a ruthless puppeteer. Hack secure networks, decrypt hidden codes, and make decisions that determine not only your life but also the fates of those you care about.">Вы — анонимный хакер, втянутый в опасную игру с безжалостным кукловодом. Взламывайте защищенные сети, расшифровывайте скрытые коды и принимайте решения, от которых зависит не только ваша жизнь, но и судьбы тех, кто вам дорог.</p>
-                <p data-ru="В этой игре нет героев. Есть только вы, ваш терминал и голос в темноте, который знает о вас слишком много. Сможете ли вы найти выход из цифрового лабиринта, пока он не нашел вас первым?" data-en="There are no heroes in this game. Only you, your terminal, and a voice in the dark that knows too much about you. Can you find a way out of the digital labyrinth before it finds you first?">В этой игре нет героев. Есть только вы, ваш терминал и голос в темноте, который знает о вас слишком много. Сможете ли вы найти выход из цифрового лабиринта, пока он не нашел вас первым?</p>
             
             <!-- Экран 1: Начальный текст и кнопка скачать -->
             <div id="dl-step-1">
                 <div class="modal-text">
                     <p><strong data-ru="Добро пожаловать в цифровой кошмар." data-en="Welcome to the digital nightmare.">Добро пожаловать в цифровой кошмар.</strong></p>
-                    <p data-ru="Вы — анонимный хакер, втянутый в опасную игру с безжалостным кукловодом. Сможете ли вы найти выход из цифрового лабиринта, пока он не нашел вас первым?" data-en="You are an anonymous hacker drawn into a dangerous game...">Вы — анонимный хакер, втянутый в опасную игру с безжалостным кукловодом. Сможете ли вы найти выход из цифрового лабиринта, пока он не нашел вас первым?</p>
+                    <p data-ru="Вы — анонимный хакер, втянутый в опасную игру с безжалостным кукловодом. Сможете ли вы найти выход из цифрового лабиринта, пока он не нашел вас первым?" data-en="You are an anonymous hacker drawn into a dangerous game with a ruthless puppeteer. Can you find a way out of the digital labyrinth before it finds you first?">Вы — анонимный хакер, втянутый в опасную игру с безжалостным кукловодом. Сможете ли вы найти выход из цифрового лабиринта, пока он не нашел вас первым?</p>
                 </div>
                 <button class="btn-download" onclick="startLoading(this)" data-ru="СКАЧАТЬ ИГРУ" data-en="DOWNLOAD GAME">СКАЧАТЬ ИГРУ</button>
+                <p class="download-note" data-ru="* Версия 1.0 | Требуется Android 8.0+" data-en="* Version 1.0 | Android 8.0+ required">* Версия 1.0 | Требуется Android 8.0+</p>
             </div>
-            <button class="btn-download" onclick="startDownload(this)" data-ru="СКАЧАТЬ APK" data-en="DOWNLOAD APK">СКАЧАТЬ APK</button>
-            <p class="download-note" data-ru="* Версия 1.0 | Требуется Android 8.0+" data-en="* Version 1.0 | Android 8.0+ required">* Версия 1.0 | Требуется Android 8.0+</p>
 
             <!-- Экран 2: Выбор платформы -->
             <div id="dl-step-2" class="hidden">
