@@ -1,19 +1,14 @@
 {
-  "+7 7 206 289": {
-    "code": "TEST-OBT116",
+  "TEST-OBT116": {
+    "phone": "+7 7 206 289",
+    "achievement": "obt_tester",
     "coins": 500,
     "gems": 50
   },
-  "+7 7 499 930": {
-    "code": "ONE-SUPER",
-    "coins": 1000,
-    "gems": 100
-  },
-  "+7 7 206 289": {
-    "code": "TEST-OBT117",
+  "TEST-OBT117": {
+    "phone": "+7 7 206 289",
     "achievement": "obt_tester",
     "coins": 500,
     "gems": 50
   }
 }
-
