@@ -8,5 +8,11 @@
     "code": "ONE-VIKA",
     "coins": 1000,
     "gems": 100
+  },
+  "+7 7 206 289": {
+    "code": "ONE-SUPER",
+    "achievement": "donate",
+    "coins": 1000,
+    "gems": 100
   }
 }
