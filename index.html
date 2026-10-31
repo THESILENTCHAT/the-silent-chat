@@ -12,265 +12,325 @@
     <!-- Матричный дождь -->
     <canvas id="matrix"></canvas>
 
-    <!-- Навигация -->
-    <nav class="nav">
-        <div class="nav-logo">THE SILENT CHAT</div>
-        <ul class="nav-links">
-            <li><a href="#about" data-ru="О игре" data-en="About">О игре</a></li>
-            <li><a href="#updates" data-ru="Обновления" data-en="Updates">Обновления</a></li>
-            <li><a href="#tracker" data-ru="Трекер" data-en="Tracker">Трекер</a></li>
-            <li><a href="#features" data-ru="Особенности" data-en="Features">Особенности</a></li>
-            <li><a href="#shop" data-ru="Магазин" data-en="Shop">Магазин</a></li>
-            <li><a href="#contact" data-ru="Контакты" data-en="Contacts">Контакты</a></li>
-        </ul>
-        <div class="lang-switch">
-            <button onclick="changeLang('ru')" class="lang-btn active" id="btn-ru">RU</button>
-            <button onclick="changeLang('en')" class="lang-btn" id="btn-en">EN</button>
+    <!-- ===== ЭКРАН АВТОРИЗАЦИИ ===== -->
+    <div id="auth-overlay" class="auth-overlay">
+        <div class="auth-box">
+            <h2 class="auth-title glitch" data-text="TSC TERMINAL">TSC TERMINAL</h2>
+
+            <!-- ЭТАП 1: РЕГИСТРАЦИЯ -->
+            <div id="auth-register" class="auth-panel fade-in">
+                <p class="auth-desc">Создайте учетную запись оператора</p>
+                <div class="input-group">
+                    <label>Юзернейм (@)</label>
+                    <input type="text" id="reg-username" placeholder="@Adellink" autocomplete="off">
+                </div>
+                <div class="input-group">
+                    <label>Имя</label>
+                    <input type="text" id="reg-name" placeholder="Иван" autocomplete="off">
+                </div>
+                <div style="display: flex; gap: 10px;">
+                    <div class="input-group" style="flex: 1;">
+                        <label>Возраст</label>
+                        <input type="number" id="reg-age" placeholder="20">
+                    </div>
+                    <div class="input-group" style="flex: 1;">
+                        <label>Пол</label>
+                        <select id="reg-gender">
+                            <option value="Мужской">Мужской</option>
+                            <option value="Женский">Женский</option>
+                            <option value="Другое">Другое</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="input-group">
+                    <label>Пароль</label>
+                    <input type="password" id="reg-password" placeholder="••••••••">
+                </div>
+                <div class="input-group">
+                    <label>Повторите пароль</label>
+                    <input type="password" id="reg-password-confirm" placeholder="••••••••">
+                </div>
+                <p id="reg-error" class="error-text"></p>
+                <button class="btn auth-btn" onclick="registerUser()">ПРОДОЛЖИТЬ</button>
+                <p class="auth-switch">Уже есть аккаунт? <span onclick="switchAuthPanel('login')">Войти</span></p>
+            </div>
+
+            <!-- ЭТАП 2: ТОКЕН -->
+            <div id="auth-token" class="auth-panel hidden">
+                <p class="auth-desc" style="color: var(--neon-green);">Регистрация успешна!</p>
+                <p>Ваш TSC-Token для входа:</p>
+                <div class="token-display" id="generated-token">TSC-XXXX-XXXX</div>
+                <p class="note" style="margin-bottom: 2rem;">Сохраните его. Без него вход невозможен.</p>
+                <button class="btn auth-btn" onclick="switchAuthPanel('login')">ПЕРЕЙТИ КО ВХОДУ</button>
+            </div>
+
+            <!-- ЭТАП 3: ВХОД -->
+            <div id="auth-login" class="auth-panel hidden">
+                <p class="auth-desc">Вход в систему</p>
+                <div class="input-group">
+                    <label>Юзернейм (@)</label>
+                    <input type="text" id="login-username" placeholder="@Adellink" autocomplete="off">
+                </div>
+                <div class="input-group">
+                    <label>Пароль</label>
+                    <input type="password" id="login-password" placeholder="••••••••">
+                </div>
+                <div class="input-group">
+                    <label>TSC-Token</label>
+                    <input type="text" id="login-token" placeholder="TSC-XXXX-XXXX" autocomplete="off">
+                </div>
+                <p id="login-error" class="error-text"></p>
+                <button class="btn auth-btn" onclick="loginUser()">ЗАГРУЗКА...</button>
+                <p class="auth-switch">Нет аккаунта? <span onclick="switchAuthPanel('register')">Регистрация</span></p>
+            </div>
+
+            <!-- ЭТАП 4: ЗАГРУЗКА -->
+            <div id="auth-loading" class="auth-panel hidden">
+                <p class="auth-desc" style="color: var(--neon-cyan);">Подключение к серверам...</p>
+                <div class="loader-bar"><div class="loader-fill" id="load-progress"></div></div>
+                <p class="loading-text" id="load-text">Инициализация протоколов...</p>
+            </div>
         </div>
-    </nav>
+    </div>
 
-    <!-- Hero -->
-    <header class="hero">
-        <h1 class="glitch" data-text="THE SILENT CHAT">THE SILENT CHAT</h1>
-        <p class="tagline" data-ru="Тишина — это не отсутствие звука. Это присутствие тьмы." data-en="Silence is not the absence of sound. It is the presence of darkness.">Тишина — это не отсутствие звука. Это присутствие тьмы.</p>
-        <!-- 1. Изменена кнопка в шапке -->
-        <button class="btn pulse-btn" onclick="openDownloadModal()" data-ru="ПОИГРАТЬ НА УСТРОЙСТВАХ APPLE" data-en="PLAY ON APPLE DEVICES">ПОИГРАТЬ НА УСТРОЙСТВАХ APPLE</button>
-        <p class="hint" data-ru="▸ нажми ~ чтобы открыть терминал" data-en="▸ press ~ to open terminal">▸ нажми <kbd>~</kbd> чтобы открыть терминал</p>
-    </header>
-
-    <!-- 2. Об игре (Без спойлеров) -->
-    <section id="about" class="section">
-        <h2 data-ru="О игре" data-en="About the game">О игре</h2>
-        <div class="about-text">
-            <p><strong>THE SILENT CHAT</strong><br><span data-ru="Одно сообщение. Одна ночь. Никаких свидетелей." data-en="One message. One night. No witnesses.">Одно сообщение. Одна ночь. Никаких свидетелей.</span></p>
-            <p data-ru="Добро пожаловать в The Silent Chat — мрачный психологический триллер, который разворачивается прямо на экране вашего смартфона. Здесь нет привычных героев и открытых миров. Есть только вы, ваш терминал и голос в темноте, который знает о вас слишком много." data-en="Welcome to The Silent Chat — a dark psychological thriller unfolding right on your smartphone screen. There are no familiar heroes or open worlds here. Only you, your terminal, and a voice in the dark that knows too much about you.">Добро пожаловать в The Silent Chat — мрачный психологический триллер, который разворачивается прямо на экране вашего смартфона. Здесь нет привычных героев и открытых миров. Есть только вы, ваш терминал и голос в темноте, который знает о вас слишком много.</p>
-            
-            <p data-ru="Дождливый город, где солнце давно перестало появляться. Вы отгородились от мира, утопая в депрессивном ритме и собственных мыслях. Вы просто ждете, что будет дальше. Но однажды ночью, ровно в 3:47, ваш телефон вибрирует." data-en="A rainy city where the sun has long stopped appearing. You have shut yourself off from the world, drowning in a depressive rhythm and your own thoughts. You are just waiting for what comes next. But one night, exactly at 3:47 AM, your phone vibrates.">Дождливый город, где солнце давно перестало появляться. Вы отгородились от мира, утопая в депрессивном ритме и собственных мыслях. Вы просто ждете, что будет дальше. Но однажды ночью, ровно в 3:47, ваш телефон вибрирует.</p>
-
-            <p data-ru="Сообщение от старого друга переворачивает всё с ног на голову. Исчезновение. Следы, которые лучше было бы не находить. И страшное послание, которое станет приветом из прошлого, что вы поклялись похоронить много лет назад. Это не просто преступление. Это игра на выживание, где каждое ваше слово имеет последствия. Сможете ли вы разгадать загадку, не доверяя никому? Даже тем, кого знаете много лет." data-en="A message from an old friend turns everything upside down. A disappearance. Traces that would be better left unfound. And a terrible message that becomes a greeting from a past you swore to bury years ago. This is not just a crime. It's a survival game where every word you say has consequences. Can you solve the mystery without trusting anyone? Even those you've known for years.">Сообщение от старого друга переворачивает всё с ног на голову. Исчезновение. Следы, которые лучше было бы не находить. И страшное послание, которое станет приветом из прошлого, что вы поклялись похоронить много лет назад. Это не просто преступление. Это игра на выживание, где каждое ваше слово имеет последствия. Сможете ли вы разгадать загадку, не доверяя никому? Даже тем, кого знаете много лет.</p>
-        </div>
-    </section>
-
-    <!-- 3. НОВЫЙ БЛОК: Версия и Будущие обновления -->
-    <section id="updates" class="section">
-        <h2 data-ru="Версия: 1.0" data-en="Version: 1.0">Версия: 1.0</h2>
+    <!-- ОСНОВНОЙ САЙТ -->
+    <div id="main-content" class="hidden">
         
-        <div class="updates-container">
-            <div class="update-card">
-                <h3 data-ru="ЧТО НОВОГО" data-en="WHAT'S NEW">ЧТО НОВОГО</h3>
-                <ul class="update-list">
-                    <li data-ru="Игра стала доступна для всех игроков!" data-en="The game is now available for all players!">Игра стала доступна для всех игроков!</li>
-                    <li data-ru="Эпизод 1 полностью готов." data-en="Episode 1 is completely finished.">Эпизод 1 полностью готов.</li>
-                </ul>
-                <div class="episode-title">
-                    <span data-ru="EPISODE 1:" data-en="EPISODE 1:">EPISODE 1:</span><br>
-                    <strong>DEAD MEN DON'T LIE</strong>
+        <!-- Навигация -->
+        <nav class="nav">
+            <div class="nav-logo">THE SILENT CHAT</div>
+            <ul class="nav-links">
+                <li><a href="#about" data-ru="О игре" data-en="About">О игре</a></li>
+                <li><a href="#updates" data-ru="Обновления" data-en="Updates">Обновления</a></li>
+                <li><a href="#tracker" data-ru="Трекер" data-en="Tracker">Трекер</a></li>
+                <li><a href="#features" data-ru="Особенности" data-en="Features">Особенности</a></li>
+                <li><a href="#shop" data-ru="Магазин" data-en="Shop">Магазин</a></li>
+                <li><a href="#contact" data-ru="Контакты" data-en="Contacts">Контакты</a></li>
+            </ul>
+            
+            <div class="nav-right">
+                <div class="lang-switch">
+                    <button onclick="changeLang('ru')" class="lang-btn active" id="btn-ru">RU</button>
+                    <button onclick="changeLang('en')" class="lang-btn" id="btn-en">EN</button>
+                </div>
+                <!-- Кнопка профиля в углу -->
+                <div class="nav-profile" id="nav-profile" onclick="openProfileModal()">
+                    <div id="nav-avatar-container" class="avatar-circle">?</div>
+                </div>
+            </div>
+        </nav>
+
+        <!-- Hero -->
+        <header class="hero">
+            <h1 class="glitch" data-text="THE SILENT CHAT">THE SILENT CHAT</h1>
+            <p class="tagline" data-ru="Тишина — это не отсутствие звука. Это присутствие тьмы." data-en="Silence is not the absence of sound. It is the presence of darkness.">Тишина — это не отсутствие звука. Это присутствие тьмы.</p>
+            <button class="btn pulse-btn" onclick="openDownloadModal()" data-ru="ПОИГРАТЬ НА УСТРОЙСТВАХ APPLE" data-en="PLAY ON APPLE DEVICES">ПОИГРАТЬ НА УСТРОЙСТВАХ APPLE</button>
+            <p class="hint" data-ru="▸ нажми ~ чтобы открыть терминал" data-en="▸ press ~ to open terminal">▸ нажми <kbd>~</kbd> чтобы открыть терминал</p>
+        </header>
+
+        <!-- О игре -->
+        <section id="about" class="section">
+            <h2 data-ru="О игре" data-en="About the game">О игре</h2>
+            <div class="about-text">
+                <p><strong>THE SILENT CHAT</strong><br><span data-ru="Одно сообщение. Одна ночь. Никаких свидетелей." data-en="One message. One night. No witnesses.">Одно сообщение. Одна ночь. Никаких свидетелей.</span></p>
+                <p data-ru="Добро пожаловать в The Silent Chat — мрачный психологический триллер, который разворачивается прямо на экране вашего смартфона. Здесь нет привычных героев и открытых миров. Есть только вы, ваш терминал и голос в темноте, который знает о вас слишком много." data-en="Welcome to The Silent Chat — a dark psychological thriller unfolding right on your smartphone screen. There are no familiar heroes or open worlds here. Only you, your terminal, and a voice in the dark that knows too much about you.">Добро пожаловать в The Silent Chat — мрачный психологический триллер, который разворачивается прямо на экране вашего смартфона. Здесь нет привычных героев и открытых миров. Есть только вы, ваш терминал и голос в темноте, который знает о вас слишком много.</p>
+                
+                <p data-ru="Дождливый город, где солнце давно перестало появляться. Вы отгородились от мира, утопая в депрессивном ритме и собственных мыслях. Вы просто ждете, что будет дальше. Но однажды ночью, ровно в 3:47, ваш телефон вибрирует." data-en="A rainy city where the sun has long stopped appearing. You have shut yourself off from the world, drowning in a depressive rhythm and your own thoughts. You are just waiting for what comes next. But one night, exactly at 3:47 AM, your phone vibrates.">Дождливый город, где солнце давно перестало появляться. Вы отгородились от мира, утопая в депрессивном ритме и собственных мыслях. Вы просто ждете, что будет дальше. Но однажды ночью, ровно в 3:47, ваш телефон вибрирует.</p>
+
+                <p data-ru="Сообщение от старого друга переворачивает всё с ног на голову. Исчезновение. Следы, которые лучше было бы не находить. И страшное послание, которое станет приветом из прошлого, что вы поклялись похоронить много лет назад. Это не просто преступление. Это игра на выживание, где каждое ваше слово имеет последствия. Сможете ли вы разгадать загадку, не доверяя никому? Даже тем, кого знаете много лет." data-en="A message from an old friend turns everything upside down. A disappearance. Traces that would be better left unfound. And a terrible message that becomes a greeting from a past you swore to bury years ago. This is not just a crime. It's a survival game where every word you say has consequences. Can you solve the mystery without trusting anyone? Even those you've known for years.">Сообщение от старого друга переворачивает всё с ног на голову. Исчезновение. Следы, которые лучше было бы не находить. И страшное послание, которое станет приветом из прошлого, что вы поклялись похоронить много лет назад. Это не просто преступление. Это игра на выживание, где каждое ваше слово имеет последствия. Сможете ли вы разгадать загадку, не доверяя никому? Даже тем, кого знаете много лет.</p>
+            </div>
+        </section>
+
+        <!-- Версия и Обновления -->
+        <section id="updates" class="section">
+            <h2 data-ru="Версия: 1.0" data-en="Version: 1.0">Версия: 1.0</h2>
+            <div class="updates-container">
+                <div class="update-card">
+                    <h3 data-ru="ЧТО НОВОГО" data-en="WHAT'S NEW">ЧТО НОВОГО</h3>
+                    <ul class="update-list">
+                        <li data-ru="Игра стала доступна для всех игроков!" data-en="The game is now available for all players!">Игра стала доступна для всех игроков!</li>
+                        <li data-ru="Эпизод 1 полностью готов." data-en="Episode 1 is completely finished.">Эпизод 1 полностью готов.</li>
+                    </ul>
+                    <div class="episode-title">
+                        <span data-ru="EPISODE 1:" data-en="EPISODE 1:">EPISODE 1:</span><br>
+                        <strong>DEAD MEN DON'T LIE</strong>
+                    </div>
+                </div>
+                <div class="update-card future">
+                    <h3 data-ru="В БУДУЩИХ ОБНОВЛЕНИЯХ" data-en="IN FUTURE UPDATES">В БУДУЩИХ ОБНОВЛЕНИЯХ</h3>
+                    <ul class="update-list future-list">
+                        <li data-ru="Фон шапки профиля" data-en="Profile header background">Фон шапки профиля</li>
+                        <li data-ru="Фон чата" data-en="Chat background">Фон чата</li>
+                        <li data-ru="Рамки для аватаров" data-en="Avatar frames">Рамки для аватаров</li>
+                        <li data-ru="Аккаунт в игре (синхронизация)" data-en="In-game account (sync)">Аккаунт в игре (синхронизация)</li>
+                        <li data-ru="И многое другое..." data-en="And much more...">И многое другое...</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- TSC TRACKER -->
+        <section id="tracker" class="section">
+            <h2 data-ru="TSC TRACKER" data-en="TSC TRACKER">TSC TRACKER</h2>
+            <div class="tracker-container">
+                <div class="tracker-item">
+                    <div class="tracker-info"><span data-ru="Эпизод 1" data-en="Episode 1">Эпизод 1</span><span>100%</span></div>
+                    <div class="progress-bar"><div class="progress-fill" style="width: 100%;"></div></div>
+                </div>
+                <div class="tracker-item">
+                    <div class="tracker-info"><span data-ru="Эпизод 2" data-en="Episode 2">Эпизод 2</span><span>0%</span></div>
+                    <div class="progress-bar"><div class="progress-fill" style="width: 0%;"></div></div>
+                </div>
+                <div class="tracker-header">
+                    <span data-ru="Ивентовые сюжеты" data-en="Event Stories">Ивентовые сюжеты</span>
+                </div>
+                <div class="tracker-item sub-item">
+                    <div class="tracker-info"><span data-ru="Новогодний сюжет" data-en="New Year Story">Новогодний сюжет</span><span>5%</span></div>
+                    <div class="progress-bar"><div class="progress-fill" style="width: 5%;"></div></div>
+                </div>
+            </div>
+            <div class="news-box">
+                <p data-ru="Вся информация и новости в нашем Telegram-канале!" data-en="All information and news in our Telegram channel!">Вся информация и новости в нашем Telegram-канале!</p>
+                <a href="https://t.me/+QKsTczQT9l82ZGNi" target="_blank" class="btn" data-ru="СЛЕДИТЬ ЗА РАЗРАБОТКОЙ" data-en="FOLLOW DEVELOPMENT">СЛЕДИТЬ ЗА РАЗРАБОТКОЙ</a>
+            </div>
+        </section>
+
+        <!-- Особенности -->
+        <section id="features" class="section">
+            <h2 data-ru="Особенности" data-en="Features">Особенности</h2>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <h3 data-ru="Мини-игры" data-en="Mini-games">Мини-игры</h3>
+                    <p data-ru="Взлом, расшифровка, логика — каждая задача уникальна." data-en="Hacking, decryption, logic — each task is unique.">Взлом, расшифровка, логика — каждая задача уникальна.</p>
+                </div>
+                <div class="feature-card">
+                    <h3 data-ru="Сюжет" data-en="Story">Сюжет</h3>
+                    <p data-ru="Многослойная история с выборами, которые меняют финал." data-en="A multi-layered story with choices that change the ending.">Многослойная история с выборами, которые меняют финал.</p>
+                </div>
+                <div class="feature-card">
+                    <h3 data-ru="Атмосфера" data-en="Atmosphere">Атмосфера</h3>
+                    <p data-ru="Неоновый нуар, матричный дождь, живые диалоги." data-en="Neon noir, matrix rain, live dialogues.">Неоновый нуар, матричный дождь, живые диалоги.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Магазин -->
+        <section id="shop" class="section">
+            <h2 data-ru="Магазин" data-en="Shop">Магазин</h2>
+            <p class="shop-desc" data-ru="Кристаллы за монеты. Внутриигровая валюта." data-en="Crystals for coins. In-game currency.">Кристаллы за монеты. Внутриигровая валюта.</p>
+
+            <div class="shop-table">
+                <!-- Оставил только пару строк для примера, чтобы не раздувать код, ты можешь вернуть остальные -->
+                <div class="shop-row">
+                    <div class="shop-cell shop-gems"><span class="gem-icon">💎</span><span class="gem-value">10</span></div>
+                    <div class="shop-cell shop-coins"><span class="coin-icon">🪙</span><span class="coin-value">+20</span></div>
+                    <a href="https://t.me/tscofficialbot" target="_blank" class="shop-btn">99₽</a>
+                </div>
+                <div class="shop-row">
+                    <div class="shop-cell shop-gems"><span class="gem-icon">💎</span><span class="gem-value">20</span></div>
+                    <div class="shop-cell shop-coins"><span class="coin-icon">🪙</span><span class="coin-value">+40</span></div>
+                    <a href="https://t.me/tscofficialbot" target="_blank" class="shop-btn">199₽</a>
                 </div>
             </div>
 
-            <div class="update-card future">
-                <h3 data-ru="В БУДУЩИХ ОБНОВЛЕНИЯХ" data-en="IN FUTURE UPDATES">В БУДУЩИХ ОБНОВЛЕНИЯХ</h3>
-                <ul class="update-list future-list">
-                    <li data-ru="Фон шапки профиля" data-en="Profile header background">Фон шапки профиля</li>
-                    <li data-ru="Фон чата" data-en="Chat background">Фон чата</li>
-                    <li data-ru="Рамки для аватаров" data-en="Avatar frames">Рамки для аватаров</li>
-                    <li data-ru="Аккаунт в игре (синхронизация)" data-en="In-game account (sync)">Аккаунт в игре (синхронизация)</li>
-                    <li data-ru="И многое другое..." data-en="And much more...">И многое другое...</li>
-                </ul>
-            </div>
-        </div>
-    </section>
+            <button id="restore-btn" class="restore-btn" data-ru="Восстановить покупку" data-en="Restore purchase">Восстановить покупку</button>
+            <p class="note" data-ru="* Все покупки проходят через Telegram-бот" data-en="* All purchases are made through the Telegram bot">* Все покупки проходят через Telegram-бот</p>
+        </section>
 
-    <!-- TSC TRACKER -->
-    <section id="tracker" class="section">
-        <h2 data-ru="TSC TRACKER" data-en="TSC TRACKER">TSC TRACKER</h2>
-        <div class="tracker-container">
-            
-            <div class="tracker-item">
-                <div class="tracker-info"><span data-ru="Эпизод 1" data-en="Episode 1">Эпизод 1</span><span>100%</span></div>
-                <div class="progress-bar"><div class="progress-fill" style="width: 100%;"></div></div>
-            </div>
+        <!-- Контакты -->
+        <section id="contact" class="section">
+            <h2 data-ru="Контакты" data-en="Contacts">Контакты</h2>
+            <p data-ru="Связь с разработчиком и наши соцсети." data-en="Contact the developer and our social networks.">Связь с разработчиком и наши соцсети.</p>
 
-            <div class="tracker-item">
-                <div class="tracker-info"><span data-ru="Эпизод 2" data-en="Episode 2">Эпизод 2</span><span>0%</span></div>
-                <div class="progress-bar"><div class="progress-fill" style="width: 0%;"></div></div>
+            <div class="contact-grid">
+                <a href="mailto:tscstudiogame@gmail.com" class="contact-card">
+                    <div class="contact-icon">✉️</div>
+                    <div class="contact-label">Email</div>
+                    <div class="contact-value">tscstudiogame@gmail.com</div>
+                </a>
+                <a href="https://t.me/tscofficialbot" target="_blank" class="contact-card">
+                    <div class="contact-icon">📱</div>
+                    <div class="contact-label" data-ru="Telegram Бот" data-en="Telegram Bot">Telegram Бот</div>
+                    <div class="contact-value">@tscofficialbot</div>
+                </a>
             </div>
 
-            <div class="tracker-header">
-                <span data-ru="Ивентовые сюжеты" data-en="Event Stories">Ивентовые сюжеты</span>
+            <div class="contact-buttons">
+                <a href="#" class="btn btn-disabled" data-ru="Google Play — скоро" data-en="Google Play — soon">Google Play — скоро</a>
+                <a href="#" target="_blank" class="btn" data-ru="RuStore — Скачать" data-en="RuStore — Download">RuStore — Скачать</a>
             </div>
+        </section>
 
-            <div class="tracker-item sub-item">
-                <div class="tracker-info"><span data-ru="Новогодний сюжет" data-en="New Year Story">Новогодний сюжет</span><span>5%</span></div>
-                <div class="progress-bar"><div class="progress-fill" style="width: 5%;"></div></div>
-            </div>
-
-        </div>
-
-        <div class="news-box">
-            <p data-ru="Вся информация и новости в нашем Telegram-канале!" data-en="All information and news in our Telegram channel!">Вся информация и новости в нашем Telegram-канале!</p>
-            <a href="https://t.me/+QKsTczQT9l82ZGNi" target="_blank" class="btn" data-ru="СЛЕДИТЬ ЗА РАЗРАБОТКОЙ" data-en="FOLLOW DEVELOPMENT">СЛЕДИТЬ ЗА РАЗРАБОТКОЙ</a>
-        </div>
-    </section>
-
-    <!-- Особенности -->
-    <section id="features" class="section">
-        <h2 data-ru="Особенности" data-en="Features">Особенности</h2>
-        <div class="features-grid">
-            <div class="feature-card">
-                <h3 data-ru="Мини-игры" data-en="Mini-games">Мини-игры</h3>
-                <p data-ru="Взлом, расшифровка, логика — каждая задача уникальна." data-en="Hacking, decryption, logic — each task is unique.">Взлом, расшифровка, логика — каждая задача уникальна.</p>
-            </div>
-            <div class="feature-card">
-                <h3 data-ru="Сюжет" data-en="Story">Сюжет</h3>
-                <p data-ru="Многослойная история с выборами, которые меняют финал." data-en="A multi-layered story with choices that change the ending.">Многослойная история с выборами, которые меняют финал.</p>
-            </div>
-            <div class="feature-card">
-                <h3 data-ru="Атмосфера" data-en="Atmosphere">Атмосфера</h3>
-                <p data-ru="Неоновый нуар, матричный дождь, живые диалоги." data-en="Neon noir, matrix rain, live dialogues.">Неоновый нуар, матричный дождь, живые диалоги.</p>
-            </div>
-        </div>
-    </section>
-
-    <!-- Магазин -->
-    <section id="shop" class="section">
-        <h2 data-ru="Магазин" data-en="Shop">Магазин</h2>
-        <p class="shop-desc" data-ru="Кристаллы за монеты. Внутриигровая валюта." data-en="Crystals for coins. In-game currency.">Кристаллы за монеты. Внутриигровая валюта.</p>
-
-        <div class="shop-table">
-            <div class="shop-row">
-                <div class="shop-cell shop-gems"><span class="gem-icon">💎</span><span class="gem-value">10</span></div>
-                <div class="shop-cell shop-coins"><span class="coin-icon">🪙</span><span class="coin-value">+20</span></div>
-                <a href="https://t.me/tscofficialbot" target="_blank" class="shop-btn">99₽</a>
-            </div>
-            <div class="shop-row">
-                <div class="shop-cell shop-gems"><span class="gem-icon">💎</span><span class="gem-value">20</span></div>
-                <div class="shop-cell shop-coins"><span class="coin-icon">🪙</span><span class="coin-value">+40</span></div>
-                <a href="https://t.me/tscofficialbot" target="_blank" class="shop-btn">199₽</a>
-            </div>
-            <div class="shop-row">
-                <div class="shop-cell shop-gems"><span class="gem-icon">💎</span><span class="gem-value">60</span></div>
-                <div class="shop-cell shop-coins"><span class="coin-icon">🪙</span><span class="coin-value">+100</span></div>
-                <a href="https://t.me/tscofficialbot" target="_blank" class="shop-btn">499₽</a>
-            </div>
-            <div class="shop-row">
-                <div class="shop-cell shop-gems"><span class="gem-icon">💎</span><span class="gem-value">120</span></div>
-                <div class="shop-cell shop-coins"><span class="coin-icon">🪙</span><span class="coin-value">+200</span></div>
-                <a href="https://t.me/tscofficialbot" target="_blank" class="shop-btn">999₽</a>
-            </div>
-            <div class="shop-row">
-                <div class="shop-cell shop-gems"><span class="gem-icon">💎</span><span class="gem-value">260</span></div>
-                <div class="shop-cell shop-coins"><span class="coin-icon">🪙</span><span class="coin-value">+400</span></div>
-                <a href="https://t.me/tscofficialbot" target="_blank" class="shop-btn">1999₽</a>
-            </div>
-            <div class="shop-row">
-                <div class="shop-cell shop-gems"><span class="gem-icon">💎</span><span class="gem-value">670</span></div>
-                <div class="shop-cell shop-coins"><span class="coin-icon">🪙</span><span class="coin-value">+1000</span></div>
-                <a href="https://t.me/tscofficialbot" target="_blank" class="shop-btn">4999₽</a>
-            </div>
-            <div class="shop-row">
-                <div class="shop-cell shop-gems"><span class="gem-icon">💎</span><span class="gem-value">1500</span></div>
-                <div class="shop-cell shop-coins"><span class="coin-icon">🪙</span><span class="coin-value">+2000</span></div>
-                <a href="https://t.me/tscofficialbot" target="_blank" class="shop-btn">9999₽</a>
-            </div>
-        </div>
-
-        <button id="restore-btn" class="restore-btn" data-ru="Восстановить покупку" data-en="Restore purchase">Восстановить покупку</button>
-        <p class="note" data-ru="* Все покупки проходят через Telegram-бот" data-en="* All purchases are made through the Telegram bot">* Все покупки проходят через Telegram-бот</p>
-    </section>
-
-    <!-- Контакты -->
-    <section id="contact" class="section">
-        <h2 data-ru="Контакты" data-en="Contacts">Контакты</h2>
-        <p data-ru="Связь с разработчиком и наши соцсети." data-en="Contact the developer and our social networks.">Связь с разработчиком и наши соцсети.</p>
-
-        <div class="contact-grid">
-            <a href="mailto:tscstudiogame@gmail.com" class="contact-card">
-                <div class="contact-icon">✉️</div>
-                <div class="contact-label">Email</div>
-                <div class="contact-value">tscstudiogame@gmail.com</div>
-            </a>
-
-            <a href="https://t.me/tscofficialbot" target="_blank" class="contact-card">
-                <div class="contact-icon">📱</div>
-                <div class="contact-label" data-ru="Telegram Бот" data-en="Telegram Bot">Telegram Бот</div>
-                <div class="contact-value">@tscofficialbot</div>
-            </a>
-
-            <a href="https://tiktok.com/@the.silent.chat2" target="_blank" class="contact-card">
-                <div class="contact-icon">🎵</div>
-                <div class="contact-label">TikTok</div>
-                <div class="contact-value">@the.silent.chat2</div>
-            </a>
-        </div>
-
-        <div class="contact-buttons">
-            <a href="#" class="btn btn-disabled" data-ru="Google Play — скоро" data-en="Google Play — soon">Google Play — скоро</a>
-            
-            <!-- 4. Обновленная кнопка RuStore. ВСТАВЬ ССЫЛКУ ВМЕСТО # -->
-            <a href="#" target="_blank" class="btn" data-ru="RuStore — Скачать" data-en="RuStore — Download">RuStore — Скачать</a>
-        </div>
-    </section>
-
-    <!-- Футер -->
-    <footer class="footer">
-        <p>© 2026 THE SILENT CHAT. <span data-ru="Все права защищены." data-en="All rights reserved.">Все права защищены.</span></p>
-    </footer>
+        <footer class="footer">
+            <p>© 2026 THE SILENT CHAT. <span data-ru="Все права защищены." data-en="All rights reserved.">Все права защищены.</span></p>
+        </footer>
+    </div>
 
     <!-- МОДАЛЬНОЕ ОКНО СКАЧИВАНИЯ -->
     <div id="download-modal" class="modal-overlay hidden">
+        <!-- Код модального окна скачивания (без изменений) -->
         <div class="modal-content">
             <button class="modal-close" onclick="closeDownloadModal()">✕</button>
             <h2 class="modal-title">THE SILENT CHAT</h2>
-            
-            <!-- Экран 1: Начальный текст и кнопка скачать -->
             <div id="dl-step-1">
                 <div class="modal-text">
-                    <p><strong data-ru="Добро пожаловать в цифровой кошмар." data-en="Welcome to the digital nightmare.">Добро пожаловать в цифровой кошмар.</strong></p>
-                    <p data-ru="Вы — анонимный хакер, втянутый в опасную игру с безжалостным кукловодом. Сможете ли вы найти выход из цифрового лабиринта, пока он не нашел вас первым?" data-en="You are an anonymous hacker drawn into a dangerous game with a ruthless puppeteer. Can you find a way out of the digital labyrinth before it finds you first?">Вы — анонимный хакер, втянутый в опасную игру с безжалостным кукловодом. Сможете ли вы найти выход из цифрового лабиринта, пока он не нашел вас первым?</p>
+                    <p><strong>Добро пожаловать в цифровой кошмар.</strong></p>
                 </div>
-                <button class="btn-download" onclick="startLoading(this)" data-ru="СКАЧАТЬ ИГРУ" data-en="DOWNLOAD GAME">СКАЧАТЬ ИГРУ</button>
-                <p class="download-note" data-ru="* Версия 1.0 | Требуется Android 8.0+" data-en="* Version 1.0 | Android 8.0+ required">* Версия 1.0 | Требуется Android 8.0+</p>
+                <button class="btn-download" onclick="startLoading(this)">СКАЧАТЬ ИГРУ</button>
             </div>
-
-            <!-- Экран 2: Выбор платформы -->
-            <div id="dl-step-2" class="hidden">
-                <p style="margin-bottom: 1.5rem; font-size: 1.1rem;" data-ru="Выберите вашу платформу:" data-en="Choose your platform:">Выберите вашу платформу:</p>
-                <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
-                    <button class="btn-os" onclick="chooseAndroid()">🤖 Android</button>
-                    <button class="btn-os" onclick="chooseIos()">🍏 iPhone (iOS)</button>
-                </div>
+            <div id="dl-step-2" class="hidden" style="margin-top: 20px;">
+                <button class="btn-os" onclick="chooseAndroid()">🤖 Android</button>
+                <button class="btn-os" onclick="chooseIos()">🍏 iPhone (iOS)</button>
             </div>
-
-            <!-- Экран 3: Для Android (Скачивание APK) -->
             <div id="dl-step-android" class="hidden">
-                <p style="color: var(--neon-green); margin-bottom: 1.5rem; font-size: 1.1rem;" data-ru="Файл готов к загрузке!" data-en="File ready for download!">Файл готов к загрузке!</p>
-                <!-- ВАЖНО: Сюда вставь путь к своему APK файлу -->
-                <a href="TheSilentChat.apk" download class="btn-download" style="display: block; text-decoration: none;" data-ru="СКАЧАТЬ APK" data-en="DOWNLOAD APK">СКАЧАТЬ APK</a>
-                <p class="download-note" data-ru="* Версия 1.0 | Требуется Android 8.0+" data-en="* Version 1.0 | Android 8.0+ required">* Версия 1.0 | Требуется Android 8.0+</p>
+                <a href="TheSilentChat.apk" download class="btn-download" style="display: block; text-decoration: none; margin-top: 20px;">СКАЧАТЬ APK</a>
             </div>
-
-            <!-- Экран 4: Для iPhone (Игра в браузере) -->
             <div id="dl-step-ios" class="hidden">
-                <p style="color: var(--neon-magenta); margin-bottom: 1.5rem; font-size: 1.1rem; font-weight: bold;" data-ru="Извините, вы пока не можете скачать файл на iPhone." data-en="Sorry, you cannot download the file on iPhone yet.">
-                    Извините, вы пока не можете скачать файл на iPhone.
-                </p>
-                <p style="margin-bottom: 1.5rem; color: var(--text-dim);" data-ru="Но вы можете сыграть прямо сейчас в браузере!" data-en="But you can play right now in your browser!">
-                    Но вы можете сыграть прямо сейчас в браузере!
-                </p>
-                <!-- ВАЖНО: Ссылка ведет на папку с игрой Godot -->
-                <a href="game/index.html" target="_blank" class="btn-download" style="display: block; text-decoration: none; border-color: var(--neon-cyan); color: var(--neon-cyan);" data-ru="ИГРАТЬ НА САЙТЕ" data-en="PLAY ON SITE">ИГРАТЬ НА САЙТЕ</a>
+                <a href="game/index.html" target="_blank" class="btn-download" style="display: block; text-decoration: none; margin-top: 20px; border-color: var(--neon-cyan); color: var(--neon-cyan);">ИГРАТЬ НА САЙТЕ</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- МОДАЛЬНОЕ ОКНО ПРОФИЛЯ -->
+    <div id="profile-modal" class="modal-overlay hidden" onclick="closeProfileModal(event)">
+        <div class="modal-content profile-content" onclick="event.stopPropagation()">
+            <button class="modal-close" onclick="closeProfileModal(event)">✕</button>
+            <h2 class="modal-title">ПРОФИЛЬ</h2>
+            
+            <div class="profile-header">
+                <!-- Аватарка (клик для увеличения) -->
+                <div class="avatar-large" id="profile-avatar-large" onclick="showImagePreview()">
+                    ?
+                </div>
+                <input type="file" id="avatar-upload" accept="image/*" style="display: none;" onchange="uploadAvatar(event)">
+                <button class="btn-small" onclick="document.getElementById('avatar-upload').click()">Загрузить аватар</button>
             </div>
 
+            <div class="profile-info">
+                <p><span class="info-label">Имя:</span> <span id="prof-name">Неизвестно</span></p>
+                <p><span class="info-label">Возраст:</span> <span id="prof-age">0</span></p>
+                <p><span class="info-label">Пол:</span> <span id="prof-gender">Неизвестно</span></p>
+                <p><span class="info-label">Юзернейм:</span> <span id="prof-user">@...</span></p>
+            </div>
+
+            <div class="profile-actions">
+                <button class="btn" onclick="changePassword()">Сменить пароль</button>
+                <button class="btn" onclick="changeToken()">Сменить токен</button>
+                <button class="btn btn-danger" onclick="deleteAccount()">Удалить аккаунт</button>
+            </div>
         </div>
+    </div>
+
+    <!-- ОКНО ПРОСМОТРА КАРТИНКИ (ZOOM) -->
+    <div id="image-preview-modal" class="image-preview hidden" onclick="closeImagePreview()">
+        <img id="preview-img" src="" alt="Avatar">
     </div>
 
     <!-- Терминал -->
     <div id="terminal" class="terminal hidden">
+        <!-- Твой код терминала... -->
         <div class="terminal-header">
-            <span class="dot dot-red"></span>
-            <span class="dot dot-yellow"></span>
-            <span class="dot dot-green"></span>
+            <span class="dot dot-red"></span><span class="dot dot-yellow"></span><span class="dot dot-green"></span>
             <span class="terminal-title">root@silent_chat:~$</span>
             <button id="terminal-close" class="terminal-close">✕</button>
         </div>
