@@ -1,184 +1,139 @@
-<!DOCTYPE html>
-<html lang="ru">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>The Silent Chat</title>
-    <style>
-        /* Базовые настройки в стиле терминала */
-        body {
-            background-color: #050505;
-            color: #d1d1d1;
-            font-family: 'Consolas', 'Courier New', monospace;
-            margin: 0;
-            padding: 0;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            background-image: url('data:image/svg+xml;utf8,<svg width="100" height="100" xmlns="http://www.w3.org/2000/svg"><text x="10" y="20" fill="%23111" font-family="monospace" font-size="14">7 R ツ</text><text x="50" y="60" fill="%23111" font-family="monospace" font-size="14">A % F</text><text x="20" y="80" fill="%23111" font-family="monospace" font-size="14">ソ 1 9</text></svg>');
-        }
+Перейти к содержимому
+THESILENTCHAT
+the-silent-chat
+Навигация по репозиторию
+Код
+Проблемы
+Пул-реквесты
+Агенты
+Действия
+Проекты
+Вики
+Безопасность и качество
+Аналитика
+Настройки
+Зафиксировать 67d5d3e
+THESILENTCHAT
+THESILENTCHAT
+авторский
+9 часов назад
+·
+·
 
-        .container {
-            max-width: 900px;
-            width: 90%;
-            margin: 40px auto;
-            text-align: center;
-        }
+Подтверждено
+Обновить index.html
+Главная
+·
+версия 1.0
+1 родительский 
+7097b69
+ фиксирует 
+67d5d3e
+1 файл изменен
 
-        /* Заголовки и неоновый текст */
-        h1 {
-            color: #ffffff;
-            font-size: 2.5em;
-            letter-spacing: 4px;
-            text-shadow: 0 0 10px #ffffff;
-            margin-bottom: 30px;
-        }
-        
-        h2 {
-            color: #00ffff;
-            font-size: 1.5em;
-            text-align: left;
-            margin-top: 40px;
-            text-shadow: 0 0 5px #00ffff;
-        }
++40
+- Изменено17
+строк: 40 добавлений и 17 удалений
+Дерево файлов
+Фильтровать файлы…
+index.html
+Search within code
+ 
+‎index.html‎
++40
+- Изменено17
+строк: 40 добавлений и 17 удалений
+Номер строки в исходном файле	Номер строки в различиях	Изменение в строке
+@@ -49,34 +49,25 @@ <h2 data-ru="О игре" data-en="About the game">О игре</h2>
+        </div>
+    </section>
 
-        h2.magenta {
-            color: #ff00ff;
-            text-shadow: 0 0 5px #ff00ff;
-        }
+    <!-- TSC TRACKER (ИСПРАВЛЕНО) -->
+    <!-- TSC TRACKER -->
+    <section id="tracker" class="section">
+        <h2 data-ru="TSC TRACKER" data-en="TSC TRACKER">TSC TRACKER</h2>
+        <div class="tracker-container">
+            
+            <!-- Эпизод 1 -->
+            <div class="tracker-item">
+                <div class="tracker-info"><span data-ru="Эпизод 1" data-en="Episode 1">Эпизод 1</span><span>100%</span></div>
+                <div class="progress-bar"><div class="progress-fill" style="width: 100%;"></div></div>
+            </div>
+            <!-- Эпизод 2 -->
+            <div class="tracker-item">
+                <div class="tracker-info"><span data-ru="Эпизод 2" data-en="Episode 2">Эпизод 2</span><span>0%</span></div>
+                <div class="progress-bar"><div class="progress-fill" style="width: 0%;"></div></div>
+            </div>
+            <!-- Ивентовые сюжеты (Просто заголовок) -->
+            <div class="tracker-header">
+                <span data-ru="Ивентовые сюжеты" data-en="Event Stories">Ивентовые сюжеты</span>
+            </div>
+            <!-- Новогодний сюжет (Под ним) -->
+            <div class="tracker-item sub-item">
+                <div class="tracker-info"><span data-ru="Новогодний сюжет" data-en="New Year Story">Новогодний сюжет</span><span>5%</span></div>
+                <div class="progress-bar"><div class="progress-fill" style="width: 5%;"></div></div>
+            </div>
+        </div>
 
-        /* Кнопки */
-        .btn {
-            display: inline-block;
-            padding: 15px 30px;
-            color: #00ffff;
-            border: 2px solid #00ffff;
-            text-decoration: none;
-            font-size: 1.2em;
-            letter-spacing: 2px;
-            margin: 10px;
-            transition: 0.3s;
-            background: transparent;
-            cursor: pointer;
-            box-shadow: 0 0 10px rgba(0, 255, 255, 0.1);
-        }
+        <div class="news-box">
+@@ -187,18 +178,50 @@ <h2 data-ru="Контакты" data-en="Contacts">Контакты</h2>
+        <p>© 2026 THE SILENT CHAT. <span data-ru="Все права защищены." data-en="All rights reserved.">Все права защищены.</span></p>
+    </footer>
 
-        .btn:hover {
-            background: #00ffff;
-            color: #000;
-            box-shadow: 0 0 20px #00ffff;
-        }
-        
-        .btn-apple {
-            color: #ffffff;
-            border-color: #ffffff;
-        }
-        .btn-apple:hover {
-            background: #ffffff;
-            box-shadow: 0 0 20px #ffffff;
-        }
-
-        /* Текстовые блоки */
-        p {
-            text-align: left;
-            line-height: 1.6;
-            font-size: 1.1em;
-            margin-bottom: 20px;
-        }
-
-        .highlight {
-            color: #00ffff;
-        }
-
-        .updates-box {
-            border: 1px solid #333;
-            padding: 20px;
-            text-align: left;
-            background: rgba(0, 0, 0, 0.5);
-            margin-bottom: 30px;
-        }
-
-        .updates-box p {
-            margin: 5px 0;
-            text-align: left;
-        }
-        
-        .episode-title {
-            color: #ffffff;
-            font-size: 1.3em;
-            margin-top: 10px;
-            letter-spacing: 2px;
-        }
-
-        .future-list {
-            list-style-type: none;
-            padding: 0;
-        }
-        
-        .future-list li {
-            margin-bottom: 10px;
-            padding-left: 20px;
-            position: relative;
-        }
-
-        .future-list li::before {
-            content: ">";
-            position: absolute;
-            left: 0;
-            color: #ff00ff;
-        }
-    </style>
-</head>
-<body>
-
-<div class="container">
-    
-    <!-- 1. Вместо "Скачать игру" - Кнопка Apple -->
-    <h1>THE SILENT CHAT</h1>
-    <p style="text-align: center; margin-bottom: 30px;">Одно сообщение. Одна ночь. Никаких свидетелей.</p>
-    
-    <a href="#" class="btn btn-apple">ПОИГРАТЬ НА УСТРОЙСТВАХ APPLE</a>
-    <p style="text-align: center; font-size: 0.8em; color: #666; margin-top: 5px;">*Релиз в App Store ожидается в ближайшее время</p>
-
-    <!-- 2. Об игре без спойлеров -->
-    <h2>О ИГРЕ</h2>
-    <p>
-        Добро пожаловать в <span class="highlight">The Silent Chat</span> — мрачный психологический триллер, который разворачивается прямо на экране вашего смартфона. Здесь нет привычных героев и открытых миров. Есть только вы, ваш терминал и голос в темноте, который знает о вас слишком много.
-    </p>
-    <p>
-        Дождливый город, где солнце давно перестало появляться. Вы отгородились от мира, утопая в депрессивном ритме и собственных мыслях. Но однажды ночью, в 3:47, ваш телефон вибрирует. Сообщение от старого друга переворачивает всё с ног на голову. 
-    </p>
-    <p>
-        Исчезновение. Следы, которые лучше было бы не находить. И страшное послание, которое станет приветом из прошлого. Это не просто преступление. Это игра на выживание, где каждое ваше слово имеет последствия. Сможете ли вы разгадать загадку, не доверяя никому? Даже тем, кого знаете много лет.
-    </p>
-
-    <!-- 3. Ссылка на RuStore -->
-    <div style="text-align: center; margin: 40px 0;">
-        <a href="ВСТАВЬ_СЮДА_ССЫЛКУ_НА_RUSTORE" class="btn">RUSTORE — СКАЧАТЬ</a>
-        <p style="text-align: center; font-size: 0.8em; color: #666; margin-top: 5px;">*Игра проходит модерацию. Ссылка появится сразу после релиза.</p>
+    <!-- МОДАЛЬНОЕ ОКНО СКАЧИВАНИЯ -->
+    <!-- МОДАЛЬНОЕ ОКНО СКАЧИВАНИЯ (ОБНОВЛЕНО) -->
+    <div id="download-modal" class="modal-overlay hidden">
+        <div class="modal-content">
+            <button class="modal-close" onclick="closeDownloadModal()">✕</button>
+            <h2 class="modal-title">THE SILENT CHAT</h2>
+            <div class="modal-text">
+                <p><strong data-ru="Добро пожаловать в цифровой кошмар." data-en="Welcome to the digital nightmare.">Добро пожаловать в цифровой кошмар.</strong></p>
+                <p data-ru="Вы — анонимный хакер, втянутый в опасную игру с безжалостным кукловодом. Взламывайте защищенные сети, расшифровывайте скрытые коды и принимайте решения, от которых зависит не только ваша жизнь, но и судьбы тех, кто вам дорог." data-en="You are an anonymous hacker drawn into a dangerous game with a ruthless puppeteer. Hack secure networks, decrypt hidden codes, and make decisions that determine not only your life but also the fates of those you care about.">Вы — анонимный хакер, втянутый в опасную игру с безжалостным кукловодом. Взламывайте защищенные сети, расшифровывайте скрытые коды и принимайте решения, от которых зависит не только ваша жизнь, но и судьбы тех, кто вам дорог.</p>
+                <p data-ru="В этой игре нет героев. Есть только вы, ваш терминал и голос в темноте, который знает о вас слишком много. Сможете ли вы найти выход из цифрового лабиринта, пока он не нашел вас первым?" data-en="There are no heroes in this game. Only you, your terminal, and a voice in the dark that knows too much about you. Can you find a way out of the digital labyrinth before it finds you first?">В этой игре нет героев. Есть только вы, ваш терминал и голос в темноте, который знает о вас слишком много. Сможете ли вы найти выход из цифрового лабиринта, пока он не нашел вас первым?</p>
+            
+            <!-- Экран 1: Начальный текст и кнопка скачать -->
+            <div id="dl-step-1">
+                <div class="modal-text">
+                    <p><strong data-ru="Добро пожаловать в цифровой кошмар." data-en="Welcome to the digital nightmare.">Добро пожаловать в цифровой кошмар.</strong></p>
+                    <p data-ru="Вы — анонимный хакер, втянутый в опасную игру с безжалостным кукловодом. Сможете ли вы найти выход из цифрового лабиринта, пока он не нашел вас первым?" data-en="You are an anonymous hacker drawn into a dangerous game...">Вы — анонимный хакер, втянутый в опасную игру с безжалостным кукловодом. Сможете ли вы найти выход из цифрового лабиринта, пока он не нашел вас первым?</p>
+                </div>
+                <button class="btn-download" onclick="startLoading(this)" data-ru="СКАЧАТЬ ИГРУ" data-en="DOWNLOAD GAME">СКАЧАТЬ ИГРУ</button>
+            </div>
+            <button class="btn-download" onclick="startDownload(this)" data-ru="СКАЧАТЬ APK" data-en="DOWNLOAD APK">СКАЧАТЬ APK</button>
+            <p class="download-note" data-ru="* Версия 1.0 | Требуется Android 8.0+" data-en="* Version 1.0 | Android 8.0+ required">* Версия 1.0 | Требуется Android 8.0+</p>
+            <!-- Экран 2: Выбор платформы -->
+            <div id="dl-step-2" class="hidden">
+                <p style="margin-bottom: 1.5rem; font-size: 1.1rem;" data-ru="Выберите вашу платформу:" data-en="Choose your platform:">Выберите вашу платформу:</p>
+                <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
+                    <button class="btn-os" onclick="chooseAndroid()">🤖 Android</button>
+                    <button class="btn-os" onclick="chooseIos()">🍏 iPhone (iOS)</button>
+                </div>
+            </div>
+            <!-- Экран 3: Для Android (Скачивание APK) -->
+            <div id="dl-step-android" class="hidden">
+                <p style="color: var(--neon-green); margin-bottom: 1.5rem; font-size: 1.1rem;" data-ru="Файл готов к загрузке!" data-en="File ready for download!">Файл готов к загрузке!</p>
+                <!-- ВАЖНО: Сюда вставь путь к своему APK файлу -->
+                <a href="TheSilentChat.apk" download class="btn-download" style="display: block; text-decoration: none;" data-ru="СКАЧАТЬ APK" data-en="DOWNLOAD APK">СКАЧАТЬ APK</a>
+                <p class="download-note" data-ru="* Версия 1.0 | Требуется Android 8.0+" data-en="* Version 1.0 | Android 8.0+ required">* Версия 1.0 | Требуется Android 8.0+</p>
+            </div>
+            <!-- Экран 4: Для iPhone (Игра в браузере) -->
+            <div id="dl-step-ios" class="hidden">
+                <p style="color: var(--neon-magenta); margin-bottom: 1.5rem; font-size: 1.1rem; font-weight: bold;" data-ru="Извините, вы пока не можете скачать файл на iPhone." data-en="Sorry, you cannot download the file on iPhone yet.">
+                    Извините, вы пока не можете скачать файл на iPhone.
+                </p>
+                <p style="margin-bottom: 1.5rem; color: var(--text-dim);" data-ru="Но вы можете сыграть прямо сейчас в браузере!" data-en="But you can play right now in your browser!">
+                    Но вы можете сыграть прямо сейчас в браузере!
+                </p>
+                <!-- ВАЖНО: Ссылка ведет на папку с игрой Godot -->
+                <a href="game/index.html" target="_blank" class="btn-download" style="display: block; text-decoration: none; border-color: var(--neon-cyan); color: var(--neon-cyan);" data-ru="ИГРАТЬ НА САЙТЕ" data-en="PLAY ON SITE">ИГРАТЬ НА САЙТЕ</a>
+            </div>
+        </div>
     </div>
 
-    <!-- 4. Версия, Что нового и Название эпизода -->
-    <h2 class="magenta">ВЕРСИЯ: 1.0</h2>
-    
-    <div class="updates-box">
-        <p><span class="highlight">ЧТО НОВОГО:</span></p>
-        <p>- Игра стала доступна для всех пользователей!</p>
-        <p>- Эпизод 1 полностью готов.</p>
-        <p class="episode-title">EPISODE 1: DEAD MEN DON'T LIE</p>
-    </div>
+0 commit comments
+Comments
+0
+ (0)
+Comment
+You're not receiving notifications from this thread.
 
-    <!-- 5. Будущие обновления -->
-    <h2>В БУДУЩИХ ОБНОВЛЕНИЯХ</h2>
-    <ul class="future-list">
-        <li>Фон шапки профиля</li>
-        <li>Фон чата</li>
-        <li>Рамки для аватаров</li>
-        <li>Аккаунт в игре (синхронизация прогресса)</li>
-        <li>И многое другое...</li>
-    </ul>
-
-</div>
-
-</body>
-</html>
