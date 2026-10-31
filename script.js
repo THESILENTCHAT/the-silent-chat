@@ -75,32 +75,51 @@ function changeLang(lang) {
 // ===== МОДАЛЬНОЕ ОКНО СКАЧИВАНИЯ =====
 const downloadModal = document.getElementById('download-modal');
 function openDownloadModal() { downloadModal.classList.remove('hidden'); }
-function closeDownloadModal() { downloadModal.classList.add('hidden'); }
+function closeDownloadModal() { 
+    downloadModal.classList.add('hidden'); 
+    // Сбрасываем шаги через 300мс (когда анимация закрытия пройдет)
+    setTimeout(() => {
+        document.getElementById('dl-step-1').classList.remove('hidden');
+        document.getElementById('dl-step-2').classList.add('hidden');
+        document.getElementById('dl-step-android').classList.add('hidden');
+        document.getElementById('dl-step-ios').classList.add('hidden');
+    }, 300);
+}
 downloadModal.addEventListener('click', (e) => { if (e.target === downloadModal) closeDownloadModal(); });
 
-function startDownload(btn) {
+// ===== ЛОГИКА СКАЧИВАНИЯ =====
+function startLoading(btn) {
     const originalText = btn.textContent;
-    btn.textContent = 'Скачивание... 0%';
+    btn.textContent = 'Загрузка... 0%';
     btn.style.pointerEvents = 'none';
+    
     let progress = 0;
     const interval = setInterval(() => {
-        progress += Math.random() * 15;
+        progress += Math.random() * 25;
         if (progress >= 100) {
-            progress = 100;
             clearInterval(interval);
-            btn.textContent = 'ФАЙЛ СКАЧАН (Заглушка)';
-            btn.style.borderColor = 'var(--neon-cyan)';
-            btn.style.color = 'var(--neon-cyan)';
+            btn.textContent = 'Готово!';
             setTimeout(() => {
+                document.getElementById('dl-step-1').classList.add('hidden');
+                document.getElementById('dl-step-2').classList.remove('hidden');
+                // Возвращаем кнопку в исходное состояние
                 btn.textContent = originalText;
                 btn.style.pointerEvents = 'auto';
-                btn.style.borderColor = 'var(--neon-green)';
-                btn.style.color = 'var(--neon-green)';
-            }, 3000);
+            }, 500);
         } else {
-            btn.textContent = `Скачивание... ${Math.floor(progress)}%`;
+            btn.textContent = `Загрузка... ${Math.floor(progress)}%`;
         }
-    }, 200);
+    }, 150);
+}
+
+function chooseAndroid() {
+    document.getElementById('dl-step-2').classList.add('hidden');
+    document.getElementById('dl-step-android').classList.remove('hidden');
+}
+
+function chooseIos() {
+    document.getElementById('dl-step-2').classList.add('hidden');
+    document.getElementById('dl-step-ios').classList.remove('hidden');
 }
 
 // ===== ТЕРМИНАЛ =====
