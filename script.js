@@ -46,7 +46,6 @@ const observer = new IntersectionObserver(entries => {
     entries.forEach(entry => {
         if (entry.isIntersecting) {
             entry.target.classList.add('in');
-            // Сборка заголовка по буквам
             const h2 = entry.target.querySelector('.split-title');
             if (h2 && !h2.dataset.animated) {
                 h2.dataset.animated = '1';
@@ -83,7 +82,6 @@ function changeLang(lang) {
         el.innerHTML = el.getAttribute(lang === 'en' ? 'data-en' : 'data-ru');
     });
     document.documentElement.lang = lang;
-    // Пересобрать заголовки по буквам
     document.querySelectorAll('.split-title').forEach(h2 => {
         h2.dataset.animated = '';
         splitLetters(h2, 0.03);
@@ -91,7 +89,7 @@ function changeLang(lang) {
 }
 
 // ===== RIPPLE НА КНОПКАХ =====
-document.querySelectorAll('.btn, .btn-download, .btn-os, .shop-btn, .auth-btn').forEach(btn => {
+document.querySelectorAll('.btn, .btn-download, .shop-btn, .auth-btn').forEach(btn => {
     btn.addEventListener('click', function(e) {
         const rect = this.getBoundingClientRect();
         const ripple = document.createElement('span');
@@ -290,7 +288,6 @@ function startBreach() {
     let H = canvas.height = window.innerHeight;
     const cx = W / 2, cy = H / 2;
 
-    // Генерируем трещины (веера линий с изломами)
     const cracks = [];
     const numMain = 9;
     for (let i = 0; i < numMain; i++) {
@@ -336,7 +333,6 @@ function startBreach() {
         });
         if (t < 1) requestAnimationFrame(draw);
         else {
-            // Вспышка + текст
             flash.classList.add('on');
             btext.classList.add('on');
             setTimeout(() => {
@@ -356,12 +352,10 @@ function startBreach() {
 
 // ===== СБОРКА САЙТА ПО БУКВАМ =====
 function launchSiteReveal() {
-    // Hero title по буквам
     const title = document.getElementById('hero-title');
     if (title) splitLetters(title, 0.06);
     setTimeout(() => document.getElementById('hero-tagline').classList.add('in'), 400);
     setTimeout(() => document.querySelector('.hero .btn.pulse-btn').classList.add('in'), 800);
-    // Секции
     document.querySelectorAll('.section').forEach(s => observer.observe(s));
 }
 
@@ -369,14 +363,12 @@ function launchSiteReveal() {
 window.addEventListener('load', () => {
     const savedUser = localStorage.getItem('tsc_user');
     if (savedUser) {
-        // Уже зарегистрирован — пропускаем интро и авторизацию
         document.getElementById('intro-overlay').classList.add('hidden');
         document.getElementById('auth-overlay').classList.add('hidden');
         document.getElementById('main-content').classList.remove('hidden');
         updateProfileUI();
         launchSiteReveal();
     } else {
-        // Интро
         runIntro();
     }
 });
@@ -485,8 +477,6 @@ function closeDownloadModal() {
     setTimeout(() => {
         document.getElementById('dl-step-1').classList.remove('hidden');
         document.getElementById('dl-step-2').classList.add('hidden');
-        document.getElementById('dl-step-android').classList.add('hidden');
-        document.getElementById('dl-step-ios').classList.add('hidden');
     }, 300);
 }
 if (downloadModal) downloadModal.addEventListener('click', e => { if (e.target === downloadModal) closeDownloadModal(); });
@@ -509,14 +499,6 @@ function startLoading(btn) {
             }, 500);
         } else btn.textContent = `Загрузка... ${Math.floor(progress)}%`;
     }, 150);
-}
-function chooseAndroid() {
-    document.getElementById('dl-step-2').classList.add('hidden');
-    document.getElementById('dl-step-android').classList.remove('hidden');
-}
-function chooseIos() {
-    document.getElementById('dl-step-2').classList.add('hidden');
-    document.getElementById('dl-step-ios').classList.remove('hidden');
 }
 
 // ===== ТЕРМИНАЛ =====
@@ -591,6 +573,10 @@ const commands = {
         printLine('  💎10 → 🪙+20 — 99₽');
         printLine('  💎20 → 🪙+40 — 199₽');
         printLine('  💎60 → 🪙+100 — 499₽');
+        printLine('  💎120 → 🪙+250 — 899₽');
+        printLine('  💎250 → 🪙+600 — 1699₽');
+        printLine('  💎500 → 🪙+1500 — 2999₽');
+        printLine('  💎1000 → 🪙+3500 — 4999₽');
     },
     clear: () => { termOutput.innerHTML = ''; },
     exit: () => { closeTerminal(); }
