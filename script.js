@@ -1,3 +1,22 @@
+// ===== FIREBASE ИМПОРТЫ =====
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+// Твои ключи от Firebase
+const firebaseConfig = {
+  apiKey: "AIzaSyA24goApnS9GR3PnhKnJXqRqJN05DTG6cc",
+  authDomain: "tsc-universe.firebaseapp.com",
+  projectId: "tsc-universe",
+  storageBucket: "tsc-universe.firebasestorage.app",
+  messagingSenderId: "537337043396",
+  appId: "1:537337043396:web:b86e9a24928eee9a0a6c91"
+};
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+
 // ===== МАТРИЦА =====
 const canvas = document.getElementById('matrix');
 if (canvas) {
@@ -73,7 +92,7 @@ function splitLetters(el, delayStep = 0.05) {
 
 // ===== ПЕРЕВОД =====
 let currentLang = 'ru';
-function changeLang(lang) {
+window.changeLang = function(lang) {
     currentLang = lang;
     document.getElementById('btn-ru').classList.remove('active');
     document.getElementById('btn-en').classList.remove('active');
@@ -86,7 +105,7 @@ function changeLang(lang) {
         h2.dataset.animated = '';
         splitLetters(h2, 0.03);
     });
-}
+};
 
 // ===== RIPPLE НА КНОПКАХ =====
 document.querySelectorAll('.btn, .btn-download, .shop-btn, .auth-btn').forEach(btn => {
@@ -193,13 +212,13 @@ function finishIntro() {
     }, 700);
 }
 
-function skipIntro() {
+window.skipIntro = function() {
     introTimers.forEach(t => { clearTimeout(t); clearInterval(t); });
     finishIntro();
-}
+};
 
 // ===== АВТОРИЗАЦИЯ =====
-function switchAuthTab(tab) {
+window.switchAuthTab = function(tab) {
     document.getElementById('tab-login').classList.toggle('active', tab === 'login');
     document.getElementById('tab-register').classList.toggle('active', tab === 'register');
     ['login', 'register', 'token'].forEach(p => {
@@ -208,15 +227,7 @@ function switchAuthTab(tab) {
     });
     const target = document.getElementById(`auth-${tab}`);
     if (target) { target.classList.remove('hidden'); }
-}
-
-function generateToken() {
-    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
-    let t1 = '', t2 = '';
-    for (let i = 0; i < 4; i++) t1 += chars.charAt(Math.floor(Math.random() * chars.length));
-    for (let i = 0; i < 4; i++) t2 += chars.charAt(Math.floor(Math.random() * chars.length));
-    return `TSC-${t1}-${t2}`;
-}
+};
 
 function showError(el, box, msg) {
     el.textContent = msg;
@@ -226,7 +237,8 @@ function showError(el, box, msg) {
     setTimeout(() => el.textContent = '', 3200);
 }
 
-function registerUser() {
+window.registerUser = async function() {
+    const email = document.getElementById('reg-email').value.trim();
     const user = document.getElementById('reg-username').value.trim();
     const name = document.getElementById('reg-name').value.trim();
     const age = document.getElementById('reg-age').value.trim();
@@ -236,44 +248,88 @@ function registerUser() {
     const err = document.getElementById('reg-error');
     const box = document.querySelector('.auth-box');
 
+    if (!email) return showError(err, box, "Введите Email.");
     if (!user.startsWith('@') || user.length < 3) return showError(err, box, "Юзернейм должен начинаться с @ и быть длиннее 2 символов.");
-    if (!name) return showError(err, box, "Введите ваше имя.");
-    if (!age || isNaN(age) || age < 1) return showError(err, box, "Введите корректный возраст.");
-    if (!gender) return showError(err, box, "Выберите пол.");
-    if (pass.length < 4) return showError(err, box, "Пароль должен быть не менее 4 символов.");
+    if (pass.length < 6) return showError(err, box, "Пароль должен быть не менее 6 символов.");
     if (pass !== confirmPass) return showError(err, box, "Пароли не совпадают.");
 
-    const token = generateToken();
-    localStorage.setItem('tsc_user', user);
-    localStorage.setItem('tsc_name', name);
-    localStorage.setItem('tsc_age', age);
-    localStorage.setItem('tsc_gender', gender);
-    localStorage.setItem('tsc_pass', pass);
-    localStorage.setItem('tsc_token', token);
+    try {
+        const userCredential = await createUserWithEmailAndPassword(auth, email, pass);
+        const firebaseUser = userCredential.user;
+        
+        // Генерируем уникальный токен
+        const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+        let t1 = '', t2 = '';
+        for (let i = 0; i < 4; i++) t1 += chars.charAt(Math.floor(Math.random() * chars.length));
+        for (let i = 0; i < 4; i++) t2 += chars.charAt(Math.floor(Math.random() * chars.length));
+        const token = `TSC-${t1}-${t2}`;
 
-    document.getElementById('generated-token').textContent = token;
-    ['login','register'].forEach(p => document.getElementById(`auth-${p}`).classList.add('hidden'));
-    document.getElementById('auth-token').classList.remove('hidden');
-}
+        // Сохраняем в Firestore
+        await setDoc(doc(db, "users", firebaseUser.uid), {
+            email: email,
+            username: user,
+            name: name,
+            age: age,
+            gender: gender,
+            tscToken: token,
+            role: "player",
+            createdAt: new Date().toISOString()
+        });
 
-function loginUser() {
-    const user = document.getElementById('login-username').value.trim();
+        // Сохраняем локально для быстрого доступа
+        localStorage.setItem('tsc_user', user);
+        localStorage.setItem('tsc_name', name);
+        localStorage.setItem('tsc_age', age);
+        localStorage.setItem('tsc_gender', gender);
+        localStorage.setItem('tsc_token', token);
+        localStorage.setItem('tsc_email', email);
+
+        document.getElementById('generated-token').textContent = token;
+        ['login','register'].forEach(p => document.getElementById(`auth-${p}`).classList.add('hidden'));
+        document.getElementById('auth-token').classList.remove('hidden');
+
+    } catch (error) {
+        if (error.code === 'auth/email-already-in-use') return showError(err, box, "Этот Email уже зарегистрирован.");
+        showError(err, box, "Ошибка: " + error.message);
+    }
+};
+
+window.loginUser = async function() {
+    const email = document.getElementById('login-email').value.trim();
     const pass = document.getElementById('login-password').value;
-    const token = document.getElementById('login-token').value.trim().toUpperCase();
     const err = document.getElementById('login-error');
     const box = document.querySelector('.auth-box');
 
-    const savedUser = localStorage.getItem('tsc_user');
-    const savedPass = localStorage.getItem('tsc_pass');
-    const savedToken = localStorage.getItem('tsc_token');
+    if (!email || !pass) return showError(err, box, "Введите Email и пароль.");
 
-    if (user === savedUser && pass === savedPass && token === savedToken) {
-        err.textContent = '';
-        startBreach();
-    } else {
-        showError(err, box, "Неверный юзернейм, пароль или TSC-Token.");
+    try {
+        const userCredential = await signInWithEmailAndPassword(auth, email, pass);
+        const firebaseUser = userCredential.user;
+
+        const docRef = doc(db, "users", firebaseUser.uid);
+        const docSnap = await getDoc(docRef);
+
+        if (docSnap.exists()) {
+            const data = docSnap.data();
+            localStorage.setItem('tsc_user', data.username);
+            localStorage.setItem('tsc_name', data.name || 'Неизвестно');
+            localStorage.setItem('tsc_age', data.age || '0');
+            localStorage.setItem('tsc_gender', data.gender || 'Неизвестно');
+            localStorage.setItem('tsc_token', data.tscToken);
+            localStorage.setItem('tsc_email', data.email);
+            
+            err.textContent = '';
+            startBreach();
+        } else {
+            showError(err, box, "Профиль не найден в базе.");
+        }
+    } catch (error) {
+        if (error.code === 'auth/wrong-password' || error.code === 'auth/user-not-found') {
+            return showError(err, box, "Неверный Email или пароль.");
+        }
+        showError(err, box, "Ошибка: " + error.message);
     }
-}
+};
 
 // ===== РАЗРЫВ ЭКРАНА =====
 function startBreach() {
@@ -361,8 +417,8 @@ function launchSiteReveal() {
 
 // ===== СТАРТ =====
 window.addEventListener('load', () => {
-    const savedUser = localStorage.getItem('tsc_user');
-    if (savedUser) {
+    const savedToken = localStorage.getItem('tsc_token');
+    if (savedToken) {
         document.getElementById('intro-overlay').classList.add('hidden');
         document.getElementById('auth-overlay').classList.add('hidden');
         document.getElementById('main-content').classList.remove('hidden');
@@ -399,14 +455,14 @@ function updateProfileUI() {
     }
 }
 
-function openProfileModal() {
+window.openProfileModal = function() {
     updateProfileUI();
     document.getElementById('profile-modal').classList.remove('hidden');
-}
-function closeProfileModal(e) {
+};
+window.closeProfileModal = function(e) {
     if (e) e.stopPropagation();
     document.getElementById('profile-modal').classList.add('hidden');
-}
+};
 
 function resizeImage(base64Str, maxWidth = 250, maxHeight = 250) {
     return new Promise(resolve => {
@@ -424,7 +480,7 @@ function resizeImage(base64Str, maxWidth = 250, maxHeight = 250) {
     });
 }
 
-function uploadAvatar(event) {
+window.uploadAvatar = function(event) {
     const file = event.target.files[0];
     if (!file) return;
     const reader = new FileReader();
@@ -434,54 +490,46 @@ function uploadAvatar(event) {
         updateProfileUI();
     };
     reader.readAsDataURL(file);
-}
+};
 
-function showImagePreview() {
+window.showImagePreview = function() {
     const avatar = localStorage.getItem('tsc_avatar');
     if (avatar) {
         document.getElementById('preview-img').src = avatar;
         document.getElementById('image-preview-modal').classList.remove('hidden');
     }
-}
-function closeImagePreview() {
+};
+window.closeImagePreview = function() {
     document.getElementById('image-preview-modal').classList.add('hidden');
-}
+};
 
-function changePassword() {
-    const newPass = prompt("Введите новый пароль (минимум 4 символа):");
-    if (newPass && newPass.length >= 4) {
-        localStorage.setItem('tsc_pass', newPass);
-        alert("Пароль успешно изменен!");
-    } else if (newPass) alert("Пароль слишком короткий!");
-}
-function changeToken() {
-    if (confirm("Сгенерировать новый TSC-Token? Вам придется использовать его при следующем входе.")) {
-        const newToken = generateToken();
-        localStorage.setItem('tsc_token', newToken);
-        alert("Ваш новый токен: " + newToken + "\n\nОбязательно сохраните его!");
-    }
-}
-function deleteAccount() {
-    if (confirm("ВЫ УВЕРЕНЫ? Это навсегда удалит ваш аккаунт, прогресс и аватарку.")) {
+window.changePassword = function() {
+    alert("Смена пароля будет доступна в следующем обновлении (через Firebase).");
+};
+window.changeToken = function() {
+    alert("Смена токена будет доступна в следующем обновлении.");
+};
+window.deleteAccount = function() {
+    if (confirm("ВЫ УВЕРЕНЫ? Это навсегда удалит ваш локальный аккаунт.")) {
         localStorage.clear();
         location.reload();
     }
-}
+};
 window.resetTSC = function() { localStorage.clear(); location.reload(); };
 
 // ===== МОДАЛКА СКАЧИВАНИЯ =====
 const downloadModal = document.getElementById('download-modal');
-function openDownloadModal() { downloadModal.classList.remove('hidden'); }
-function closeDownloadModal() {
+window.openDownloadModal = function() { downloadModal.classList.remove('hidden'); };
+window.closeDownloadModal = function() {
     downloadModal.classList.add('hidden');
     setTimeout(() => {
         document.getElementById('dl-step-1').classList.remove('hidden');
         document.getElementById('dl-step-2').classList.add('hidden');
     }, 300);
-}
+};
 if (downloadModal) downloadModal.addEventListener('click', e => { if (e.target === downloadModal) closeDownloadModal(); });
 
-function startLoading(btn) {
+window.startLoading = function(btn) {
     const original = btn.textContent;
     btn.textContent = 'Загрузка... 0%';
     btn.style.pointerEvents = 'none';
@@ -499,7 +547,7 @@ function startLoading(btn) {
             }, 500);
         } else btn.textContent = `Загрузка... ${Math.floor(progress)}%`;
     }, 150);
-}
+};
 
 // ===== ТЕРМИНАЛ =====
 const terminal = document.getElementById('terminal');
