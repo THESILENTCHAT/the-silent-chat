@@ -52,7 +52,7 @@
                     <input type="password" id="login-password" placeholder="••••••••">
                 </div>
                 <p id="login-error" class="error-text"></p>
-                <button class="btn auth-btn" onclick="handleLogin()">ВОЙТИ</button>
+                <button class="btn auth-btn" onclick="loginUser()">ВОЙТИ</button>
             </div>
 
             <!-- РЕГИСТРАЦИЯ -->
@@ -67,6 +67,24 @@
                     <input type="text" id="reg-username" placeholder="@Adellink" autocomplete="off">
                 </div>
                 <div class="input-group">
+                    <label>Имя</label>
+                    <input type="text" id="reg-name" placeholder="Иван" autocomplete="off">
+                </div>
+                <div style="display:flex;gap:10px;">
+                    <div class="input-group" style="flex:1;">
+                        <label>Возраст</label>
+                        <input type="number" id="reg-age" placeholder="20">
+                    </div>
+                    <div class="input-group" style="flex:1;">
+                        <label>Пол</label>
+                        <select id="reg-gender">
+                            <option value="Мужской">Мужской</option>
+                            <option value="Женский">Женский</option>
+                            <option value="Другое">Другое</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="input-group">
                     <label>Пароль</label>
                     <input type="password" id="reg-password" placeholder="••••••••">
                 </div>
@@ -75,15 +93,15 @@
                     <input type="password" id="reg-password-confirm" placeholder="••••••••">
                 </div>
                 <p id="reg-error" class="error-text"></p>
-                <button class="btn auth-btn" onclick="handleRegister()">ПРОДОЛЖИТЬ</button>
+                <button class="btn auth-btn" onclick="registerUser()">ПРОДОЛЖИТЬ</button>
             </div>
-            
+
             <!-- ТОКЕН -->
             <div id="auth-token" class="auth-panel hidden">
                 <p class="auth-desc" style="color: var(--neon-green);">Регистрация успешна!</p>
-                <p>Ваш TSC-Token для входа:</p>
+                <p>Ваш TSC-Token для входа в игру:</p>
                 <div class="token-display" id="generated-token">TSC-XXXX-XXXX</div>
-                <p class="note" style="margin-bottom:2rem;">Сохраните его. Без него вход невозможен.</p>
+                <p class="note" style="margin-bottom:2rem;">Сохраните его. Без него вход в игру невозможен.</p>
                 <button class="btn auth-btn" onclick="switchAuthTab('login')">ПЕРЕЙТИ К ВХОДУ</button>
             </div>
         </div>
@@ -310,12 +328,10 @@
                     Доступно на Windows, macOS, Linux, Android и iOS прямо в браузере!
                 </p>
                 
-                <!-- КНОПКА ИГРАТЬ В БРАУЗЕРЕ (Ведет на itch.io) -->
                 <a href="https://thesilentchat.itch.io/the-silent-chat" target="_blank" class="btn-download" style="display:flex; justify-content:center; align-items:center; text-decoration:none; border-color:var(--neon-cyan); color:var(--neon-cyan);">
                     🎮 ИГРАТЬ ОНЛАЙН (iOS / PC / MAC / LINUX)
                 </a>
                 
-                <!-- ЗАГЛУШКА ДЛЯ APK -->
                 <button onclick="alert('APK-версия появится чуть позже на RuStore! А пока вы можете играть прямо в браузере.')" class="btn-download" style="display:flex; justify-content:center; align-items:center; border-color:var(--text-dim); color:var(--text-dim); font-size: 1.1rem; cursor: not-allowed;">
                     🤖 СКАЧАТЬ APK (СКОРО)
                 </button>
@@ -367,9 +383,8 @@
             <input type="text" id="terminal-input" autocomplete="off" spellcheck="false" />
         </div>
     </div>
-    
-    <!-- Firebase SDK -->
-    <script type="module" src="auth.js"></script>
-    <script src="script.js"></script>
+
+    <!-- ВАЖНО: type="module" для работы Firebase -->
+    <script type="module" src="script.js"></script>
 </body>
 </html>
