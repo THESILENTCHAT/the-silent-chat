@@ -287,10 +287,15 @@
                     <div class="contact-label" data-ru="Telegram Бот" data-en="Telegram Bot">Telegram Бот</div>
                     <div class="contact-value">@tscofficialbot</div>
                 </a>
+                <a href="https://www.tiktok.com/@thesilentchat" target="_blank" class="contact-card tilt">
+                    <div class="contact-icon">🎵</div>
+                    <div class="contact-label">TikTok</div>
+                    <div class="contact-value">@thesilentchat</div>
+                </a>
             </div>
             <div class="contact-buttons">
                 <a href="#" class="btn btn-disabled" data-ru="Google Play — скоро" data-en="Google Play — soon">Google Play — скоро</a>
-                <a href="#" class="btn" id="rustore-btn" data-ru="RuStore — Скачать" data-en="RuStore — Download">RuStore — Скачать</a>
+                <a href="https://thesilentchat.itch.io/the-silent-chat" target="_blank" class="btn" data-ru="RuStore — Скачать" data-en="RuStore — Download">RuStore — Скачать</a>
             </div>
         </section>
 
@@ -304,13 +309,29 @@
         <div class="modal-content glass">
             <button class="modal-close" onclick="closeDownloadModal()">✕</button>
             <h2 class="modal-title glitch" data-text="THE SILENT CHAT">THE SILENT CHAT</h2>
+            
             <div id="dl-step-1">
                 <div class="modal-text"><p><strong>Добро пожаловать в цифровой кошмар.</strong></p></div>
-                <button class="btn-download" onclick="startLoading(this)">СКАЧАТЬ ИГРУ</button>
+                <button class="btn-download" onclick="startLoading(this)">ЗАГРУЗИТЬ ИГРУ</button>
             </div>
-            <div id="dl-step-2" class="hidden" style="margin-top:20px;">
-                <p class="modal-text" style="text-align: center; font-size: 0.95rem; margin-bottom: 1.5rem; line-height: 1.5;">На данный момент игру скачать нельзя, но вы можете поиграть на сайте!</p>
-                <a href="game/index.html" target="_blank" class="btn-download" style="display:block;text-decoration:none;border-color:var(--neon-cyan);color:var(--neon-cyan);">ИГРАТЬ НА САЙТЕ</a>
+
+            <div id="dl-step-2" class="hidden" style="margin-top:20px; display: flex; flex-direction: column; gap: 15px;">
+                <p class="modal-text" style="text-align: center; font-size: 0.95rem; line-height: 1.5; margin-bottom: 5px;">
+                    Выберите платформу для игры:
+                </p>
+                <p style="text-align: center; font-size: 0.8rem; color: var(--text-dim); margin-bottom: 10px;">
+                    Доступно на Windows, macOS, Linux, Android и iOS прямо в браузере!
+                </p>
+                
+                <!-- КНОПКА ИГРАТЬ В БРАУЗЕРЕ (Ведет на itch.io) -->
+                <a href="https://thesilentchat.itch.io/the-silent-chat" target="_blank" class="btn-download" style="display:flex; justify-content:center; align-items:center; text-decoration:none; border-color:var(--neon-cyan); color:var(--neon-cyan);">
+                    🎮 ИГРАТЬ ОНЛАЙН (iOS / PC / MAC / LINUX)
+                </a>
+                
+                <!-- КНОПКА СКАЧАТЬ APK (Для Android) -->
+                <a href="TheSilentChat.apk" download class="btn-download" style="display:flex; justify-content:center; align-items:center; text-decoration:none; border-color:var(--neon-green); color:var(--neon-green); font-size: 1.1rem;">
+                    🤖 СКАЧАТЬ APK (Android)
+                </a>
             </div>
         </div>
     </div>
