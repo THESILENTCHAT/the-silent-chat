@@ -44,45 +44,27 @@
             <div id="auth-login" class="auth-panel">
                 <p class="auth-desc">Вход в систему</p>
                 <div class="input-group">
-                    <label>Юзернейм (@)</label>
-                    <input type="text" id="login-username" placeholder="@Adellink" autocomplete="off">
+                    <label>Email</label>
+                    <input type="email" id="login-email" placeholder="operator@blackwood.ru" autocomplete="off">
                 </div>
                 <div class="input-group">
                     <label>Пароль</label>
                     <input type="password" id="login-password" placeholder="••••••••">
                 </div>
-                <div class="input-group">
-                    <label>TSC-Token</label>
-                    <input type="text" id="login-token" placeholder="TSC-XXXX-XXXX" autocomplete="off">
-                </div>
                 <p id="login-error" class="error-text"></p>
-                <button class="btn auth-btn" onclick="loginUser()">ВОЙТИ</button>
+                <button class="btn auth-btn" onclick="handleLogin()">ВОЙТИ</button>
             </div>
 
             <!-- РЕГИСТРАЦИЯ -->
             <div id="auth-register" class="auth-panel hidden">
                 <p class="auth-desc">Создайте учетную запись оператора</p>
                 <div class="input-group">
-                    <label>Юзернейм (@)</label>
-                    <input type="text" id="reg-username" placeholder="@Adellink" autocomplete="off">
+                    <label>Email</label>
+                    <input type="email" id="reg-email" placeholder="operator@blackwood.ru" autocomplete="off">
                 </div>
                 <div class="input-group">
-                    <label>Имя</label>
-                    <input type="text" id="reg-name" placeholder="Иван" autocomplete="off">
-                </div>
-                <div style="display:flex;gap:10px;">
-                    <div class="input-group" style="flex:1;">
-                        <label>Возраст</label>
-                        <input type="number" id="reg-age" placeholder="20">
-                    </div>
-                    <div class="input-group" style="flex:1;">
-                        <label>Пол</label>
-                        <select id="reg-gender">
-                            <option value="Мужской">Мужской</option>
-                            <option value="Женский">Женский</option>
-                            <option value="Другое">Другое</option>
-                        </select>
-                    </div>
+                    <label>Юзернейм (@)</label>
+                    <input type="text" id="reg-username" placeholder="@Adellink" autocomplete="off">
                 </div>
                 <div class="input-group">
                     <label>Пароль</label>
@@ -93,9 +75,9 @@
                     <input type="password" id="reg-password-confirm" placeholder="••••••••">
                 </div>
                 <p id="reg-error" class="error-text"></p>
-                <button class="btn auth-btn" onclick="registerUser()">ПРОДОЛЖИТЬ</button>
+                <button class="btn auth-btn" onclick="handleRegister()">ПРОДОЛЖИТЬ</button>
             </div>
-
+            
             <!-- ТОКЕН -->
             <div id="auth-token" class="auth-panel hidden">
                 <p class="auth-desc" style="color: var(--neon-green);">Регистрация успешна!</p>
@@ -385,7 +367,9 @@
             <input type="text" id="terminal-input" autocomplete="off" spellcheck="false" />
         </div>
     </div>
-
+    
+    <!-- Firebase SDK -->
+    <script type="module" src="auth.js"></script>
     <script src="script.js"></script>
 </body>
 </html>
