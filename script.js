@@ -11,7 +11,7 @@ const escapeHtml = (str) => !str ? '' : String(str).replace(/[&<>"']/g, ch => ({
 const formatDateTime = (ts) => { if(!ts) return ''; let d = ts.toDate ? ts.toDate() : new Date(ts); return `${String(d.getDate()).padStart(2,'0')}.${String(d.getMonth()+1).padStart(2,'0')}.${d.getFullYear()} ${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`; };
 const showToast = (type, title, msg) => { const c = document.getElementById('toast-container'); if(!c) return; const t = document.createElement('div'); t.className = `toast ${type}`; t.innerHTML = `<div class="toast-title">${title}</div><div>${msg}</div>`; c.appendChild(t); setTimeout(()=>{ t.style.opacity='0'; setTimeout(()=>t.remove(),300); }, 6000); };
 
-// --- ЭФФЕКТЫ (МАТРИЦА, ИНТРО, ВЗЛОМ) ---
+// --- ЭФФЕКТЫ ---
 const canvas = document.getElementById('matrix');
 if (canvas && window.innerWidth > 768) {
     const ctx = canvas.getContext('2d'); let width, height, columns, drops;
@@ -174,7 +174,6 @@ window.addEventListener('load', () => {
             if(snap.exists()) { 
                 window.currentUserData = snap.data(); 
                 window.isAdmin = window.currentUserData.role === 'admin'; 
-                // ВОТ ЗДЕСЬ ЗАПУСКАЕТСЯ ВЗЛОМ ЭКРАНА
                 startBreach(); 
             }
         } else {
