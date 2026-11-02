@@ -41,7 +41,6 @@
             <div class="input-group"><label>Пароль</label><input type="password" id="login-password" placeholder="••••••••"></div>
             <p id="login-error" class="error-text"></p>
             <button class="btn auth-btn" onclick="loginUser()">ВОЙТИ</button>
-            <div id="saved-accounts-list" style="margin-top: 1rem; text-align: left;"></div>
         </div>
 
         <div id="auth-register" class="auth-panel hidden">
@@ -83,7 +82,6 @@
             <li><a href="#applications">Заявки</a></li>
         </ul>
         <div class="nav-right">
-            <!-- КРАСИВЫЙ ПЕРЕКЛЮЧАТЕЛЬ ЯЗЫКОВ -->
             <div class="custom-lang">
                 <button class="lang-btn active" onclick="changeLang('ru')" id="lang-ru">RU</button>
                 <button class="lang-btn" onclick="changeLang('en')" id="lang-en">EN</button>
@@ -106,13 +104,12 @@
         <hr style="border-color: rgba(255,255,255,0.1); margin: 2rem 0;">
         <h3 style="color: var(--neon-magenta); margin-bottom: 1rem;">АКТИВАЦИЯ ПРОМОКОДА</h3>
         <div style="max-width: 400px; margin: 0 auto; display: flex; gap: 10px;">
-            <input type="text" id="promo-input" placeholder="TSC-XXXX-XXXX" style="flex: 1; padding: 0.8rem; background: rgba(0,0,0,0.5); border: 1px solid var(--neon-cyan); color: white; border-radius: var(--radius-md);">
+            <input type="text" id="promo-input" placeholder="TSC-XXXX-XXXX" style="flex: 1; padding: 0.8rem; background: rgba(0,0,0,0.5); border: 1px solid var(--neon-cyan); color: white; border-radius: var(--radius-md); text-transform: uppercase;">
             <button class="btn" onclick="redeemPromo()">ВВЕСТИ</button>
         </div>
         <p id="promo-status" style="margin-top: 1rem;"></p>
     </section>
 
-    <!-- ТУТ ТВОЙ ТЕКСТ О ИГРЕ (я его не трогал) -->
     <section id="about" class="section glass">
         <h2 class="split-title">О игре</h2>
         <div class="about-text">
@@ -156,17 +153,15 @@
     <section id="obt-testers" class="section glass"><h2 class="split-title">ОБТ Тестеры</h2><div id="obt-grid" class="blogger-grid"></div></section>
     <section id="testers" class="section glass"><h2 class="split-title">Тестеры</h2><div id="testers-grid" class="blogger-grid"></div></section>
 
-    <!-- ОТЗЫВЫ -->
+    <!-- ОТЗЫВЫ, ОПРОСЫ, ГАЛЕРЕЯ -->
     <section id="reviews" class="section glass">
         <h2 class="split-title">Отзывы</h2>
         <button class="btn" onclick="openReviewModal()" style="margin-bottom: 2rem;">ОСТАВИТЬ ОТЗЫВ</button>
         <div id="reviews-list" class="reviews-grid"></div>
     </section>
 
-    <!-- ОПРОСЫ -->
     <section id="polls" class="section glass"><h2 class="split-title">Опросы</h2><div id="polls-list"></div></section>
 
-    <!-- ГАЛЕРЕЯ -->
     <section id="gallery" class="section glass">
         <h2 class="split-title">Фан-Арт</h2>
         <button class="btn" onclick="openGalleryUpload()" style="margin-bottom: 2rem;">ЗАГРУЗИТЬ АРТ</button>
@@ -184,8 +179,8 @@
 
         <div id="app-blogger" class="app-panel">
             <div id="app-status-blogger" class="hidden"></div>
-            <div class="input-group"><label>ФИО</label><input type="text" id="blogger-realname" readonly></div>
-            <div class="input-group"><label>Возраст</label><input type="number" id="blogger-age" readonly></div>
+            <div class="input-group"><label>ФИО (из профиля)</label><input type="text" id="blogger-realname" readonly></div>
+            <div class="input-group"><label>Возраст (из профиля)</label><input type="number" id="blogger-age" readonly></div>
             <div class="input-group checkbox-label"><input type="checkbox" id="blogger-hide-name"> Скрыть ФИО в публичном профиле</div>
             <div class="input-group"><label>Контакт (Telegram)</label><input type="text" id="blogger-contact-value" placeholder="@nickname"></div>
             <div class="socials-section">
@@ -198,8 +193,8 @@
 
         <div id="app-obt" class="app-panel hidden">
             <div id="app-status-obt" class="hidden"></div>
-            <div class="input-group"><label>ФИО</label><input type="text" id="obt-realname" readonly></div>
-            <div class="input-group"><label>Возраст</label><input type="number" id="obt-age" readonly></div>
+            <div class="input-group"><label>ФИО (из профиля)</label><input type="text" id="obt-realname" readonly></div>
+            <div class="input-group"><label>Возраст (из профиля)</label><input type="number" id="obt-age" readonly></div>
             <div class="input-group checkbox-label"><input type="checkbox" id="obt-hide-name"> Скрыть ФИО</div>
             <div class="input-group"><label>Контакт</label><input type="text" id="obt-contact-value" placeholder="@nickname"></div>
             <div class="input-group"><label>Платформа</label><select id="obt-platform"><option value="Android">Android</option><option value="iOS">iOS</option><option value="PC">PC</option></select></div>
@@ -209,8 +204,8 @@
 
         <div id="app-tester" class="app-panel hidden">
             <div id="app-status-tester" class="hidden"></div>
-            <div class="input-group"><label>ФИО</label><input type="text" id="tester-realname" readonly></div>
-            <div class="input-group"><label>Возраст</label><input type="number" id="tester-age" readonly></div>
+            <div class="input-group"><label>ФИО (из профиля)</label><input type="text" id="tester-realname" readonly></div>
+            <div class="input-group"><label>Возраст (из профиля)</label><input type="number" id="tester-age" readonly></div>
             <div class="input-group checkbox-label"><input type="checkbox" id="tester-hide-name"> Скрыть ФИО</div>
             <div class="input-group"><label>Контакт</label><input type="text" id="tester-contact-value" placeholder="@nickname"></div>
             <div class="input-group"><label>Платформа</label><select id="tester-platform"><option value="Android">Android</option><option value="iOS">iOS</option><option value="PC">PC</option></select></div>
@@ -220,7 +215,7 @@
     </section>
 </div>
 
-<!-- ПРОФИЛЬ (С ВОЗВРАЩЕННЫМИ КНОПКАМИ) -->
+<!-- ПРОФИЛЬ -->
 <div id="profile-modal" class="modal-overlay hidden" onclick="closeProfileModal(event)">
     <div class="modal-content profile-content glass" onclick="event.stopPropagation()" style="max-width: 600px;">
         <button class="modal-close" onclick="closeProfileModal(event)">✕</button>
@@ -276,7 +271,7 @@
     </div>
 </div>
 
-<!-- МОДАЛКА ПУБЛИЧНОГО ПРОФИЛЯ -->
+<!-- ПУБЛИЧНЫЙ ПРОФИЛЬ -->
 <div id="tester-profile-modal" class="modal-overlay hidden" onclick="closeTesterProfileModal(event)">
     <div class="modal-content glass" onclick="event.stopPropagation()" style="max-width: 500px; text-align: left;">
         <button class="modal-close" onclick="closeTesterProfileModal(event)">✕</button>
@@ -304,7 +299,7 @@
     </div>
 </div>
 
-<!-- АДМИНКА С ФУНКЦИОНАЛОМ -->
+<!-- АДМИНКА -->
 <div id="admin-modal" class="modal-overlay hidden" onclick="closeAdminPanel(event)">
     <div class="modal-content admin-content glass" onclick="event.stopPropagation()">
         <button class="modal-close" onclick="closeAdminPanel(event)">✕</button>
