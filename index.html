@@ -224,6 +224,16 @@
         </div>
         <div class="dossier-progress" id="dossier-progress">Открыто 0 из 18</div>
         <div class="dossier-grid" id="dossier-grid"></div>
+                <!-- ФИЛЬТРЫ ДОСЬЕ -->
+        <div class="dossier-filters-wrapper">
+            <h3 class="episode-title-filters">EPISODE 1</h3>
+            <div class="dossier-tabs">
+                <button class="dossier-tab active" onclick="filterDossiers('all')" id="tab-dossier-all">Общее</button>
+                <button class="dossier-tab" onclick="filterDossiers('alive')" id="tab-dossier-alive">Живые</button>
+                <button class="dossier-tab" onclick="filterDossiers('missing')" id="tab-dossier-missing">Пропавшие</button>
+                <button class="dossier-tab" onclick="filterDossiers('dead')" id="tab-dossier-dead">Мертвые</button>
+            </div>
+        </div>
     </section>
 
     <!-- ЗАЯВКИ -->
