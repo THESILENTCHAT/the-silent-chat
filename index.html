@@ -3,16 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="THE SILENT CHAT — хакерский триллер в неоновом нуаре.">
     <title>THE SILENT CHAT</title>
     <link rel="stylesheet" href="style.css">
     <link rel="icon" type="image/jpeg" href="https://i.ibb.co/0jLFZ8Ck/5415731015122099624-2.jpg">
-    <!-- PWA -->
-    <link rel="manifest" href="manifest.json">
-    <meta name="theme-color" content="#0a0a0f">
 </head>
 <body>
-
 <canvas id="matrix"></canvas>
 <div class="noise"></div>
 
@@ -33,8 +28,6 @@
 
 <!-- АВТОРИЗАЦИЯ -->
 <div id="auth-overlay" class="auth-overlay hidden">
-    <div class="auth-orb orb-1"></div>
-    <div class="auth-orb orb-2"></div>
     <div class="auth-box glass">
         <div class="auth-scanline"></div>
         <h2 class="auth-title glitch" data-text="TSC TERMINAL">TSC TERMINAL</h2>
@@ -44,46 +37,34 @@
         </div>
 
         <div id="auth-login" class="auth-panel">
-            <p class="auth-desc">Вход в систему</p>
-            <div class="input-group"><label>Email</label><input type="email" id="login-email" placeholder="operator@blackwood.ru" autocomplete="off"></div>
+            <div class="input-group"><label>Email</label><input type="email" id="login-email" placeholder="operator@blackwood.ru"></div>
             <div class="input-group"><label>Пароль</label><input type="password" id="login-password" placeholder="••••••••"></div>
             <p id="login-error" class="error-text"></p>
             <button class="btn auth-btn" onclick="loginUser()">ВОЙТИ</button>
-            <div id="saved-accounts-list" style="margin-top: 1rem; font-size: 0.8rem; text-align: left;"></div>
+            <div id="saved-accounts-list" style="margin-top: 1rem; text-align: left;"></div>
         </div>
 
         <div id="auth-register" class="auth-panel hidden">
-            <p class="auth-desc">Создайте учетную запись оператора</p>
-            <div class="input-group"><label>Email</label><input type="email" id="reg-email" placeholder="operator@blackwood.ru" autocomplete="off"></div>
-            <div class="input-group"><label>Юзернейм (@)</label><input type="text" id="reg-username" placeholder="@Adellink" autocomplete="off"></div>
-            <div class="input-group"><label>Имя</label><input type="text" id="reg-name" placeholder="Иван" autocomplete="off"></div>
+            <div class="input-group"><label>Email</label><input type="email" id="reg-email" placeholder="operator@blackwood.ru"></div>
+            <div class="input-group"><label>Юзернейм (@)</label><input type="text" id="reg-username" placeholder="@Adellink"></div>
+            <div class="input-group"><label>Имя</label><input type="text" id="reg-name" placeholder="Иван"></div>
             <div style="display:flex;gap:10px;">
                 <div class="input-group" style="flex:1;"><label>Возраст</label><input type="number" id="reg-age" placeholder="20"></div>
-                <div class="input-group" style="flex:1;"><label>Пол</label>
-                    <select id="reg-gender"><option value="Мужской">Мужской</option><option value="Женский">Женский</option><option value="Другое">Другое</option></select>
-                </div>
+                <div class="input-group" style="flex:1;"><label>Пол</label><select id="reg-gender"><option value="Мужской">Мужской</option><option value="Женский">Женский</option></select></div>
             </div>
-            <div class="input-group"><label>Пароль</label><input type="password" id="reg-password" placeholder="••••••••"></div>
-            <div class="input-group"><label>Повторите пароль</label><input type="password" id="reg-password-confirm" placeholder="••••••••"></div>
+            <div class="input-group"><label>Пароль</label><input type="password" id="reg-password"></div>
+            <div class="input-group"><label>Повторите</label><input type="password" id="reg-password-confirm"></div>
             <p id="reg-error" class="error-text"></p>
             <button class="btn auth-btn" id="reg-submit-btn" onclick="registerUser()">ПРОДОЛЖИТЬ</button>
         </div>
 
         <div id="auth-token" class="auth-panel hidden">
             <p class="auth-desc" style="color: var(--neon-green);">Регистрация успешна!</p>
-            <p>Ваш TSC-Token для входа в игру:</p>
             <div class="token-display" id="generated-token">TSC-XXXX-XXXX</div>
-            <button class="btn-small" onclick="copyToken('generated-token')" style="margin-bottom:1rem;">📋 Копировать токен</button>
-            <button class="btn auth-btn" onclick="switchAuthTab('login')">ПЕРЕЙТИ К ВХОДУ</button>
+            <button class="btn-small" onclick="copyToken('generated-token')">📋 Копировать</button>
+            <button class="btn auth-btn" style="margin-top:1rem;" onclick="switchAuthTab('login')">ПЕРЕЙТИ К ВХОДУ</button>
         </div>
     </div>
-</div>
-
-<!-- РАЗРЫВ ЭКРАНА -->
-<div id="breach-overlay" class="breach-overlay hidden">
-    <canvas id="breach-canvas"></canvas>
-    <div class="breach-flash" id="breach-flash"></div>
-    <div class="breach-text glitch" data-text="ACCESS GRANTED">ACCESS GRANTED</div>
 </div>
 
 <!-- ОСНОВНОЙ САЙТ -->
@@ -99,26 +80,17 @@
             <li><a href="#reviews">Отзывы</a></li>
             <li><a href="#polls">Опросы</a></li>
             <li><a href="#gallery">Арт</a></li>
-            <li><a href="#leaderboard">Топ</a></li>
             <li><a href="#applications">Заявки</a></li>
         </ul>
         <div class="nav-right">
-            <div class="lang-switch">
-                <select id="lang-select" onchange="changeLang(this.value)" style="background:transparent; border:1px solid var(--neon-cyan); color:var(--neon-cyan); padding: 0.2rem 0.5rem; border-radius: 20px; font-family: inherit; font-size: 0.75rem; cursor:pointer;">
-                    <option value="ru">RU</option>
-                    <option value="en">EN</option>
-                    <option value="tt">TT</option>
-                    <option value="es">ES</option>
-                    <option value="de">DE</option>
-                </select>
+            <!-- КРАСИВЫЙ ПЕРЕКЛЮЧАТЕЛЬ ЯЗЫКОВ -->
+            <div class="custom-lang">
+                <button class="lang-btn active" onclick="changeLang('ru')" id="lang-ru">RU</button>
+                <button class="lang-btn" onclick="changeLang('en')" id="lang-en">EN</button>
+                <button class="lang-btn" onclick="changeLang('tt')" id="lang-tt">TT</button>
             </div>
-            <div class="nav-bell" id="nav-bell" onclick="openNotifPanel()" title="Уведомления">
-                <span class="bell-icon">🔔</span>
-                <span class="bell-dot hidden" id="bell-dot"></span>
-            </div>
-            <div class="nav-profile" onclick="openProfileModal()">
-                <div id="nav-avatar-container" class="avatar-circle">?</div>
-            </div>
+            <div class="nav-bell" onclick="openNotifPanel()">🔔<span class="bell-dot hidden" id="bell-dot"></span></div>
+            <div class="nav-profile" onclick="openProfileModal()"><div id="nav-avatar-container" class="avatar-circle">?</div></div>
         </div>
     </nav>
 
@@ -128,23 +100,19 @@
         <button class="btn pulse-btn" onclick="openDownloadModal()">ВОЙТИ В THE SILENT CHAT</button>
     </header>
 
-    <!-- ТОКЕН И ПРОМОКОД -->
     <section id="token" class="section glass">
         <h2 class="split-title">Ваш TSC-Токен</h2>
-        <div id="token-box" class="hidden" style="max-width: 400px; margin: 0 auto;">
-            <div class="token-display" id="my-token-display">TSC-XXXX-XXXX</div>
-            <button class="btn" onclick="copyToken('my-token-display')" style="margin-top: 1rem;">📋 КОПИРОВАТЬ ТОКЕН</button>
-        </div>
-        <hr style="border-color: rgba(255,255,255,0.1); margin: 2.5rem 0;">
+        <div id="token-box" class="hidden"><div class="token-display" id="my-token-display"></div></div>
+        <hr style="border-color: rgba(255,255,255,0.1); margin: 2rem 0;">
         <h3 style="color: var(--neon-magenta); margin-bottom: 1rem;">АКТИВАЦИЯ ПРОМОКОДА</h3>
         <div style="max-width: 400px; margin: 0 auto; display: flex; gap: 10px;">
-            <input type="text" id="promo-input" placeholder="TSC-XXXX-XXXX" style="flex: 1; padding: 0.8rem; background: rgba(0,0,0,0.5); border: 1px solid var(--neon-cyan); color: white; font-family: inherit; border-radius: var(--radius-md); text-transform: uppercase;">
-            <button class="btn" onclick="redeemPromo()" style="padding: 0.8rem 1.5rem;">ВВЕСТИ</button>
+            <input type="text" id="promo-input" placeholder="TSC-XXXX-XXXX" style="flex: 1; padding: 0.8rem; background: rgba(0,0,0,0.5); border: 1px solid var(--neon-cyan); color: white; border-radius: var(--radius-md);">
+            <button class="btn" onclick="redeemPromo()">ВВЕСТИ</button>
         </div>
-        <p id="promo-status" style="margin-top: 1rem; font-size: 0.95rem; font-weight: bold;"></p>
+        <p id="promo-status" style="margin-top: 1rem;"></p>
     </section>
 
-    <!-- О ИГРЕ (текст не тронут) -->
+    <!-- ТУТ ТВОЙ ТЕКСТ О ИГРЕ (я его не трогал) -->
     <section id="about" class="section glass">
         <h2 class="split-title">О игре</h2>
         <div class="about-text">
@@ -179,23 +147,14 @@
                 <button class="dossier-tab" onclick="filterDossiers('dead')" id="tab-dossier-dead">Мертвые</button>
             </div>
         </div>
-        <div class="dossier-progress" id="dossier-progress">Открыто 0 из 18</div>
+        <div class="dossier-progress" id="dossier-progress"></div>
         <div class="dossier-grid" id="dossier-grid"></div>
     </section>
 
     <!-- КОМАНДА -->
-    <section id="bloggers" class="section glass">
-        <h2 class="split-title">Блогеры игры</h2>
-        <div id="bloggers-grid" class="blogger-grid"></div>
-    </section>
-    <section id="obt-testers" class="section glass">
-        <h2 class="split-title">ОБТ Тестеры</h2>
-        <div id="obt-grid" class="blogger-grid"></div>
-    </section>
-    <section id="testers" class="section glass">
-        <h2 class="split-title">Тестеры игры</h2>
-        <div id="testers-grid" class="blogger-grid"></div>
-    </section>
+    <section id="bloggers" class="section glass"><h2 class="split-title">Блогеры</h2><div id="bloggers-grid" class="blogger-grid"></div></section>
+    <section id="obt-testers" class="section glass"><h2 class="split-title">ОБТ Тестеры</h2><div id="obt-grid" class="blogger-grid"></div></section>
+    <section id="testers" class="section glass"><h2 class="split-title">Тестеры</h2><div id="testers-grid" class="blogger-grid"></div></section>
 
     <!-- ОТЗЫВЫ -->
     <section id="reviews" class="section glass">
@@ -205,22 +164,13 @@
     </section>
 
     <!-- ОПРОСЫ -->
-    <section id="polls" class="section glass">
-        <h2 class="split-title">Опросы</h2>
-        <div id="polls-list"></div>
-    </section>
+    <section id="polls" class="section glass"><h2 class="split-title">Опросы</h2><div id="polls-list"></div></section>
 
     <!-- ГАЛЕРЕЯ -->
     <section id="gallery" class="section glass">
         <h2 class="split-title">Фан-Арт</h2>
         <button class="btn" onclick="openGalleryUpload()" style="margin-bottom: 2rem;">ЗАГРУЗИТЬ АРТ</button>
         <div id="gallery-grid" class="gallery-grid"></div>
-    </section>
-
-    <!-- ТОП -->
-    <section id="leaderboard" class="section glass">
-        <h2 class="split-title">Таблица Лидеров</h2>
-        <div id="leaderboard-list"></div>
     </section>
 
     <!-- ЗАЯВКИ -->
@@ -232,79 +182,45 @@
             <button class="app-tab" id="app-tab-tester" onclick="switchAppTab('tester')">ТЕСТЕР</button>
         </div>
 
-        <!-- БЛОГЕР -->
         <div id="app-blogger" class="app-panel">
             <div id="app-status-blogger" class="hidden"></div>
-            <div class="input-group"><label>ФИО (из профиля)</label><input type="text" id="blogger-realname" readonly></div>
-            <div class="input-group"><label>Возраст (из профиля)</label><input type="number" id="blogger-age" readonly></div>
+            <div class="input-group"><label>ФИО</label><input type="text" id="blogger-realname" readonly></div>
+            <div class="input-group"><label>Возраст</label><input type="number" id="blogger-age" readonly></div>
             <div class="input-group checkbox-label"><input type="checkbox" id="blogger-hide-name"> Скрыть ФИО в публичном профиле</div>
-            <div class="input-group"><label>Платформа для связи</label>
-                <select id="blogger-contact-platform" onchange="updateContactField('blogger')">
-                    <option value="Telegram">Telegram</option><option value="Discord">Discord</option><option value="VK">VK</option><option value="Email">Email</option>
-                </select>
-            </div>
-            <div class="input-group"><label id="blogger-contact-label">Контакт</label><input type="text" id="blogger-contact-value" placeholder="@nickname"></div>
+            <div class="input-group"><label>Контакт (Telegram)</label><input type="text" id="blogger-contact-value" placeholder="@nickname"></div>
             <div class="socials-section">
-                <label style="color:var(--neon-cyan); font-size:0.85rem;">Ваши соцсети</label>
-                <div id="blogger-socials-list"></div>
-                <button class="btn-small" onclick="addBloggerSocial()">+ Добавить соцсеть</button>
+                <label>Соцсети</label><div id="blogger-socials-list"></div>
+                <button class="btn-small" onclick="addBloggerSocial()">+ Добавить</button>
             </div>
-            <div class="subscribe-box">
-                <p><strong>📢 ОБЯЗАТЕЛЬНОЕ УСЛОВИЕ</strong></p>
-                <p>Подпишитесь: <a href="https://t.me/THESILENTCHAT" target="_blank">TG</a> · <a href="https://www.tiktok.com/@thesilentchat" target="_blank">TikTok</a></p>
-                <label class="checkbox-label"><input type="checkbox" id="blogger-subscribed"> Я подписался(ась)</label>
-            </div>
-            <p id="blogger-error" class="error-text"></p>
+            <div class="subscribe-box"><label class="checkbox-label"><input type="checkbox" id="blogger-subscribed"> Я подписался на TSC</label></div>
             <button class="btn auth-btn" onclick="submitBloggerApplication()">ОТПРАВИТЬ</button>
         </div>
 
-        <!-- ОБТ -->
         <div id="app-obt" class="app-panel hidden">
             <div id="app-status-obt" class="hidden"></div>
-            <div class="input-group"><label>ФИО (из профиля)</label><input type="text" id="obt-realname" readonly></div>
-            <div class="input-group"><label>Возраст (из профиля)</label><input type="number" id="obt-age" readonly></div>
-            <div class="input-group checkbox-label"><input type="checkbox" id="obt-hide-name"> Скрыть ФИО в публичном профиле</div>
-            <div class="input-group"><label>Контакт</label>
-                <select id="obt-contact-platform" onchange="updateContactField('obt')">
-                    <option value="Telegram">Telegram</option><option value="Discord">Discord</option><option value="VK">VK</option><option value="Email">Email</option>
-                </select>
-            </div>
-            <div class="input-group"><label id="obt-contact-label">Контакт</label><input type="text" id="obt-contact-value" placeholder="@nickname"></div>
-            <div class="input-group"><label>Платформа</label>
-                <select id="obt-platform"><option value="Android">Android</option><option value="iOS">iOS</option><option value="PC">PC</option></select>
-            </div>
-            <div class="subscribe-box">
-                <p><strong>📢 ОБЯЗАТЕЛЬНОЕ УСЛОВИЕ</strong></p>
-                <label class="checkbox-label"><input type="checkbox" id="obt-subscribed"> Я подписался(ась)</label>
-            </div>
+            <div class="input-group"><label>ФИО</label><input type="text" id="obt-realname" readonly></div>
+            <div class="input-group"><label>Возраст</label><input type="number" id="obt-age" readonly></div>
+            <div class="input-group checkbox-label"><input type="checkbox" id="obt-hide-name"> Скрыть ФИО</div>
+            <div class="input-group"><label>Контакт</label><input type="text" id="obt-contact-value" placeholder="@nickname"></div>
+            <div class="input-group"><label>Платформа</label><select id="obt-platform"><option value="Android">Android</option><option value="iOS">iOS</option><option value="PC">PC</option></select></div>
+            <div class="subscribe-box"><label class="checkbox-label"><input type="checkbox" id="obt-subscribed"> Я подписался</label></div>
             <button class="btn auth-btn" onclick="submitOBTApplication()">ОТПРАВИТЬ</button>
         </div>
 
-        <!-- ТЕСТЕР -->
         <div id="app-tester" class="app-panel hidden">
             <div id="app-status-tester" class="hidden"></div>
-            <div class="input-group"><label>ФИО (из профиля)</label><input type="text" id="tester-realname" readonly></div>
-            <div class="input-group"><label>Возраст (из профиля)</label><input type="number" id="tester-age" readonly></div>
-            <div class="input-group checkbox-label"><input type="checkbox" id="tester-hide-name"> Скрыть ФИО в публичном профиле</div>
-            <div class="input-group"><label>Контакт</label>
-                <select id="tester-contact-platform" onchange="updateContactField('tester')">
-                    <option value="Telegram">Telegram</option><option value="Discord">Discord</option><option value="VK">VK</option><option value="Email">Email</option>
-                </select>
-            </div>
-            <div class="input-group"><label id="tester-contact-label">Контакт</label><input type="text" id="tester-contact-value" placeholder="@nickname"></div>
-            <div class="input-group"><label>Платформа</label>
-                <select id="tester-platform"><option value="Android">Android</option><option value="iOS">iOS</option><option value="PC">PC</option></select>
-            </div>
-            <div class="subscribe-box">
-                <p><strong>📢 ОБЯЗАТЕЛЬНОЕ УСЛОВИЕ</strong></p>
-                <label class="checkbox-label"><input type="checkbox" id="tester-subscribed"> Я подписался(ась)</label>
-            </div>
+            <div class="input-group"><label>ФИО</label><input type="text" id="tester-realname" readonly></div>
+            <div class="input-group"><label>Возраст</label><input type="number" id="tester-age" readonly></div>
+            <div class="input-group checkbox-label"><input type="checkbox" id="tester-hide-name"> Скрыть ФИО</div>
+            <div class="input-group"><label>Контакт</label><input type="text" id="tester-contact-value" placeholder="@nickname"></div>
+            <div class="input-group"><label>Платформа</label><select id="tester-platform"><option value="Android">Android</option><option value="iOS">iOS</option><option value="PC">PC</option></select></div>
+            <div class="subscribe-box"><label class="checkbox-label"><input type="checkbox" id="tester-subscribed"> Я подписался</label></div>
             <button class="btn auth-btn" onclick="submitTesterApplication()">ОТПРАВИТЬ</button>
         </div>
     </section>
 </div>
 
-<!-- ПРОФИЛЬ -->
+<!-- ПРОФИЛЬ (С ВОЗВРАЩЕННЫМИ КНОПКАМИ) -->
 <div id="profile-modal" class="modal-overlay hidden" onclick="closeProfileModal(event)">
     <div class="modal-content profile-content glass" onclick="event.stopPropagation()" style="max-width: 600px;">
         <button class="modal-close" onclick="closeProfileModal(event)">✕</button>
@@ -316,7 +232,6 @@
             <button class="profile-tab" onclick="switchProfileTab('settings')">НАСТРОЙКИ</button>
         </div>
 
-        <!-- ВКЛАДКА ИНФО -->
         <div id="prof-tab-info">
             <div class="profile-header">
                 <div class="avatar-large" id="profile-avatar-large" onclick="showImagePreview()">?</div>
@@ -325,26 +240,22 @@
             </div>
             <div class="profile-roles" id="profile-roles"></div>
             <div class="profile-info">
-                <p><span class="info-label">Имя:</span> <span id="prof-name">Неизвестно</span></p>
-                <p><span class="info-label">Возраст:</span> <span id="prof-age">0</span></p>
-                <p><span class="info-label">Пол:</span> <span id="prof-gender">Неизвестно</span></p>
-                <p><span class="info-label">Юзернейм:</span> <span id="prof-user">@...</span></p>
+                <p><span class="info-label">Имя:</span> <span id="prof-name"></span></p>
+                <p><span class="info-label">Возраст:</span> <span id="prof-age"></span></p>
+                <p><span class="info-label">Юзернейм:</span> <span id="prof-user"></span></p>
             </div>
             <div class="profile-actions">
+                <button class="btn" onclick="changePassword()">Сменить пароль</button>
+                <button class="btn" onclick="changeToken()">Сменить токен</button>
                 <button class="btn btn-admin hidden" id="admin-panel-btn" onclick="openAdminPanel()">👑 АДМИН-ПАНЕЛЬ</button>
                 <button class="btn btn-danger" onclick="logoutUser()">Выйти</button>
             </div>
         </div>
 
-        <!-- ВКЛАДКА ИСТОРИЯ -->
         <div id="prof-tab-history" class="hidden">
-            <div class="profile-section">
-                <h3 class="profile-section-title">История наград</h3>
-                <div id="profile-history-list"><p class="profile-empty">Пока пусто.</p></div>
-            </div>
+            <div class="profile-section"><h3 class="profile-section-title">История наград</h3><div id="profile-history-list"></div></div>
         </div>
 
-        <!-- ВКЛАДКА НАСТРОЙКИ -->
         <div id="prof-tab-settings" class="hidden">
             <div class="profile-section">
                 <h3 class="profile-section-title">Изменить данные</h3>
@@ -356,11 +267,10 @@
             <div class="profile-section">
                 <h3 class="profile-section-title">Аккаунты</h3>
                 <button class="btn-small" onclick="addAccount()">Добавить второй аккаунт</button>
-                <div id="accounts-list" style="margin-top: 1rem;"></div>
             </div>
             <div class="profile-section">
                 <h3 class="profile-section-title" style="color: var(--neon-red);">Опасная зона</h3>
-                <button class="btn" style="border-color: var(--neon-red); color: var(--neon-red);" onclick="deleteAccount()">Удалить аккаунт</button>
+                <button class="btn btn-danger" onclick="deleteAccount()">Удалить аккаунт</button>
             </div>
         </div>
     </div>
@@ -370,56 +280,31 @@
 <div id="tester-profile-modal" class="modal-overlay hidden" onclick="closeTesterProfileModal(event)">
     <div class="modal-content glass" onclick="event.stopPropagation()" style="max-width: 500px; text-align: left;">
         <button class="modal-close" onclick="closeTesterProfileModal(event)">✕</button>
-        <h2 class="modal-title glitch" data-text="ПРОФИЛЬ" style="text-align: center; margin-bottom: 2rem;">ПРОФИЛЬ</h2>
+        <h2 class="modal-title glitch" data-text="ПРОФИЛЬ">ПРОФИЛЬ</h2>
         <div id="tester-profile-body"></div>
     </div>
 </div>
 
-<!-- МОДАЛКИ ОТЗЫВОВ, ОПРОСОВ, ГАЛЕРЕИ -->
+<!-- МОДАЛКИ ОТЗЫВОВ/ГАЛЕРЕИ -->
 <div id="review-modal" class="modal-overlay hidden" onclick="closeReviewModal(event)">
-    <div class="modal-content glass" onclick="event.stopPropagation()" style="max-width: 500px;">
+    <div class="modal-content glass" onclick="event.stopPropagation()">
         <button class="modal-close" onclick="closeReviewModal(event)">✕</button>
         <h2 class="modal-title glitch" data-text="ОТЗЫВ">ОТЗЫВ</h2>
-        <div class="input-group"><label>Ваш отзыв</label><textarea id="review-text" rows="4"></textarea></div>
+        <div class="input-group"><textarea id="review-text" rows="4" placeholder="Ваш отзыв..."></textarea></div>
         <button class="btn auth-btn" onclick="submitReview()">ОТПРАВИТЬ</button>
     </div>
 </div>
 
 <div id="gallery-modal" class="modal-overlay hidden" onclick="closeGalleryModal(event)">
-    <div class="modal-content glass" onclick="event.stopPropagation()" style="max-width: 500px;">
+    <div class="modal-content glass" onclick="event.stopPropagation()">
         <button class="modal-close" onclick="closeGalleryModal(event)">✕</button>
         <h2 class="modal-title glitch" data-text="АРТ">АРТ</h2>
-        <div class="input-group"><label>Ссылка на картинку (imgbb)</label><input type="text" id="gallery-url"></div>
-        <div class="input-group"><label>Описание</label><input type="text" id="gallery-desc"></div>
+        <div class="input-group"><label>Ссылка (imgbb)</label><input type="text" id="gallery-url"></div>
         <button class="btn auth-btn" onclick="submitGallery()">ОТПРАВИТЬ</button>
     </div>
 </div>
 
-<!-- СКАЧИВАНИЕ -->
-<div id="download-modal" class="modal-overlay hidden">
-    <div class="modal-content glass">
-        <button class="modal-close" onclick="closeDownloadModal()">✕</button>
-        <h2 class="modal-title glitch" data-text="ТОЧКА ВХОДА">ТОЧКА ВХОДА</h2>
-        <div class="platform-grid">
-            <a href="https://thesilentchat.itch.io/the-silent-chat" target="_blank" class="platform-btn"><span class="platform-icon">🖥</span><span class="platform-name">WINDOWS</span></a>
-            <a href="https://thesilentchat.itch.io/the-silent-chat" target="_blank" class="platform-btn"><span class="platform-icon">🍎</span><span class="platform-name">macOS</span></a>
-            <a href="https://thesilentchat.itch.io/the-silent-chat" target="_blank" class="platform-btn"><span class="platform-icon">🐧</span><span class="platform-name">LINUX</span></a>
-            <a href="https://thesilentchat.itch.io/the-silent-chat" target="_blank" class="platform-btn"><span class="platform-icon">📱</span><span class="platform-name">iOS</span></a>
-        </div>
-    </div>
-</div>
-
-<!-- УВЕДОМЛЕНИЯ -->
-<div id="notif-panel" class="notif-panel glass hidden">
-    <div class="notif-header">
-        <h3>УВЕДОМЛЕНИЯ</h3>
-        <button class="modal-close" style="position:static;" onclick="closeNotifPanel()">✕</button>
-    </div>
-    <div id="notif-list" class="notif-list"></div>
-    <div class="notif-footer"><button class="btn-small" onclick="markAllNotifRead()">Прочитать всё</button></div>
-</div>
-
-<!-- АДМИНКА (сокращенно для экономии места) -->
+<!-- АДМИНКА С ФУНКЦИОНАЛОМ -->
 <div id="admin-modal" class="modal-overlay hidden" onclick="closeAdminPanel(event)">
     <div class="modal-content admin-content glass" onclick="event.stopPropagation()">
         <button class="modal-close" onclick="closeAdminPanel(event)">✕</button>
@@ -429,18 +314,31 @@
             <button class="admin-tab" onclick="switchAdminTab('promo')">ПРОМОКОДЫ</button>
             <button class="admin-tab" onclick="switchAdminTab('content')">КОНТЕНТ</button>
         </div>
-        <div id="admin-apps" class="admin-panel">
-            <div id="admin-app-list"></div>
-        </div>
+        <div id="admin-apps" class="admin-panel"><div id="admin-app-list"></div></div>
         <div id="admin-promo" class="admin-panel hidden">
-             <div id="promo-result"></div>
+             <h3 style="margin-bottom:1rem;">Создать промокод</h3>
+             <div class="input-group"><label>Тип</label><select id="promo-type"><option value="crystals">Кристаллы</option><option value="coins">Монеты</option></select></div>
+             <div class="input-group"><label>Количество</label><input type="number" id="promo-value"></div>
+             <button class="btn-small" onclick="generatePromocode()">Создать</button>
+             <div id="promo-result" style="margin-top:1rem;"></div>
         </div>
         <div id="admin-content" class="admin-panel hidden">
             <h3>Управление контентом</h3>
-            <p>Добавить опрос или модерация арта (в разработке)</p>
+            <div class="input-group" style="margin-top:1rem;"><label>Вопрос для опроса</label><input type="text" id="poll-q"></div>
+            <div class="input-group"><label>Варианты (через запятую)</label><input type="text" id="poll-opts" placeholder="Да, Нет, Не знаю"></div>
+            <button class="btn-small" onclick="createPoll()">Добавить опрос</button>
         </div>
     </div>
 </div>
+
+<!-- УВЕДОМЛЕНИЯ -->
+<div id="notif-panel" class="notif-panel glass hidden">
+    <div class="notif-header"><h3>УВЕДОМЛЕНИЯ</h3><button class="modal-close" style="position:static;" onclick="closeNotifPanel()">✕</button></div>
+    <div id="notif-list" class="notif-list"></div>
+</div>
+
+<div id="image-preview-modal" class="image-preview hidden" onclick="closeImagePreview()"><img id="preview-img" src=""></div>
+<div id="toast-container" class="toast-container"></div>
 
 <script type="module" src="script.js"></script>
 </body>
