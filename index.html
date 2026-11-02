@@ -41,7 +41,7 @@
 
         <div id="auth-login" class="auth-panel">
             <p class="auth-desc">Вход в систему</p>
-            <div class="input-group"><label>Email</label><input type="email" id="login-email" placeholder="operator@blackwood.ru" autocomplete="off"></div>
+            <div class="input-group"><label>Email</label><input type="email" id="login-email" placeholder="operator@blackwood.ru"></div>
             <div class="input-group"><label>Пароль</label><input type="password" id="login-password" placeholder="••••••••"></div>
             <p id="login-error" class="error-text"></p>
             <button class="btn auth-btn" onclick="loginUser()">ВОЙТИ</button>
@@ -49,24 +49,24 @@
 
         <div id="auth-register" class="auth-panel hidden">
             <p class="auth-desc">Создайте учетную запись</p>
-            <div class="input-group"><label>Email</label><input type="email" id="reg-email" placeholder="operator@blackwood.ru" autocomplete="off"></div>
-            <div class="input-group"><label>Юзернейм (@)</label><input type="text" id="reg-username" placeholder="@Adellink" autocomplete="off"></div>
-            <div class="input-group"><label>Имя</label><input type="text" id="reg-name" placeholder="Иван" autocomplete="off"></div>
+            <div class="input-group"><label>Email</label><input type="email" id="reg-email" placeholder="operator@blackwood.ru"></div>
+            <div class="input-group"><label>Юзернейм (@)</label><input type="text" id="reg-username" placeholder="@Adellink"></div>
+            <div class="input-group"><label>Имя</label><input type="text" id="reg-name" placeholder="Иван"></div>
             <div style="display:flex;gap:10px;">
                 <div class="input-group" style="flex:1;"><label>Возраст</label><input type="number" id="reg-age" placeholder="20"></div>
                 <div class="input-group" style="flex:1;"><label>Пол</label><select id="reg-gender"><option value="Мужской">Мужской</option><option value="Женский">Женский</option><option value="Другое">Другое</option></select></div>
             </div>
-            <div class="input-group"><label>Пароль</label><input type="password" id="reg-password" placeholder="••••••••"></div>
-            <div class="input-group"><label>Повторите пароль</label><input type="password" id="reg-password-confirm" placeholder="••••••••"></div>
+            <div class="input-group"><label>Пароль</label><input type="password" id="reg-password"></div>
+            <div class="input-group"><label>Повторите</label><input type="password" id="reg-password-confirm"></div>
             <p id="reg-error" class="error-text"></p>
             <button class="btn auth-btn" id="reg-submit-btn" onclick="registerUser()">ПРОДОЛЖИТЬ</button>
         </div>
 
         <div id="auth-token" class="auth-panel hidden">
             <p class="auth-desc" style="color: var(--neon-green);">Регистрация успешна!</p>
-            <p>Ваш TSC-Token для входа в игру:</p>
+            <p>Ваш TSC-Token:</p>
             <div class="token-display" id="generated-token">TSC-XXXX-XXXX</div>
-            <button class="btn-small" onclick="copyToken('generated-token')" style="margin-bottom:1rem;">Копировать токен</button>
+            <button class="btn-small" onclick="copyToken('generated-token')" style="margin-bottom:1rem;">📋 Копировать токен</button>
             <button class="btn auth-btn" onclick="switchAuthTab('login')">ПЕРЕЙТИ К ВХОДУ</button>
         </div>
     </div>
@@ -90,8 +90,8 @@
             <li><a href="#features">Особенности</a></li>
             <li><a href="#dossier">Досье</a></li>
             <li><a href="#bloggers">Блогеры</a></li>
-            <li><a href="#reviews">Отзывы</a></li>
-            <li><a href="#gallery">Арт</a></li>
+            <li><a href="#obt-testers">ОБТ</a></li>
+            <li><a href="#testers">Тестеры</a></li>
             <li><a href="#applications">Заявки</a></li>
             <li><a href="#shop">Магазин</a></li>
         </ul>
@@ -113,13 +113,13 @@
         <p class="hint">▸ нажми <kbd>~</kbd> чтобы открыть терминал</p>
     </header>
 
-    <!-- ТОКЕН И ПРОМОКОД -->
+    <!-- СЕКЦИЯ С ТОКЕНОМ -->
     <section id="token" class="section glass">
         <h2 class="split-title">Ваш TSC-Токен</h2>
         <p class="shop-desc">Ваш уникальный ключ для входа в игру. <strong>Никому не передавайте его.</strong></p>
         <div id="token-box" class="hidden" style="max-width: 400px; margin: 0 auto;">
             <div class="token-display" id="my-token-display"></div>
-            <button class="btn" onclick="copyToken('my-token-display')" style="margin-top: 1rem;">КОПИРОВАТЬ ТОКЕН</button>
+            <button class="btn" onclick="copyToken('my-token-display')" style="margin-top: 1rem;">📋 КОПИРОВАТЬ ТОКЕН</button>
         </div>
         <hr style="border-color: rgba(255,255,255,0.1); margin: 2.5rem 0;">
         <h3 style="color: var(--neon-magenta); margin-bottom: 1rem; letter-spacing: 2px; text-shadow: 0 0 10px var(--neon-magenta);">АКТИВАЦИЯ ПРОМОКОДА</h3>
@@ -238,21 +238,6 @@
     <section id="obt-testers" class="section glass"><h2 class="split-title">ОБТ Тестеры</h2><div id="obt-grid" class="blogger-grid"></div></section>
     <section id="testers" class="section glass"><h2 class="split-title">Тестеры</h2><div id="testers-grid" class="blogger-grid"></div></section>
 
-    <!-- ОТЗЫВЫ, ОПРОСЫ, АРТ -->
-    <section id="reviews" class="section glass">
-        <h2 class="split-title">Отзывы</h2>
-        <button class="btn" onclick="openReviewModal()" style="margin-bottom: 2rem;">ОСТАВИТЬ ОТЗЫВ</button>
-        <div id="reviews-list" class="reviews-grid"></div>
-    </section>
-
-    <section id="polls" class="section glass"><h2 class="split-title">Опросы</h2><div id="polls-list"></div></section>
-
-    <section id="gallery" class="section glass">
-        <h2 class="split-title">Фан-Арт</h2>
-        <button class="btn" onclick="openGalleryUpload()" style="margin-bottom: 2rem;">ЗАГРУЗИТЬ АРТ</button>
-        <div id="gallery-grid" class="gallery-grid"></div>
-    </section>
-
     <!-- ЗАЯВКИ -->
     <section id="applications" class="section glass">
         <h2 class="split-title">Заявки</h2>
@@ -305,11 +290,10 @@
         <h2 class="split-title">Магазин</h2>
         <p class="shop-desc">Все покупки проходят через официального Telegram-бота.</p>
         <div style="text-align:center;margin-top:2rem;">
-            <a href="https://t.me/tscofficialbot" target="_blank" class="btn pulse-btn" style="font-size:1.2rem;padding:1.2rem 3rem;">КУПИТЬ ЧЕРЕЗ ТГ-БОТА</a>
+            <a href="https://t.me/tscofficialbot" target="_blank" class="btn pulse-btn" style="font-size:1.2rem;padding:1.2rem 3rem;">💎 КУПИТЬ ЧЕРЕЗ ТГ-БОТА</a>
         </div>
     </section>
 
-    <!-- СОЦ СЕТИ -->
     <section id="socials" class="section glass">
         <h2 class="split-title">Соц сети</h2>
         <div class="contact-grid">
@@ -355,7 +339,7 @@
             <div class="profile-actions">
                 <button class="btn" onclick="changePassword()">Сменить пароль</button>
                 <button class="btn" onclick="changeToken()">Сменить токен</button>
-                <button class="btn btn-admin hidden" id="admin-panel-btn" onclick="openAdminPanel()">АДМИН-ПАНЕЛЬ</button>
+                <button class="btn btn-admin hidden" id="admin-panel-btn" onclick="openAdminPanel()">👑 АДМИН-ПАНЕЛЬ</button>
                 <button class="btn btn-danger" onclick="logoutUser()">Выйти</button>
             </div>
         </div>
@@ -382,33 +366,6 @@
     </div>
 </div>
 
-<!-- МОДАЛКИ ОТЗЫВОВ, АРТА, ПУБЛИЧНОГО ПРОФИЛЯ -->
-<div id="tester-profile-modal" class="modal-overlay hidden" onclick="closeTesterProfileModal(event)">
-    <div class="modal-content glass" onclick="event.stopPropagation()" style="max-width: 500px; text-align: left;">
-        <button class="modal-close" onclick="closeTesterProfileModal(event)">✕</button>
-        <h2 class="modal-title glitch" data-text="ПРОФИЛЬ" style="text-align:center;">ПРОФИЛЬ</h2>
-        <div id="tester-profile-body"></div>
-    </div>
-</div>
-
-<div id="review-modal" class="modal-overlay hidden" onclick="closeReviewModal(event)">
-    <div class="modal-content glass" onclick="event.stopPropagation()">
-        <button class="modal-close" onclick="closeReviewModal(event)">✕</button>
-        <h2 class="modal-title glitch" data-text="ОТЗЫВ">ОТЗЫВ</h2>
-        <div class="input-group"><textarea id="review-text" rows="4" placeholder="Ваш отзыв..."></textarea></div>
-        <button class="btn auth-btn" onclick="submitReview()">ОТПРАВИТЬ</button>
-    </div>
-</div>
-
-<div id="gallery-modal" class="modal-overlay hidden" onclick="closeGalleryModal(event)">
-    <div class="modal-content glass" onclick="event.stopPropagation()">
-        <button class="modal-close" onclick="closeGalleryModal(event)">✕</button>
-        <h2 class="modal-title glitch" data-text="АРТ">АРТ</h2>
-        <div class="input-group"><label>Ссылка (imgbb)</label><input type="text" id="gallery-url"></div>
-        <button class="btn auth-btn" onclick="submitGallery()">ОТПРАВИТЬ</button>
-    </div>
-</div>
-
 <!-- АДМИНКА -->
 <div id="admin-modal" class="modal-overlay hidden" onclick="closeAdminPanel(event)">
     <div class="modal-content admin-content glass" onclick="event.stopPropagation()">
@@ -417,7 +374,6 @@
         <div class="admin-tabs">
             <button class="admin-tab active" onclick="switchAdminTab('apps')">ЗАЯВКИ</button>
             <button class="admin-tab" onclick="switchAdminTab('promo')">ПРОМОКОДЫ</button>
-            <button class="admin-tab" onclick="switchAdminTab('content')">КОНТЕНТ</button>
         </div>
         <div id="admin-apps" class="admin-panel"><div id="admin-app-list"></div></div>
         <div id="admin-promo" class="admin-panel hidden">
@@ -426,12 +382,6 @@
              <div class="input-group"><label>Количество</label><input type="number" id="promo-value"></div>
              <button class="btn-small" onclick="generatePromocode()">Создать</button>
              <div id="promo-result" style="margin-top:1rem;"></div>
-        </div>
-        <div id="admin-content" class="admin-panel hidden">
-            <h3>Управление контентом</h3>
-            <div class="input-group" style="margin-top:1rem;"><label>Вопрос для опроса</label><input type="text" id="poll-q"></div>
-            <div class="input-group"><label>Варианты (через запятую)</label><input type="text" id="poll-opts"></div>
-            <button class="btn-small" onclick="createPoll()">Добавить опрос</button>
         </div>
     </div>
 </div>
