@@ -11,7 +11,6 @@ import {
 } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-// Твои ключи от Firebase
 const firebaseConfig = {
   apiKey: "AIzaSyA24goApnS9GR3PnhKnJXqRqJN05DTG6cc",
   authDomain: "tsc-universe.firebaseapp.com",
@@ -25,7 +24,7 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
 
-// ВКЛЮЧАЕМ СОХРАНЕНИЕ СЕССИИ (чтобы не выкидывало при перезагрузке)
+// ВКЛЮЧАЕМ СОХРАНЕНИЕ СЕССИИ
 setPersistence(auth, browserLocalPersistence).catch((error) => {
     console.error("Ошибка сохранения сессии:", error);
 });
@@ -341,13 +340,11 @@ window.loginUser = async function() {
     }
 };
 
-// ВЫХОД ИЗ АККАУНТА
 window.logoutUser = async function() {
     try {
         await signOut(auth);
         localStorage.removeItem('tsc_token');
         localStorage.removeItem('tsc_user');
-        // Очищаем сессию
         document.getElementById('main-content').classList.add('hidden');
         document.getElementById('auth-overlay').classList.remove('hidden');
         location.reload();
@@ -416,9 +413,7 @@ function startBreach() {
         else {
             flash.classList.add('on');
             btext.classList.add('on');
-            setTimeout(() => {
-                flash.classList.remove('on');
-            }, 120);
+            setTimeout(() => { flash.classList.remove('on'); }, 120);
             setTimeout(() => {
                 overlay.classList.add('hidden');
                 document.getElementById('auth-overlay').classList.add('hidden');
@@ -431,7 +426,6 @@ function startBreach() {
     requestAnimationFrame(draw);
 }
 
-// ===== СБОРКА САЙТА ПО БУКВАМ =====
 function launchSiteReveal() {
     const title = document.getElementById('hero-title');
     if (title) splitLetters(title, 0.06);
@@ -440,19 +434,16 @@ function launchSiteReveal() {
     document.querySelectorAll('.section').forEach(s => observer.observe(s));
 }
 
-// ===== СТАРТ (Проверка авторизации через Firebase) =====
+// ===== СТАРТ =====
 window.addEventListener('load', () => {
-    // Слушаем состояние Firebase. Если пользователь вошел, он сразу попадет на сайт
     onAuthStateChanged(auth, (user) => {
         if (user) {
-            // Пользователь авторизован (сессия сохранена)
             document.getElementById('intro-overlay').classList.add('hidden');
             document.getElementById('auth-overlay').classList.add('hidden');
             document.getElementById('main-content').classList.remove('hidden');
             updateProfileUI();
             launchSiteReveal();
         } else {
-            // Пользователь не авторизован
             document.getElementById('main-content').classList.add('hidden');
             document.getElementById('auth-overlay').classList.add('hidden');
             document.getElementById('intro-overlay').classList.remove('hidden');
@@ -467,7 +458,7 @@ function updateProfileUI() {
     const name = localStorage.getItem('tsc_name') || 'Неизвестно';
     const age = localStorage.getItem('tsc_age') || '0';
     const gender = localStorage.getItem('tsc_gender') || 'Неизвестно';
-    const avatar = localStorage.getItem('tsc_avatar');
+    const avatar = localStorage.getItem('tsc_avatar'); // Аватарка только для сайта
 
     if (document.getElementById('prof-user')) {
         document.getElementById('prof-user').textContent = user;
@@ -518,7 +509,7 @@ window.uploadAvatar = function(event) {
     const reader = new FileReader();
     reader.onload = async e => {
         const compressed = await resizeImage(e.target.result);
-        localStorage.setItem('tsc_avatar', compressed);
+        localStorage.setItem('tsc_avatar', compressed); // Сохраняем ТОЛЬКО локально на сайте
         updateProfileUI();
     };
     reader.readAsDataURL(file);
@@ -536,7 +527,7 @@ window.closeImagePreview = function() {
 };
 
 window.changePassword = function() {
-    alert("Смена пароля будет доступна в следующем обновлении (через Firebase).");
+    alert("Смена пароля будет доступна в следующем обновлении.");
 };
 window.changeToken = function() {
     alert("Смена токена будет доступна в следующем обновлении.");
@@ -668,7 +659,6 @@ function handleCommand(raw) {
 }
 document.addEventListener('click', () => { if (isTerminalOpen()) termInput.focus(); });
 
-// Восстановление покупки
 const restoreBtn = document.getElementById('restore-btn');
 if (restoreBtn) {
     restoreBtn.addEventListener('click', function() {
