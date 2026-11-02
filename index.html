@@ -113,7 +113,6 @@
         <p class="hint">▸ нажми <kbd>~</kbd> чтобы открыть терминал</p>
     </header>
 
-    <!-- СЕКЦИЯ С ТОКЕНОМ -->
     <section id="token" class="section glass">
         <h2 class="split-title">Ваш TSC-Токен</h2>
         <p class="shop-desc">Ваш уникальный ключ для входа в игру. <strong>Никому не передавайте его.</strong></p>
@@ -130,7 +129,6 @@
         <p id="promo-status" style="margin-top: 1rem;"></p>
     </section>
 
-    <!-- О ИГРЕ -->
     <section id="about" class="section glass">
         <h2 class="split-title">О игре</h2>
         <div class="about-text">
@@ -149,7 +147,6 @@
         </div>
     </section>
 
-    <!-- ВЕРСИЯ -->
     <section id="updates" class="section glass">
         <h2 class="split-title">Версия: 1.0</h2>
         <div class="updates-container">
@@ -174,7 +171,6 @@
         </div>
     </section>
 
-    <!-- ТРЕКЕР -->
     <section id="tracker" class="section glass">
         <h2 class="split-title">TSC TRACKER</h2>
         <div class="tracker-container">
@@ -198,7 +194,6 @@
         </div>
     </section>
 
-    <!-- ОСОБЕННОСТИ -->
     <section id="features" class="section glass">
         <h2 class="split-title">Особенности</h2>
         <div class="features-grid">
@@ -208,7 +203,6 @@
         </div>
     </section>
 
-    <!-- ДОСЬЕ -->
     <section id="dossier" class="section glass">
         <h2 class="split-title">Досье</h2>
         <div class="dossier-intro">
@@ -228,7 +222,6 @@
         <div class="dossier-grid" id="dossier-grid"></div>
     </section>
 
-    <!-- КОМАНДА -->
     <section id="bloggers" class="section glass">
         <h2 class="split-title">Блогеры игры</h2>
         <p class="shop-desc">Люди, которые освещают THE SILENT CHAT. Подписывайтесь на их каналы!</p>
@@ -238,7 +231,6 @@
     <section id="obt-testers" class="section glass"><h2 class="split-title">ОБТ Тестеры</h2><div id="obt-grid" class="blogger-grid"></div></section>
     <section id="testers" class="section glass"><h2 class="split-title">Тестеры</h2><div id="testers-grid" class="blogger-grid"></div></section>
 
-    <!-- ЗАЯВКИ -->
     <section id="applications" class="section glass">
         <h2 class="split-title">Заявки</h2>
         <p class="shop-desc">Подай заявку на роль блогера, ОБТ-тестера или тестера.</p>
@@ -282,7 +274,6 @@
         </div>
     </section>
 
-    <!-- МАГАЗИН -->
     <section id="shop" class="section glass">
         <h2 class="split-title">Магазин</h2>
         <p class="shop-desc">Все покупки проходят через официального Telegram-бота.</p>
@@ -311,7 +302,7 @@
     <footer class="footer"><p>© 2026 THE SILENT CHAT. Все права защищены.</p></footer>
 </div>
 
-<!-- МОДАЛКА ПРОФИЛЯ -->
+<!-- ПРОФИЛЬ -->
 <div id="profile-modal" class="modal-overlay hidden" onclick="closeProfileModal(event)">
     <div class="modal-content profile-content glass" onclick="event.stopPropagation()" style="max-width: 600px;">
         <button class="modal-close" onclick="closeProfileModal(event)">✕</button>
@@ -344,6 +335,15 @@
             <button class="btn btn-admin hidden" id="admin-panel-btn" onclick="openAdminPanel()">👑 АДМИН-ПАНЕЛЬ</button>
             <button class="btn btn-danger" onclick="logoutUser()">Выйти</button>
         </div>
+    </div>
+</div>
+
+<!-- ПУБЛИЧНЫЙ ПРОФИЛЬ -->
+<div id="tester-profile-modal" class="modal-overlay hidden" onclick="closeTesterProfileModal(event)">
+    <div class="modal-content glass" onclick="event.stopPropagation()" style="max-width: 500px; text-align: left;">
+        <button class="modal-close" onclick="closeTesterProfileModal(event)">✕</button>
+        <h2 class="modal-title glitch" data-text="ПРОФИЛЬ" style="text-align:center;">ПРОФИЛЬ</h2>
+        <div id="tester-profile-body"></div>
     </div>
 </div>
 
