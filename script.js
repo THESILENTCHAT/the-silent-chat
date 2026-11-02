@@ -2018,4 +2018,49 @@ window.addEventListener('load', () => {
             addBloggerSocial();
         }
     }, 1000);
+    // ============================================================
+// АВТОЗАПОЛНЕНИЕ ДОСЬЕ (Запустить 1 раз)
+// ============================================================
+window.autoFillDossiers = async function() {
+    if (!window.isAdmin) { alert("Только для админа!"); return; }
+    
+    const characters = [
+        { id: "player", name: "Данил", order: 1, status: "alive", unlockAfter: "episode_1" },
+        { id: "dima", name: "Дима", order: 2, status: "dead", unlockAfter: "episode_1" },
+        { id: "mark", name: "Марк", order: 3, status: "alive", unlockAfter: "episode_1" },
+        { id: "denis", name: "Денис", order: 4, status: "alive", unlockAfter: "episode_1" },
+        { id: "vlad", name: "Влад", order: 5, status: "alive", unlockAfter: "episode_1" },
+        { id: "petrovich", name: "Александр Петрович", order: 6, status: "alive", unlockAfter: "episode_1" },
+        { id: "vika", name: "Вика", order: 7, status: "missing", unlockAfter: "episode_1" },
+        { id: "doctor", name: "Доктор Кувалдович", order: 8, status: "alive", unlockAfter: "episode_1" },
+        { id: "boris", name: "Следователь Борис", order: 9, status: "alive", unlockAfter: "episode_1" },
+        { id: "anonym", name: "Аноним", order: 10, status: "alive", unlockAfter: "episode_1" },
+        { id: "eva", name: "Ева", order: 11, status: "alive", unlockAfter: "episode_1" },
+        { id: "innostranets", name: "Иностранец", order: 12, status: "alive", unlockAfter: "episode_1" },
+        { id: "varya", name: "Варя", order: 13, status: "missing", unlockAfter: "episode_1" },
+        { id: "mama", name: "Мама (Елена)", order: 14, status: "dead", unlockAfter: "episode_1" },
+        { id: "gretman", name: "Gretman", order: 15, status: "alive", unlockAfter: "episode_1" },
+        { id: "kukolnik", name: "Кукольник", order: 16, status: "dead", unlockAfter: "episode_2" },
+        { id: "hirurg", name: "Хирург", order: 17, status: "dead", unlockAfter: "episode_2" },
+        { id: "forest_man", name: "Человек из леса", order: 18, status: "dead", unlockAfter: "episode_2" }
+    ];
+
+    let count = 0;
+    for (const char of characters) {
+        try {
+            await setDoc(doc(db, "dossiers", char.id), {
+                id: char.id,
+                name: char.name,
+                order: char.order,
+                status: char.status,
+                unlockAfter: char.unlockAfter,
+                photo: "",
+                bio: "",
+                quote: ""
+            });
+            count++;
+        } catch(e) { console.error("Ошибка с " + char.id, e); }
+    }
+    alert(`Успешно добавлено ${count} персонажей! Обнови страницу.`);
+};
 });
