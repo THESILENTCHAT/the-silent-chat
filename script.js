@@ -333,22 +333,3 @@ window.openNotifPanel = () => document.getElementById('notif-panel').classList.r
 window.closeNotifPanel = () => document.getElementById('notif-panel').classList.add('hidden');
 window.openDownloadModal = () => document.getElementById('download-modal')?.classList.remove('hidden');
 window.closeDownloadModal = () => document.getElementById('download-modal')?.classList.add('hidden');
-
-// ===== БЕЗОПАСНЫЙ 3D-ЭФФЕКТ (ДОБАВЛЕНО В КОНЕЦ) =====
-document.addEventListener('mousemove', (e) => {
-    const cards = document.querySelectorAll('.feature-card, .dossier-card, .update-card, .glass.section, .review-card, .blogger-card, .contact-card');
-    const x = (window.innerWidth / 2 - e.pageX) / 30; 
-    const y = (window.innerHeight / 2 - e.pageY) / 30; 
-
-    cards.forEach(card => {
-        if(card.closest('.modal-content') || card.closest('.admin-content')) return;
-        card.style.transform = `perspective(1200px) rotateX(${y}deg) rotateY(${x}deg) translateZ(10px)`;
-    });
-});
-
-document.addEventListener('mouseleave', () => {
-    const cards = document.querySelectorAll('.feature-card, .dossier-card, .update-card, .glass.section, .review-card, .blogger-card, .contact-card');
-    cards.forEach(card => {
-        card.style.transform = `perspective(1200px) rotateX(0deg) rotateY(0deg) translateZ(0px)`;
-    });
-});
