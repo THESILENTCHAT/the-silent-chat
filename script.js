@@ -171,9 +171,17 @@ window.addEventListener('load', () => {
     onAuthStateChanged(auth, async (user) => {
         if(user) {
             const snap = await getDoc(doc(db, "users", user.uid));
-            if(snap.exists()) { window.currentUserData = snap.data(); window.isAdmin = window.currentUserData.role === 'admin'; document.getElementById('intro-overlay').classList.add('hidden'); document.getElementById('auth-overlay').classList.add('hidden'); document.getElementById('main-content').classList.remove('hidden'); updateProfileUI(); launchSiteReveal(); }
+            if(snap.exists()) { 
+                window.currentUserData = snap.data(); 
+                window.isAdmin = window.currentUserData.role === 'admin'; 
+                // ВОТ ЗДЕСЬ ЗАПУСКАЕТСЯ ВЗЛОМ ЭКРАНА
+                startBreach(); 
+            }
         } else {
-            document.getElementById('main-content').classList.add('hidden'); document.getElementById('auth-overlay').classList.add('hidden'); document.getElementById('intro-overlay').classList.remove('hidden'); runIntro();
+            document.getElementById('main-content').classList.add('hidden'); 
+            document.getElementById('auth-overlay').classList.add('hidden'); 
+            document.getElementById('intro-overlay').classList.remove('hidden'); 
+            runIntro();
         }
     });
 });
