@@ -38,6 +38,7 @@ window.lastKnownStatuses = {};
 window.notifPollInterval = null;
 window.isAdmin = false;
 window.currentDossierFilter = 'all';
+window.allTeamMembers = []; // Сюда собираем всех блогеров, тестеров и ОБТ
 
 // ============================================================
 // УТИЛИТЫ
@@ -495,7 +496,7 @@ function launchSiteReveal() {
     document.querySelectorAll('.section').forEach(s => observer.observe(s));
     renderTokenSection();
     loadDossiers();
-    loadBloggers();
+    loadTeam(); // <--- Загружаем команду (блогеры, ОБТ, тестеры)
     loadApplicationStatus();
     loadNotifications();
     loadShopStatus();
@@ -607,47 +608,125 @@ window.redeemPromo = async function() {
 };
 
 // ============================================================
-// БЛОГЕРЫ
+// КОМАНДА: БЛОГЕРЫ, ОБТ, ТЕСТЕРЫ
 // ============================================================
-async function loadBloggers() {
-    const grid = document.getElementById('bloggers-grid');
-    if (!grid) return;
+async function loadTeam() {
     try {
-        const q = query(collection(db, "applications"), where("type", "==", "blogger"), where("status", "==", "approved"));
+        // Загружаем всех одобренных
+        const q = query(collection(db, "applications"), where("status", "==", "approved"));
         const snap = await getDocs(q);
+        
+        window.allTeamMembers = []; // Сбрасываем кэш
+        
         const bloggers = [];
-        snap.forEach(d => bloggers.push(d.data()));
+        const obt = [];
+        const testers = [];
         
-        if (!bloggers.length) {
-            grid.innerHTML = '<p class="profile-empty">Пока нет одобренных блогеров. Стань первым!</p>';
-            return;
-        }
+        snap.forEach(doc => {
+            const data = { id: doc.id, ...doc.data() };
+            window.allTeamMembers.push(data); // Сохраняем всех в массив для модалки
+            
+            if (data.type === 'blogger') bloggers.push(data);
+            else if (data.type === 'obt') obt.push(data);
+            else if (data.type === 'tester') testers.push(data);
+        });
         
-        grid.innerHTML = bloggers.map(b => {
-            const initial = (b.realName || '?').trim().charAt(0).toUpperCase();
-            const tgRaw = (b.tgUsername || '').replace('@', '').trim();
-            
-            const socialsHtml = (b.socials || []).map(s => {
-                if (!s.url) return '';
-                return `<a href="${escapeHtml(s.url)}" target="_blank" rel="noopener" class="blogger-social-btn">${escapeHtml(s.platform)}</a>`;
-            }).join('');
-            
-            const tgLink = tgRaw ? `<a href="https://t.me/${escapeHtml(tgRaw)}" target="_blank" rel="noopener" class="blogger-social-btn">✈️ TG</a>` : '';
-            
-            return `
-                <div class="blogger-card">
-                    <div class="blogger-avatar">${initial}</div>
-                    <h3 class="blogger-name">${escapeHtml(b.realName || 'Блогер')}</h3>
-                    <p class="blogger-tg">${tgRaw ? '@' + escapeHtml(tgRaw) : 'TSC Creator'}</p>
-                    <div class="blogger-socials">${socialsHtml}${tgLink}</div>
-                </div>
-            `;
-        }).join('');
+        renderTeamGrid('bloggers-grid', bloggers, 'blogger');
+        renderTeamGrid('obt-grid', obt, 'obt');
+        renderTeamGrid('testers-grid', testers, 'tester');
+        
     } catch(e) {
-        console.error("Ошибка загрузки блогеров:", e);
-        grid.innerHTML = '<p class="profile-empty">Ошибка загрузки.</p>';
+        console.error("Ошибка загрузки команды:", e);
     }
 }
+
+function renderTeamGrid(gridId, members, type) {
+    const grid = document.getElementById(gridId);
+    if (!grid) return;
+    
+    if (!members.length) {
+        grid.innerHTML = `<p class="profile-empty">Пока никого нет. Стань первым!</p>`;
+        return;
+    }
+    
+    grid.innerHTML = members.map(m => {
+        const initial = (m.realName || '?').trim().charAt(0).toUpperCase();
+        const tgRaw = (m.tgUsername || '').replace('@', '').trim();
+        
+        // Собираем соцсети (если есть)
+        let socialsHtml = '';
+        if (m.socials && m.socials.length > 0) {
+            socialsHtml = m.socials.map(s => {
+                if (!s.url) return '';
+                return `<a href="${escapeHtml(s.url)}" target="_blank" rel="noopener" class="blogger-social-btn" onclick="event.stopPropagation();">${escapeHtml(s.platform)}</a>`;
+            }).join('');
+        }
+        
+        const tgLink = tgRaw ? `<a href="https://t.me/${escapeHtml(tgRaw)}" target="_blank" rel="noopener" class="blogger-social-btn" onclick="event.stopPropagation();">✈️ TG</a>` : '';
+        
+        return `
+            <div class="blogger-card" onclick="openTeamProfile('${m.id}')">
+                <div class="blogger-avatar">${initial}</div>
+                <h3 class="blogger-name">${escapeHtml(m.realName || 'Неизвестный')}</h3>
+                <p class="blogger-tg">${tgRaw ? '@' + escapeHtml(tgRaw) : 'TSC Creator'}</p>
+                <div class="blogger-socials">${socialsHtml}${tgLink}</div>
+            </div>
+        `;
+    }).join('');
+}
+
+// ============================================================
+// МОДАЛКА ПРОФИЛЯ УЧАСТНИКА КОМАНДЫ
+// ============================================================
+window.openTeamProfile = function(appId) {
+    const member = window.allTeamMembers.find(m => m.id === appId);
+    if (!member) return;
+
+    // Определяем бейдж роли
+    let roleBadge = '';
+    let roleText = '';
+    if (member.type === 'blogger') { roleBadge = '⭐ БЛОГЕР'; roleText = 'blogger'; }
+    else if (member.type === 'obt') { roleBadge = '🟢 ОБТ ТЕСТЕР'; roleText = 'obt'; }
+    else if (member.type === 'tester') { roleBadge = '🧪 ТЕСТЕР'; roleText = 'tester'; }
+
+    // Собираем соцсети
+    let socialsHtml = '';
+    if (member.socials && member.socials.length > 0) {
+        socialsHtml = member.socials.map(s => {
+            if (!s.url) return '';
+            return `<a href="${escapeHtml(s.url)}" target="_blank" rel="noopener" style="color: var(--neon-cyan); display: block; margin-bottom: 0.5rem;">🔗 ${escapeHtml(s.platform)}: ${escapeHtml(s.url)}</a>`;
+        }).join('');
+    }
+
+    const body = document.getElementById('tester-profile-body');
+    body.innerHTML = `
+        <div style="text-align: center; margin-bottom: 1.5rem;">
+            <div class="blogger-avatar" style="margin: 0 auto 1rem auto; width: 100px; height: 100px; font-size: 2.5rem;">${(member.realName || '?').charAt(0).toUpperCase()}</div>
+            <h3 style="color: var(--neon-cyan); font-size: 1.5rem; margin-bottom: 0.5rem;">${escapeHtml(member.realName || 'Неизвестный')}</h3>
+            <div class="team-badge ${roleText}">${roleBadge}</div>
+        </div>
+        
+        <div class="team-profile-info">
+            ${member.username ? `<p><strong>Юзернейм:</strong> ${escapeHtml(member.username)}</p>` : ''}
+            ${member.realAge ? `<p><strong>Возраст:</strong> ${escapeHtml(member.realAge)}</p>` : ''}
+            ${member.contactValue ? `<p><strong>Контакт (${escapeHtml(member.contactPlatform || 'Связь')}):</strong> ${escapeHtml(member.contactValue)}</p>` : ''}
+            ${member.tgUsername ? `<p><strong>Telegram:</strong> <a href="https://t.me/${escapeHtml(member.tgUsername.replace('@', ''))}" target="_blank" style="color: var(--neon-cyan);">@${escapeHtml(member.tgUsername.replace('@', ''))}</a></p>` : ''}
+            
+            <!-- Информация специфичная для тестеров -->
+            ${member.platform ? `<p><strong>Платформа:</strong> ${escapeHtml(member.platform)}</p>` : ''}
+            ${member.testTarget ? `<p><strong>Что тестирует:</strong> ${member.testTarget === 'episode' ? 'Эпизоды' : 'Ивенты'} (${(member.testScope || []).join(', ')})</p>` : ''}
+        </div>
+
+        ${socialsHtml ? `<div class="team-profile-info"><p><strong>Соцсети:</strong></p>${socialsHtml}</div>` : ''}
+    `;
+
+    document.getElementById('tester-profile-modal').classList.remove('hidden');
+};
+
+window.closeTesterProfileModal = function(e) {
+    if (e) e.stopPropagation();
+    document.getElementById('tester-profile-modal').classList.add('hidden');
+};
 
 // ============================================================
 // ПРОФИЛЬ
@@ -1180,7 +1259,7 @@ window.approveApplication = async function(appId, type, uid) {
             }).catch(e => console.log('TG user notify error:', e));
         }
         
-        showToast('approved', 'Одобрено', 'Роль выдана.'); loadAdminApplications(); loadBloggers();
+        showToast('approved', 'Одобрено', 'Роль выдана.'); loadAdminApplications(); loadTeam();
     } catch(e) { alert(e.message); }
 };
 
@@ -1213,7 +1292,7 @@ window.revokeApplication = async function(appId, type, uid) {
     else if (type === 'tester') upd.isTester = false;
     await updateDoc(doc(db, "users", uid), upd);
     await addDoc(collection(db, "notifications"), { uid, type: 'app_revoked', title: '🚫 Доступ отозван', text: `Причина: ${comment}`, read: false, createdAt: serverTimestamp() });
-    showToast('rejected', 'Отозвано', 'Доступ забран.'); loadAdminApplications(); loadBloggers();
+    showToast('rejected', 'Отозвано', 'Доступ забран.'); loadAdminApplications(); loadTeam();
 };
 
 window.togglePromoScope = function() { document.getElementById('promo-token-field')?.classList.toggle('hidden', document.getElementById('promo-scope').value !== 'user'); };
