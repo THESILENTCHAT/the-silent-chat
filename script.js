@@ -257,10 +257,17 @@ async function loadTeam() {
         const snap = await getDocs(query(collection(db, "applications"), where("status", "==", "approved")));
         const b = [], o = [], t = []; window.allTeamMembers = [];
         snap.forEach(d => { const data = { id: d.id, ...d.data() }; window.allTeamMembers.push(data); if(data.type === 'blogger') b.push(data); else if(data.type === 'obt') o.push(data); else if(data.type === 'tester') t.push(data); });
-        const render = (id, arr) => document.getElementById(id).innerHTML = arr.map(m => `<div class="blogger-card"><div class="blogger-avatar">${(m.realName || m.username).charAt(0)}</div><h3 class="blogger-name">${m.realName || m.username}</h3><div class="verify-badge">✅ Подтвержден</div></div>`).join('');
+        const render = (id, arr) => document.getElementById(id).innerHTML = arr.map(m => `<div class="blogger-card" onclick="openTeamProfile('${m.id}')"><div class="blogger-avatar">${(m.realName || m.username).charAt(0)}</div><h3 class="blogger-name">${m.realName || m.username}</h3><div class="verify-badge">✅ Подтвержден</div></div>`).join('');
         render('bloggers-grid', b); render('obt-grid', o); render('testers-grid', t);
     } catch(e) { console.error(e); document.getElementById('bloggers-grid').innerHTML = '<p class="profile-empty">Ошибка загрузки.</p>'; }
 }
+
+window.openTeamProfile = function(id) {
+    const m = window.allTeamMembers.find(x => x.id === id);
+    const modal = document.createElement('div'); modal.className = 'modal-overlay';
+    modal.innerHTML = `<div class="modal-content glass" style="text-align:left;"><button class="modal-close" onclick="this.parentElement.parentElement.remove()">✕</button><h3 style="color:var(--neon-cyan); text-align:center;">${m.realName || m.username}</h3><div class="profile-info" style="margin-top:1rem;"><p>Юзер: ${m.username}</p><p>Возраст: ${m.realAge || 'Не указан'}</p><p>Контакт: ${m.contactValue || 'Не указан'}</p></div><p style="color:#27c93f; margin-top:1rem; text-align:center;">✅ Аккаунт подтвержден владельцем сайта</p></div>`;
+    document.body.appendChild(modal);
+};
 
 window.switchAppTab = function(t) { ['blogger','obt','tester'].forEach(x => document.getElementById(`app-${x}`).classList.toggle('hidden', x !== t)); };
 window.addBloggerSocial = function() { document.getElementById('blogger-socials-list').innerHTML += `<div class="social-row" style="margin-top:5px;"><input type="text" class="social-url" placeholder="Ссылка"><button onclick="this.parentElement.remove()" class="btn-small">X</button></div>`; };
