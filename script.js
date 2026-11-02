@@ -262,7 +262,7 @@ window.openDossierModal = function(id) {
     let html = `<h3 class="dossier-detail-name">${d.name}</h3>`;
     if(d.bio) html += `<div class="dossier-detail-bio" style="text-align:left; margin-top:1rem;">${d.bio}</div>`;
     if(d.quote) html += `<div class="dossier-detail-quote" style="text-align:left; margin-top:1rem;">«${d.quote}»</div>`;
-    if(d.fullBioUrl) html += `<div style="margin-top:1.5rem;text-align:center;"><a href="${d.fullBioUrl}" target="_blank" class="btn-small" style="padding:1rem; display:inline-block;">📖 ПРОЧИТАТЬ ПОЛНУЮ БИОГРАФИЮ</a></div>`;
+    if(d.fullBioUrl) html += `<div style="margin-top:1.5rem;text-align:center;"><a href="${d.fullBioUrl}" target="_blank" class="btn-small" style="padding:1rem; display:inline-block;">ПРОЧИТАТЬ ПОЛНУЮ БИОГРАФИЮ</a></div>`;
     const modal = document.createElement('div'); modal.className = 'modal-overlay';
     modal.innerHTML = `<div class="modal-content glass" style="text-align:left;"><button class="modal-close" onclick="this.parentElement.parentElement.remove()">✕</button>${html}</div>`;
     document.body.appendChild(modal);
@@ -319,9 +319,20 @@ async function submitApp(type) {
 window.openAdminPanel = function() { document.getElementById('admin-modal').classList.remove('hidden'); loadAdminApps(); };
 window.closeAdminPanel = function(e) { if(e) e.stopPropagation(); document.getElementById('admin-modal').classList.add('hidden'); };
 window.switchAdminTab = function(t) { ['apps','promo','content'].forEach(x => document.getElementById(`admin-${x}`).classList.toggle('hidden', x !== t)); };
+
+// ВЕРНУЛ КНОПКИ ОДОБРЕНИЯ И ОТКЛОНЕНИЯ В АДМИНКУ
 async function loadAdminApps() {
     const snap = await getDocs(query(collection(db, "applications"), where("status", "==", "pending")));
-    document.getElementById('admin-app-list').innerHTML = snap.docs.map(d => `<div class="admin-app-item pending"><b>${d.data().type}</b> - ${d.data().username} <br><button class="btn-small" style="margin-top:5px;" onclick="appAction('${d.id}', 'approved')">Одобрить</button></div>`).join('');
+    document.getElementById('admin-app-list').innerHTML = snap.docs.map(d => `
+        <div class="admin-app-item pending">
+            <b>${d.data().type.toUpperCase()}</b> - ${d.data().username}
+            <div style="font-size:0.8rem; color:var(--text-dim); margin-top:5px;">ФИО: ${d.data().realName || 'Нет'} | Возраст: ${d.data().realAge || 'Нет'} | Контакт: ${d.data().contactValue || 'Нет'}</div>
+            <div class="app-actions">
+                <button class="btn-approve" onclick="appAction('${d.id}', 'approved')">Одобрить</button>
+                <button class="btn-reject" onclick="appAction('${d.id}', 'rejected')">Отклонить</button>
+            </div>
+        </div>
+    `).join('');
 }
 window.appAction = async function(id, status) { await updateDoc(doc(db, "applications", id), { status }); loadAdminApps(); loadTeam(); };
 window.generatePromocode = async function() { const code = `TSC-${Math.random().toString(36).substr(2,4).toUpperCase()}`; await setDoc(doc(db, "promocodes", code), { type: document.getElementById('promo-type').value, value: parseInt(document.getElementById('promo-value').value), usedCount: 0, active: true }); document.getElementById('promo-result').textContent = "Код: " + code; };
