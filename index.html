@@ -7,7 +7,7 @@
     <title>THE SILENT CHAT</title>
     <link rel="stylesheet" href="style.css">
     <!-- ТВОЯ ИКОНКА САЙТА -->
-    <link rel="icon" type="image/png" href="https://i.ibb.co/0jLFZ8Ck/5415731015122099624-2.jpg">
+    <link rel="icon" type="image/png" href="https://i.ibb.co/ТВОЯ_ССЫЛКА_НА_ЛОГО.png">
 </head>
 <body>
 
@@ -99,6 +99,8 @@
             <li><a href="#features">Особенности</a></li>
             <li><a href="#dossier">Досье</a></li>
             <li><a href="#bloggers">Блогеры</a></li>
+            <li><a href="#obt-testers">ОБТ</a></li>
+            <li><a href="#testers">Тестеры</a></li>
             <li><a href="#applications">Заявки</a></li>
             <li><a href="#shop">Магазин</a></li>
             <li><a href="#socials">Соц сети</a></li>
@@ -259,6 +261,24 @@
         <p style="margin-top: 2.5rem; color: var(--neon-cyan); font-style: italic; font-size: 1.1rem; text-shadow: 0 0 10px rgba(0,240,255,0.4);">
             Спасибо за вашу поддержку и то, что делаете THE SILENT CHAT известным!
         </p>
+    </section>
+
+    <!-- ОБТ ТЕСТЕРЫ -->
+    <section id="obt-testers" class="section glass">
+        <h2 class="split-title">ОБТ Тестеры</h2>
+        <p class="shop-desc">Те, кто тестирует ивенты и помогает делать игру лучше.</p>
+        <div id="obt-grid" class="blogger-grid">
+            <p class="profile-empty">Загрузка...</p>
+        </div>
+    </section>
+
+    <!-- ТЕСТЕРЫ -->
+    <section id="testers" class="section glass">
+        <h2 class="split-title">Тестеры игры</h2>
+        <p class="shop-desc">Люди, которые находят баги и помогают нам с разработкой.</p>
+        <div id="testers-grid" class="blogger-grid">
+            <p class="profile-empty">Загрузка...</p>
+        </div>
     </section>
 
     <!-- ЗАЯВКИ -->
@@ -467,6 +487,18 @@
             <button class="btn btn-admin hidden" id="admin-panel-btn" onclick="openAdminPanel()">👑 АДМИН-ПАНЕЛЬ</button>
             <button class="btn btn-danger" onclick="logoutUser()">Выйти</button>
             <button class="btn" style="border-color: #555; color: #888; font-size: 0.8rem; margin-top: 1rem;" onclick="deleteAccount()">Удалить аккаунт</button>
+        </div>
+    </div>
+</div>
+
+<!-- МОДАЛКА ПРОФИЛЯ ТЕСТЕРА/БЛОГЕРА -->
+<div id="tester-profile-modal" class="modal-overlay hidden" onclick="closeTesterProfileModal(event)">
+    <div class="modal-content glass" onclick="event.stopPropagation()" style="max-width: 500px; text-align: left;">
+        <button class="modal-close" onclick="closeTesterProfileModal(event)">✕</button>
+        <h2 class="modal-title glitch" data-text="ПРОФИЛЬ" style="text-align: center; margin-bottom: 2rem;">ПРОФИЛЬ</h2>
+        
+        <div id="tester-profile-body">
+            <!-- Заполняется через JS -->
         </div>
     </div>
 </div>
