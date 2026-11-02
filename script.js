@@ -37,6 +37,7 @@ window.allDossiers = [];
 window.lastKnownStatuses = {};
 window.notifPollInterval = null;
 window.isAdmin = false;
+window.currentDossierFilter = 'all'; // Фильтр для досье
 
 // ============================================================
 // УТИЛИТЫ
@@ -597,7 +598,18 @@ function renderDossiers() {
 
     const opened = window.allDossiers.filter(d => unlocked.includes(d.id));
     const locked = window.allDossiers.filter(d => !unlocked.includes(d.id));
-    const toShow = [...opened, ...locked.slice(0, 2)];
+    
+    // Берем 2 закрытых для интриги
+    const lockedToShow = locked.slice(0, 2);
+
+    // Фильтруем открытые досье по выбранному статусу
+    const filteredOpened = opened.filter(d => {
+        if (window.currentDossierFilter === 'all') return true;
+        const status = personalStatuses[d.id] || d.status || 'unknown';
+        return status === window.currentDossierFilter;
+    });
+
+    const toShow = [...filteredOpened, ...lockedToShow];
 
     if (progressEl) progressEl.textContent = `Открыто ${opened.length} из ${window.allDossiers.length}`;
 
@@ -633,6 +645,18 @@ function renderDossiers() {
     }).join('');
 }
 
+window.filterDossiers = function(filter) {
+    window.currentDossierFilter = filter;
+    
+    // Обновляем активную кнопку
+    ['all', 'alive', 'missing', 'dead'].forEach(f => {
+        document.getElementById(`tab-dossier-${f}`)?.classList.toggle('active', f === filter);
+    });
+
+    // Перерисовываем сетку
+    renderDossiers();
+};
+
 window.shakeLocked = function(el) { el.classList.remove('shake'); void el.offsetWidth; el.classList.add('shake'); };
 
 window.openDossierModal = function(id) {
@@ -660,7 +684,7 @@ window.openDossierModal = function(id) {
         ${d.bio ? `<div class="dossier-detail-bio">${escapeHtml(d.bio)}</div>` : ''}
         ${d.quote ? `<div class="dossier-detail-quote">«${escapeHtml(d.quote)}»</div>` : ''}
         
-        <!-- НОВАЯ КНОПКА ПОЛНОЙ БИОГРАФИИ -->
+        <!-- КНОПКА ПОЛНОЙ БИОГРАФИИ -->
         ${d.fullBioUrl ? `<div class="dossier-bio-container"><a href="${escapeHtml(d.fullBioUrl)}" target="_blank" rel="noopener" class="btn-bio">📖 ПРОЧИТАТЬ ПОЛНУЮ БИОГРАФИЮ</a></div>` : ''}
     `;
     document.getElementById('dossier-modal').classList.remove('hidden');
@@ -760,7 +784,6 @@ window.submitBloggerApplication = async function() {
         });
         await loadApplicationStatus();
         
-        // Отправляем в фоне (не блокируем интерфейс)
         sendNotificationToBot('blogger', { 
             realName, realAge: age, contactPlatform, contactValue, socials,
             tgUsername: document.getElementById('blogger-tg').value.trim(),
@@ -1002,7 +1025,6 @@ window.approveApplication = async function(appId, type, uid) {
         
         await addDoc(collection(db, "notifications"), { uid, type: 'app_approved', title: '✅ Заявка одобрена', text: 'Проверьте профиль.', read: false, createdAt: serverTimestamp() });
         
-        // Отправляем в ТГ юзеру
         const appSnap = await getDoc(doc(db, "applications", appId));
         if (appSnap.exists() && appSnap.data().tgUsername) {
             fetch('https://silent-bot-es3x.onrender.com/api/notify_user', {
@@ -1024,7 +1046,6 @@ window.rejectApplication = async function(appId) {
     await updateDoc(doc(db, "applications", appId), { status: 'rejected', adminComment: comment, reviewedAt: serverTimestamp() });
     await addDoc(collection(db, "notifications"), { uid: snap.data().uid, type: 'app_rejected', title: '❌ Заявка отклонена', text: `Причина: ${comment}`, read: false, createdAt: serverTimestamp() });
     
-    // Отправляем в ТГ юзеру
     if (snap.data().tgUsername) {
         fetch('https://silent-bot-es3x.onrender.com/api/notify_user', {
             method: 'POST',
@@ -1190,7 +1211,7 @@ function startNotificationPolling() {
 }
 
 // ============================================================
-// АВТОЗАПОЛНЕНИЕ ДОСЬЕ (Для тебя)
+// АВТОЗАПОЛНЕНИЕ ДОСЬЕ
 // ============================================================
 window.autoFillDossiers = async function() {
     if (!window.isAdmin) return alert("Только для админа!");
@@ -1224,7 +1245,7 @@ window.autoFillDossiers = async function() {
             gender: char.gender || "male", 
             unlockAfter: char.unlockAfter, 
             photo: "", bio: "", quote: "", fullBioUrl: "" 
-        }, { merge: true }); // merge: true чтобы не затереть фото и тексты, если они уже есть
+        }, { merge: true });
         count++;
     }
     alert(`Успешно добавлено/обновлено ${count} персонажей!`);
