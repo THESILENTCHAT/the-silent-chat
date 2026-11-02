@@ -5,11 +5,11 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
 import { 
     getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut,
-    setPersistence, browserLocalPersistence, onAuthStateChanged
+    setPersistence, browserLocalPersistence, onAuthStateChanged, updatePassword, deleteUser
 } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 import { 
-    getFirestore, doc, setDoc, getDoc, updateDoc,
-    addDoc, collection, query, where, getDocs, serverTimestamp, orderBy 
+    getFirestore, doc, setDoc, getDoc, updateDoc, deleteDoc,
+    addDoc, collection, query, where, getDocs, serverTimestamp, orderBy, increment 
 } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
 const firebaseConfig = {
@@ -37,7 +37,7 @@ window.allDossiers = [];
 window.lastKnownStatuses = {};
 window.notifPollInterval = null;
 window.isAdmin = false;
-window.currentDossierFilter = 'all'; // Фильтр для досье
+window.currentDossierFilter = 'all';
 
 // ============================================================
 // УТИЛИТЫ
@@ -126,7 +126,7 @@ if (canvas && window.innerWidth > 768) {
     window.addEventListener('resize', initMatrix);
     requestAnimationFrame(drawMatrix);
 } else if (canvas) {
-    canvas.style.display = 'none'; // Убираем с экрана на мобилках
+    canvas.style.display = 'none';
 }
 
 // ============================================================
@@ -237,7 +237,7 @@ window.skipIntro = function() {
 };
 
 // ============================================================
-// АВТОРИЗАЦИЯ
+// АВТОРИЗАЦИЯ И АККАУНТ
 // ============================================================
 window.switchAuthTab = function(tab) {
     document.getElementById('tab-login')?.classList.toggle('active', tab === 'login');
@@ -258,7 +258,6 @@ window.copyToken = function(elementId) {
     if (!el) return;
     const token = el.textContent.trim();
     if (!token || token === 'TSC-XXXX-XXXX') return;
-    
     navigator.clipboard.writeText(token).then(() => {
         showToast('approved', 'Скопировано', 'Токен в буфере обмена. Никому не передавайте!');
     }).catch(() => alert('Не удалось скопировать. Ваш токен: ' + token));
@@ -298,7 +297,7 @@ window.registerUser = async function() {
             email, username: user, name, age, gender, tscToken: token,
             role: "player", isBlogger: false, isOBT: false, isTester: false,
             applicationsBlocked: false, blockReason: "", roleFrozen: false, roleFrozenReason: "",
-            unlockedDossiers: ["player"], dossierStatuses: {},
+            unlockedDossiers: ["player"], dossierStatuses: {}, crystals: 0, coins: 0,
             createdAt: new Date().toISOString()
         });
 
@@ -365,6 +364,54 @@ window.logoutUser = async function() {
         localStorage.clear();
         location.reload();
     } catch (e) { console.error(e); }
+};
+
+window.deleteAccount = async function() {
+    if (!confirm("Ты уверен, что хочешь УДАЛИТЬ аккаунт? Это действие нельзя отменить. Твой токен, заявки и прогресс сгорят.")) return;
+    if (!confirm("Точно-точно? Лучше подумай еще раз.")) return;
+    
+    try {
+        const user = auth.currentUser;
+        if (!user) return;
+        await deleteDoc(doc(db, "users", user.uid));
+        await deleteUser(user);
+        localStorage.clear();
+        alert("Аккаунт успешно удален. Прощай, оператор.");
+        location.reload();
+    } catch (e) {
+        if (e.code === 'auth/requires-recent-login') alert("Для удаления аккаунта нужно заново войти в систему (в целях безопасности). Выйди и зайди снова, а потом жми удалить.");
+        else alert("Ошибка при удалении: " + e.message);
+    }
+};
+
+window.changePassword = async function() {
+    const newPass = prompt("Введи новый пароль (не менее 6 символов):");
+    if (!newPass) return;
+    if (newPass.length < 6) return alert("Пароль слишком короткий!");
+    try {
+        await updatePassword(auth.currentUser, newPass);
+        alert("✅ Пароль успешно изменен!");
+    } catch (e) {
+        if (e.code === 'auth/requires-recent-login') alert("Для смены пароля нужно заново войти в систему. Выйди и зайди, потом поменяй.");
+        else alert("Ошибка: " + e.message);
+    }
+};
+
+window.changeToken = async function() {
+    if (!confirm("Сменить токен? Старый токен перестанет работать, и игра потребует новый.")) return;
+    try {
+        const chars = 'ABCDEFGHJKMNPQRSTUVWXYZ23456789'; let t1 = '', t2 = '';
+        for (let i = 0; i < 4; i++) t1 += chars.charAt(Math.floor(Math.random() * chars.length));
+        for (let i = 0; i < 4; i++) t2 += chars.charAt(Math.floor(Math.random() * chars.length));
+        const newToken = `TSC-${t1}-${t2}`;
+        
+        await updateDoc(doc(db, "users", auth.currentUser.uid), { tscToken: newToken });
+        localStorage.setItem('tsc_token', newToken);
+        if (window.currentUserData) window.currentUserData.tscToken = newToken;
+        
+        renderTokenSection();
+        alert("✅ Токен изменен!\n\nТвой новый токен: " + newToken);
+    } catch(e) { alert("Ошибка: " + e.message); }
 };
 
 // ============================================================
@@ -438,6 +485,7 @@ function launchSiteReveal() {
     document.querySelectorAll('.section').forEach(s => observer.observe(s));
     renderTokenSection();
     loadDossiers();
+    loadBloggers();
     loadApplicationStatus();
     loadNotifications();
     loadShopStatus();
@@ -477,7 +525,7 @@ async function loadUserData() {
 }
 
 // ============================================================
-// СЕКЦИЯ С ТОКЕНОМ
+// СЕКЦИЯ С ТОКЕНОМ И ПРОМОКОДОМ
 // ============================================================
 window.renderTokenSection = function() {
     const box = document.getElementById('token-box');
@@ -493,6 +541,103 @@ window.renderTokenSection = function() {
         box.classList.add('hidden'); err.classList.remove('hidden');
     }
 };
+
+window.redeemPromo = async function() {
+    const input = document.getElementById('promo-input');
+    const status = document.getElementById('promo-status');
+    const code = input.value.trim().toUpperCase();
+    
+    if (!code) return alert("Введи промокод!");
+    if (!auth.currentUser) return alert("Сначала авторизуйся!");
+    
+    status.style.color = "var(--neon-yellow)";
+    status.textContent = "Проверка...";
+    
+    try {
+        const promoRef = doc(db, "promocodes", code);
+        const promoSnap = await getDoc(promoRef);
+        
+        if (!promoSnap.exists()) {
+            status.style.color = "var(--neon-red)";
+            status.textContent = "❌ Такого промокода не существует.";
+            return;
+        }
+        
+        const promo = promoSnap.data();
+        
+        if (!promo.active) {
+            status.style.color = "var(--neon-red)"; status.textContent = "❌ Промокод деактивирован."; return;
+        }
+        if (promo.maxUses > 0 && promo.usedCount >= promo.maxUses) {
+            status.style.color = "var(--neon-red)"; status.textContent = "❌ Лимит активаций исчерпан."; return;
+        }
+        if (promo.expiresAt && new Date() > new Date(promo.expiresAt)) {
+            status.style.color = "var(--neon-red)"; status.textContent = "❌ Срок действия истек."; return;
+        }
+        
+        if (promo.usedBy && promo.usedBy.includes(auth.currentUser.uid)) {
+            status.style.color = "var(--neon-red)"; status.textContent = "❌ Ты уже активировал этот промокод."; return;
+        }
+        
+        const userRef = doc(db, "users", auth.currentUser.uid);
+        const rewardField = promo.type === 'crystals' ? 'crystals' : 'coins';
+        
+        await updateDoc(userRef, { [rewardField]: increment(promo.value) });
+        await updateDoc(promoRef, { usedCount: increment(1), usedBy: [...(promo.usedBy || []), auth.currentUser.uid] });
+        
+        status.style.color = "var(--neon-green)";
+        status.textContent = `✅ Успешно! Получено ${promo.value} ${promo.type === 'crystals' ? '💎 кристаллов' : '🪙 монет'}.`;
+        input.value = '';
+        
+    } catch(e) {
+        console.error(e);
+        status.style.color = "var(--neon-red)";
+        status.textContent = "❌ Ошибка: " + e.message;
+    }
+};
+
+// ============================================================
+// БЛОГЕРЫ
+// ============================================================
+async function loadBloggers() {
+    const grid = document.getElementById('bloggers-grid');
+    if (!grid) return;
+    try {
+        const q = query(collection(db, "applications"), where("type", "==", "blogger"), where("status", "==", "approved"));
+        const snap = await getDocs(q);
+        const bloggers = [];
+        snap.forEach(d => bloggers.push(d.data()));
+        
+        if (!bloggers.length) {
+            grid.innerHTML = '<p class="profile-empty">Пока нет одобренных блогеров. Стань первым!</p>';
+            return;
+        }
+        
+        grid.innerHTML = bloggers.map(b => {
+            const initial = (b.realName || '?').trim().charAt(0).toUpperCase();
+            const tgRaw = (b.tgUsername || '').replace('@', '').trim();
+            
+            const socialsHtml = (b.socials || []).map(s => {
+                if (!s.url) return '';
+                return `<a href="${escapeHtml(s.url)}" target="_blank" rel="noopener" class="blogger-social-btn">${escapeHtml(s.platform)}</a>`;
+            }).join('');
+            
+            const tgLink = tgRaw ? `<a href="https://t.me/${escapeHtml(tgRaw)}" target="_blank" rel="noopener" class="blogger-social-btn">✈️ TG</a>` : '';
+            
+            return `
+                <div class="blogger-card">
+                    <div class="blogger-avatar">${initial}</div>
+                    <h3 class="blogger-name">${escapeHtml(b.realName || 'Блогер')}</h3>
+                    <p class="blogger-tg">${tgRaw ? '@' + escapeHtml(tgRaw) : 'TSC Creator'}</p>
+                    <div class="blogger-socials">${socialsHtml}${tgLink}</div>
+                </div>
+            `;
+        }).join('');
+    } catch(e) {
+        console.error("Ошибка загрузки блогеров:", e);
+        grid.innerHTML = '<p class="profile-empty">Ошибка загрузки.</p>';
+    }
+}
 
 // ============================================================
 // ПРОФИЛЬ
@@ -598,11 +743,8 @@ function renderDossiers() {
 
     const opened = window.allDossiers.filter(d => unlocked.includes(d.id));
     const locked = window.allDossiers.filter(d => !unlocked.includes(d.id));
-    
-    // Берем 2 закрытых для интриги
     const lockedToShow = locked.slice(0, 2);
 
-    // Фильтруем открытые досье по выбранному статусу
     const filteredOpened = opened.filter(d => {
         if (window.currentDossierFilter === 'all') return true;
         const status = personalStatuses[d.id] || d.status || 'unknown';
@@ -647,13 +789,9 @@ function renderDossiers() {
 
 window.filterDossiers = function(filter) {
     window.currentDossierFilter = filter;
-    
-    // Обновляем активную кнопку
     ['all', 'alive', 'missing', 'dead'].forEach(f => {
         document.getElementById(`tab-dossier-${f}`)?.classList.toggle('active', f === filter);
     });
-
-    // Перерисовываем сетку
     renderDossiers();
 };
 
@@ -727,7 +865,6 @@ window.toggleObtScope = function() {
     if (target === 'event') document.getElementById('obt-scope-episode')?.querySelectorAll('input').forEach(cb => cb.checked = false);
 };
 
-// --- ОТПРАВКА В БОТА ---
 async function sendNotificationToBot(type, data) {
     try {
         await fetch('https://silent-bot-es3x.onrender.com/api/notify', {
@@ -1034,7 +1171,7 @@ window.approveApplication = async function(appId, type, uid) {
             }).catch(e => console.log('TG user notify error:', e));
         }
         
-        showToast('approved', 'Одобрено', 'Роль выдана.'); loadAdminApplications();
+        showToast('approved', 'Одобрено', 'Роль выдана.'); loadAdminApplications(); loadBloggers();
     } catch(e) { alert(e.message); }
 };
 
@@ -1067,10 +1204,9 @@ window.revokeApplication = async function(appId, type, uid) {
     else if (type === 'tester') upd.isTester = false;
     await updateDoc(doc(db, "users", uid), upd);
     await addDoc(collection(db, "notifications"), { uid, type: 'app_revoked', title: '🚫 Доступ отозван', text: `Причина: ${comment}`, read: false, createdAt: serverTimestamp() });
-    showToast('rejected', 'Отозвано', 'Доступ забран.'); loadAdminApplications();
+    showToast('rejected', 'Отозвано', 'Доступ забран.'); loadAdminApplications(); loadBloggers();
 };
 
-// --- ПРОМОКОДЫ ---
 window.togglePromoScope = function() { document.getElementById('promo-token-field')?.classList.toggle('hidden', document.getElementById('promo-scope').value !== 'user'); };
 
 async function generatePromoCodeString() {
@@ -1130,7 +1266,6 @@ async function loadPromocodes() {
     `).join('') : '<p class="profile-empty">Пусто.</p>';
 }
 
-// --- УВЕДОМЛЕНИЯ АДМИНА ---
 window.sendMassNotification = async function() {
     const title = document.getElementById('notif-title-input').value.trim();
     const text = document.getElementById('notif-text-input').value.trim();
@@ -1143,7 +1278,6 @@ window.sendMassNotification = async function() {
     document.getElementById('notif-title-input').value = ''; document.getElementById('notif-text-input').value = '';
 };
 
-// --- НАСТРОЙКИ ---
 async function loadShopStatus() {
     const snap = await getDoc(doc(db, "settings", "global"));
     if (snap.exists()) {
