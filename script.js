@@ -1,5 +1,5 @@
 // ============================================================
-// THE SILENT CHAT — script.js (ПОЛНЫЙ)
+// THE SILENT CHAT — script.js (ПОЛНЫЙ, ФИНАЛЬНЫЙ)
 // ============================================================
 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
@@ -615,7 +615,8 @@ function renderDossiers() {
         
         const hasPhoto = d.photo && d.photo.trim() !== '';
         const photoHtml = hasPhoto ? `<div class="dossier-photo" style="background-image:url('${escapeHtml(d.photo)}');"></div>` : `<div class="dossier-photo silhouette">👤</div>`;
-                const isFemale = d.gender === 'female';
+        
+        const isFemale = d.gender === 'female';
         let statusLabel = 'Неизвестно';
         if (status === 'alive') statusLabel = isFemale ? 'Жива' : 'Жив';
         else if (status === 'missing') statusLabel = isFemale ? 'Пропала' : 'Пропал';
@@ -639,7 +640,8 @@ window.openDossierModal = function(id) {
     if (!d) return;
     const personalStatuses = window.currentUserData?.dossierStatuses || {};
     const status = personalStatuses[id] || d.status || 'unknown';
-        const isFemale = d.gender === 'female';
+    
+    const isFemale = d.gender === 'female';
     let statusLabel = '⚪ Неизвестно';
     if (status === 'alive') statusLabel = isFemale ? '🟢 Жива' : '🟢 Жив';
     else if (status === 'missing') statusLabel = isFemale ? '🟡 Пропала' : '🟡 Пропал';
@@ -657,6 +659,9 @@ window.openDossierModal = function(id) {
         </div>
         ${d.bio ? `<div class="dossier-detail-bio">${escapeHtml(d.bio)}</div>` : ''}
         ${d.quote ? `<div class="dossier-detail-quote">«${escapeHtml(d.quote)}»</div>` : ''}
+        
+        <!-- НОВАЯ КНОПКА ПОЛНОЙ БИОГРАФИИ -->
+        ${d.fullBioUrl ? `<div class="dossier-bio-container"><a href="${escapeHtml(d.fullBioUrl)}" target="_blank" rel="noopener" class="btn-bio">📖 ПРОЧИТАТЬ ПОЛНУЮ БИОГРАФИЮ</a></div>` : ''}
     `;
     document.getElementById('dossier-modal').classList.remove('hidden');
 };
@@ -1196,14 +1201,14 @@ window.autoFillDossiers = async function() {
         { id: "denis", name: "Денис", order: 4, status: "alive", unlockAfter: "episode_1" },
         { id: "vlad", name: "Влад", order: 5, status: "alive", unlockAfter: "episode_1" },
         { id: "petrovich", name: "Александр Петрович", order: 6, status: "alive", unlockAfter: "episode_1" },
-        { id: "vika", name: "Вика", order: 7, status: "missing", unlockAfter: "episode_1" },
+        { id: "vika", name: "Вика", order: 7, status: "missing", unlockAfter: "episode_1", gender: "female" },
         { id: "doctor", name: "Доктор Кувалдович", order: 8, status: "alive", unlockAfter: "episode_1" },
         { id: "boris", name: "Следователь Борис", order: 9, status: "alive", unlockAfter: "episode_1" },
         { id: "anonym", name: "Аноним", order: 10, status: "alive", unlockAfter: "episode_1" },
-        { id: "eva", name: "Ева", order: 11, status: "alive", unlockAfter: "episode_1" },
+        { id: "eva", name: "Ева", order: 11, status: "alive", unlockAfter: "episode_1", gender: "female" },
         { id: "innostranets", name: "Иностранец", order: 12, status: "alive", unlockAfter: "episode_1" },
-        { id: "varya", name: "Варя", order: 13, status: "missing", unlockAfter: "episode_1" },
-        { id: "mama", name: "Мама (Елена)", order: 14, status: "dead", unlockAfter: "episode_1" },
+        { id: "varya", name: "Варя", order: 13, status: "missing", unlockAfter: "episode_1", gender: "female" },
+        { id: "mama", name: "Мама (Елена)", order: 14, status: "dead", unlockAfter: "episode_1", gender: "female" },
         { id: "gretman", name: "Gretman", order: 15, status: "alive", unlockAfter: "episode_1" },
         { id: "kukolnik", name: "Кукольник", order: 16, status: "dead", unlockAfter: "episode_2" },
         { id: "hirurg", name: "Хирург", order: 17, status: "dead", unlockAfter: "episode_2" },
@@ -1211,8 +1216,16 @@ window.autoFillDossiers = async function() {
     ];
     let count = 0;
     for (const char of characters) {
-        await setDoc(doc(db, "dossiers", char.id), { id: char.id, name: char.name, order: char.order, status: char.status, unlockAfter: char.unlockAfter, photo: "", bio: "", quote: "" });
+        await setDoc(doc(db, "dossiers", char.id), { 
+            id: char.id, 
+            name: char.name, 
+            order: char.order, 
+            status: char.status, 
+            gender: char.gender || "male", 
+            unlockAfter: char.unlockAfter, 
+            photo: "", bio: "", quote: "", fullBioUrl: "" 
+        }, { merge: true }); // merge: true чтобы не затереть фото и тексты, если они уже есть
         count++;
     }
-    alert(`Успешно добавлено ${count} персонажей!`);
+    alert(`Успешно добавлено/обновлено ${count} персонажей!`);
 };
