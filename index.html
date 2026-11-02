@@ -5,8 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="THE SILENT CHAT — хакерский триллер в неоновом нуаре.">
     <title>THE SILENT CHAT</title>
-    <link rel="icon" type="image/png" href="https://i.ibb.co/0jLFZ8Ck/5415731015122099624-2.jpg">
     <link rel="stylesheet" href="style.css">
+    <!-- Фавиконка (если у тебя другая ссылка, замени) -->
+    <link rel="icon" type="image/png" href="https://i.ibb.co/XXXXXX/logo.png">
 </head>
 <body>
 
@@ -97,6 +98,7 @@
             <li><a href="#tracker">Трекер</a></li>
             <li><a href="#features">Особенности</a></li>
             <li><a href="#dossier">Досье</a></li>
+            <li><a href="#bloggers">Блогеры</a></li>
             <li><a href="#applications">Заявки</a></li>
             <li><a href="#shop">Магазин</a></li>
             <li><a href="#socials">Соц сети</a></li>
@@ -124,7 +126,7 @@
         <p class="hint">▸ нажми <kbd>~</kbd> чтобы открыть терминал</p>
     </header>
 
-    <!-- СЕКЦИЯ С ТОКЕНОМ -->
+    <!-- СЕКЦИЯ С ТОКЕНОМ И ПРОМОКОДОМ -->
     <section id="token" class="section glass">
         <h2 class="split-title">Ваш TSC-Токен</h2>
         <p class="shop-desc">Ваш уникальный ключ для входа в игру. <strong>Никому не передавайте его.</strong></p>
@@ -135,9 +137,19 @@
         <div id="token-error" class="hidden">
             <p style="color: var(--neon-red);">Вы не авторизованы. Пожалуйста, войдите в аккаунт.</p>
         </div>
+
+        <hr style="border-color: rgba(255,255,255,0.1); margin: 2.5rem 0;">
+        
+        <h3 style="color: var(--neon-magenta); margin-bottom: 1rem; letter-spacing: 2px; text-shadow: 0 0 10px var(--neon-magenta);">АКТИВАЦИЯ ПРОМОКОДА</h3>
+        <p class="shop-desc" style="margin-bottom: 1rem; font-size: 0.9rem;">Введи код, чтобы получить кристаллы или монеты.</p>
+        <div style="max-width: 400px; margin: 0 auto; display: flex; gap: 10px; justify-content: center;">
+            <input type="text" id="promo-input" placeholder="TSC-XXXX-XXXX" style="flex: 1; padding: 0.8rem; background: rgba(0,0,0,0.5); border: 1px solid var(--neon-cyan); color: white; font-family: inherit; border-radius: var(--radius-md); text-transform: uppercase;">
+            <button class="btn" onclick="redeemPromo()" style="padding: 0.8rem 1.5rem;">ВВЕСТИ</button>
+        </div>
+        <p id="promo-status" style="margin-top: 1rem; font-size: 0.95rem; font-weight: bold;"></p>
     </section>
 
-    <!-- О ИГРЕ (ПОЛНЫЙ ТЕКСТ) -->
+    <!-- О ИГРЕ -->
     <section id="about" class="section glass">
         <h2 class="split-title">О игре</h2>
         <div class="about-text">
@@ -222,9 +234,8 @@
             <p class="dossier-header-line">🔒 <strong>ДОСЬЕ ЗАСЕКРЕЧЕНО</strong></p>
             <p class="dossier-desc">Все профили заблокированы. По мере прохождения сюжета вы будете открывать новые имена, новые тайны и новые тени прошлого.</p>
         </div>
-        <div class="dossier-progress" id="dossier-progress">Открыто 0 из 18</div>
-        <div class="dossier-grid" id="dossier-grid"></div>
-                <!-- ФИЛЬТРЫ ДОСЬЕ -->
+        
+        <!-- ФИЛЬТРЫ ДОСЬЕ -->
         <div class="dossier-filters-wrapper">
             <h3 class="episode-title-filters">EPISODE 1</h3>
             <div class="dossier-tabs">
@@ -234,6 +245,21 @@
                 <button class="dossier-tab" onclick="filterDossiers('dead')" id="tab-dossier-dead">Мертвые</button>
             </div>
         </div>
+
+        <div class="dossier-progress" id="dossier-progress">Открыто 0 из 18</div>
+        <div class="dossier-grid" id="dossier-grid"></div>
+    </section>
+
+    <!-- БЛОГЕРЫ -->
+    <section id="bloggers" class="section glass">
+        <h2 class="split-title">Блогеры игры</h2>
+        <p class="shop-desc">Люди, которые освещают THE SILENT CHAT. Подписывайтесь на их каналы!</p>
+        <div id="bloggers-grid" class="blogger-grid">
+            <p class="profile-empty">Загрузка...</p>
+        </div>
+        <p style="margin-top: 2.5rem; color: var(--neon-cyan); font-style: italic; font-size: 1.1rem; text-shadow: 0 0 10px rgba(0,240,255,0.4);">
+            Спасибо за вашу поддержку и то, что делаете Блэквуд известным!
+        </p>
     </section>
 
     <!-- ЗАЯВКИ -->
@@ -441,6 +467,8 @@
             <button class="btn" onclick="changeToken()">Сменить токен</button>
             <button class="btn btn-admin hidden" id="admin-panel-btn" onclick="openAdminPanel()">👑 АДМИН-ПАНЕЛЬ</button>
             <button class="btn btn-danger" onclick="logoutUser()">Выйти</button>
+            <!-- Кнопка удаления аккаунта -->
+            <button class="btn" style="border-color: #555; color: #888; font-size: 0.8rem; margin-top: 1rem;" onclick="deleteAccount()">Удалить аккаунт</button>
         </div>
     </div>
 </div>
