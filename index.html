@@ -8,6 +8,7 @@
     <link rel="icon" type="image/jpeg" href="https://i.ibb.co/0jLFZ8Ck/5415731015122099624-2.jpg">
 </head>
 <body>
+
 <canvas id="matrix"></canvas>
 <div class="noise"></div>
 
@@ -28,6 +29,8 @@
 
 <!-- АВТОРИЗАЦИЯ -->
 <div id="auth-overlay" class="auth-overlay hidden">
+    <div class="auth-orb orb-1"></div>
+    <div class="auth-orb orb-2"></div>
     <div class="auth-box glass">
         <div class="auth-scanline"></div>
         <h2 class="auth-title glitch" data-text="TSC TERMINAL">TSC TERMINAL</h2>
@@ -37,6 +40,7 @@
         </div>
 
         <div id="auth-login" class="auth-panel">
+            <p class="auth-desc">Вход в систему</p>
             <div class="input-group"><label>Email</label><input type="email" id="login-email" placeholder="operator@blackwood.ru"></div>
             <div class="input-group"><label>Пароль</label><input type="password" id="login-password" placeholder="••••••••"></div>
             <p id="login-error" class="error-text"></p>
@@ -44,6 +48,7 @@
         </div>
 
         <div id="auth-register" class="auth-panel hidden">
+            <p class="auth-desc">Создайте учетную запись</p>
             <div class="input-group"><label>Email</label><input type="email" id="reg-email" placeholder="operator@blackwood.ru"></div>
             <div class="input-group"><label>Юзернейм (@)</label><input type="text" id="reg-username" placeholder="@Adellink"></div>
             <div class="input-group"><label>Имя</label><input type="text" id="reg-name" placeholder="Иван"></div>
@@ -59,11 +64,19 @@
 
         <div id="auth-token" class="auth-panel hidden">
             <p class="auth-desc" style="color: var(--neon-green);">Регистрация успешна!</p>
+            <p>Ваш TSC-Token:</p>
             <div class="token-display" id="generated-token">TSC-XXXX-XXXX</div>
-            <button class="btn-small" onclick="copyToken('generated-token')">📋 Копировать</button>
-            <button class="btn auth-btn" style="margin-top:1rem;" onclick="switchAuthTab('login')">ПЕРЕЙТИ К ВХОДУ</button>
+            <button class="btn-small" onclick="copyToken('generated-token')" style="margin-bottom:1rem;">📋 Копировать токен</button>
+            <button class="btn auth-btn" onclick="switchAuthTab('login')">ПЕРЕЙТИ К ВХОДУ</button>
         </div>
     </div>
+</div>
+
+<!-- РАЗРЫВ ЭКРАНА -->
+<div id="breach-overlay" class="breach-overlay hidden">
+    <canvas id="breach-canvas"></canvas>
+    <div class="breach-flash" id="breach-flash"></div>
+    <div class="breach-text glitch" data-text="ACCESS GRANTED">ACCESS GRANTED</div>
 </div>
 
 <!-- ОСНОВНОЙ САЙТ -->
@@ -82,6 +95,7 @@
             <li><a href="#applications">Заявки</a></li>
         </ul>
         <div class="nav-right">
+            <!-- КРАСИВЫЙ ЯЗЫК -->
             <div class="custom-lang">
                 <button class="lang-btn active" onclick="changeLang('ru')" id="lang-ru">RU</button>
                 <button class="lang-btn" onclick="changeLang('en')" id="lang-en">EN</button>
@@ -100,12 +114,15 @@
 
     <section id="token" class="section glass">
         <h2 class="split-title">Ваш TSC-Токен</h2>
-        <div id="token-box" class="hidden"><div class="token-display" id="my-token-display"></div></div>
+        <div id="token-box" class="hidden" style="max-width: 400px; margin: 0 auto;">
+            <div class="token-display" id="my-token-display"></div>
+            <button class="btn" onclick="copyToken('my-token-display')" style="margin-top: 1rem;">📋 КОПИРОВАТЬ ТОКЕН</button>
+        </div>
         <hr style="border-color: rgba(255,255,255,0.1); margin: 2rem 0;">
-        <h3 style="color: var(--neon-magenta); margin-bottom: 1rem;">АКТИВАЦИЯ ПРОМОКОДА</h3>
+        <h3 style="color: var(--neon-magenta); margin-bottom: 1rem; letter-spacing: 2px;">АКТИВАЦИЯ ПРОМОКОДА</h3>
         <div style="max-width: 400px; margin: 0 auto; display: flex; gap: 10px;">
             <input type="text" id="promo-input" placeholder="TSC-XXXX-XXXX" style="flex: 1; padding: 0.8rem; background: rgba(0,0,0,0.5); border: 1px solid var(--neon-cyan); color: white; border-radius: var(--radius-md); text-transform: uppercase;">
-            <button class="btn" onclick="redeemPromo()">ВВЕСТИ</button>
+            <button class="btn" onclick="redeemPromo()" style="padding: 0.8rem 1.5rem;">ВВЕСТИ</button>
         </div>
         <p id="promo-status" style="margin-top: 1rem;"></p>
     </section>
@@ -275,7 +292,7 @@
 <div id="tester-profile-modal" class="modal-overlay hidden" onclick="closeTesterProfileModal(event)">
     <div class="modal-content glass" onclick="event.stopPropagation()" style="max-width: 500px; text-align: left;">
         <button class="modal-close" onclick="closeTesterProfileModal(event)">✕</button>
-        <h2 class="modal-title glitch" data-text="ПРОФИЛЬ">ПРОФИЛЬ</h2>
+        <h2 class="modal-title glitch" data-text="ПРОФИЛЬ" style="text-align:center;">ПРОФИЛЬ</h2>
         <div id="tester-profile-body"></div>
     </div>
 </div>
@@ -326,7 +343,6 @@
     </div>
 </div>
 
-<!-- УВЕДОМЛЕНИЯ -->
 <div id="notif-panel" class="notif-panel glass hidden">
     <div class="notif-header"><h3>УВЕДОМЛЕНИЯ</h3><button class="modal-close" style="position:static;" onclick="closeNotifPanel()">✕</button></div>
     <div id="notif-list" class="notif-list"></div>
