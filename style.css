@@ -10,7 +10,7 @@
     --bg-dark: #0a0a0f;
     --text: #e0e0e0;
     --text-dim: #888;
-    --glass-bg: rgba(20, 20, 30, 0.7); /* Плотнее для читаемости */
+    --glass-bg: rgba(20, 20, 30, 0.7);
     --glass-border: rgba(255, 255, 255, 0.15);
     --glass-shadow: 0 10px 40px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255,255,255,0.1);
     --radius-xl: 32px;
@@ -23,7 +23,7 @@ html { scroll-behavior: smooth; }
 body {
     background-color: var(--bg-dark); 
     background-image: radial-gradient(ellipse at 20% 0%, #12101f 0%, #07070c 45%, #0a0a0f 100%);
-    background-attachment: fixed; /* ФИКС ПРОПАДАЮЩЕГО ФОНА */
+    background-attachment: fixed;
     color: var(--text);
     font-family: 'Courier New', monospace;
     overflow-x: hidden;
@@ -40,7 +40,7 @@ body {
 
 .glass {
     background: var(--glass-bg);
-    backdrop-filter: blur(15px) saturate(150%); /* ОПТИМИЗАЦИЯ ДЛЯ МОБИЛОК */
+    backdrop-filter: blur(15px) saturate(150%);
     -webkit-backdrop-filter: blur(15px) saturate(150%);
     border: 1px solid var(--glass-border);
     border-radius: var(--radius-xl);
@@ -266,32 +266,60 @@ body {
 .dossier-detail-bio { line-height: 1.8; color: var(--text); margin-bottom: 1.5rem; white-space: pre-line; }
 .dossier-detail-quote { border-left: 3px solid var(--neon-magenta); padding: 0.8rem 1rem; background: rgba(255,0,170,0.05); font-style: italic; color: var(--text-dim); }
 
-/* --- НОВЫЕ СТИЛИ ДЛЯ КНОПКИ ПОЛНОЙ БИОГРАФИИ --- */
-.dossier-bio-container {
-    margin-top: 2rem;
-    text-align: center;
-}
+/* Кнопка полной биографии */
+.dossier-bio-container { margin-top: 2rem; text-align: center; }
 .btn-bio {
-    display: inline-block;
-    padding: 0.8rem 2rem;
-    font-size: 0.85rem;
-    font-weight: bold;
-    color: var(--neon-cyan);
-    border: 1px solid var(--neon-cyan);
-    border-radius: 30px;
-    text-decoration: none;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    transition: all 0.3s ease;
-    box-shadow: 0 0 10px rgba(0,240,255,0.2);
-    background: rgba(0,240,255,0.05);
+    display: inline-block; padding: 0.8rem 2rem; font-size: 0.85rem; font-weight: bold;
+    color: var(--neon-cyan); border: 1px solid var(--neon-cyan); border-radius: 30px;
+    text-decoration: none; text-transform: uppercase; letter-spacing: 1px; transition: all 0.3s ease;
+    box-shadow: 0 0 10px rgba(0,240,255,0.2); background: rgba(0,240,255,0.05);
 }
-.btn-bio:hover {
-    background: var(--neon-cyan);
-    color: var(--bg-dark);
-    box-shadow: 0 0 20px var(--neon-cyan);
-    transform: translateY(-2px);
+.btn-bio:hover { background: var(--neon-cyan); color: var(--bg-dark); box-shadow: 0 0 20px var(--neon-cyan); transform: translateY(-2px); }
+
+/* ===== ФИЛЬТРЫ ДОСЬЕ ===== */
+.dossier-filters-wrapper { margin-bottom: 2rem; }
+.episode-title-filters {
+    color: var(--neon-magenta); font-size: 1.2rem; letter-spacing: 3px; margin-bottom: 1rem;
+    text-shadow: 0 0 10px rgba(255,0,170,0.5); border-bottom: 1px dashed rgba(255,0,170,0.3);
+    display: inline-block; padding-bottom: 5px;
 }
+.dossier-tabs {
+    display: flex; gap: 0.5rem; justify-content: center; flex-wrap: wrap;
+    padding: 4px; background: rgba(0,0,0,0.3); border-radius: 20px;
+    border: 1px solid rgba(255,255,255,0.08); max-width: 600px; margin: 0 auto;
+}
+.dossier-tab {
+    flex: 1; padding: 0.6rem 1rem; background: transparent; border: none; color: var(--text-dim);
+    font-family: inherit; font-size: 0.85rem; letter-spacing: 1px; cursor: pointer;
+    transition: all 0.3s; border-radius: 16px; min-width: 100px;
+}
+.dossier-tab:hover { color: var(--neon-cyan); }
+.dossier-tab.active {
+    background: rgba(0,240,255,0.15); color: var(--neon-cyan);
+    text-shadow: 0 0 10px var(--neon-cyan); box-shadow: 0 0 10px rgba(0,240,255,0.2) inset;
+}
+
+/* ===== БЛОГЕРЫ ===== */
+.blogger-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 1.5rem; margin-top: 2rem; }
+.blogger-card {
+    padding: 2rem 1.5rem 1.6rem; background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.1); border-radius: var(--radius-lg);
+    transition: all 0.4s; text-align: center; display: flex; flex-direction: column; align-items: center;
+}
+.blogger-card:hover { border-color: var(--neon-cyan); box-shadow: 0 0 30px rgba(0,240,255,0.2); transform: translateY(-5px); }
+.blogger-avatar {
+    width: 80px; height: 80px; border-radius: 50%; background: linear-gradient(135deg, var(--neon-cyan), var(--neon-magenta));
+    color: var(--bg-dark); font-size: 2rem; font-weight: bold; display: flex; align-items: center;
+    justify-content: center; margin-bottom: 1rem; box-shadow: 0 0 20px rgba(0,240,255,0.4);
+}
+.blogger-name { color: var(--neon-cyan); font-size: 1.2rem; margin-bottom: 0.3rem; letter-spacing: 1px; }
+.blogger-tg { color: var(--text-dim); font-size: 0.8rem; margin-bottom: 1.1rem; }
+.blogger-socials { display: flex; flex-wrap: wrap; justify-content: center; gap: 0.5rem; margin-top: auto; }
+.blogger-social-btn {
+    padding: 0.4rem 0.8rem; border-radius: 20px; border: 1px solid var(--neon-cyan);
+    color: var(--neon-cyan); text-decoration: none; font-size: 0.78rem; transition: all 0.3s;
+}
+.blogger-social-btn:hover { background: var(--neon-cyan); color: var(--bg-dark); box-shadow: 0 0 10px var(--neon-cyan); }
 
 /* ===== ЗАЯВКИ ===== */
 .shop-desc { margin-bottom: 2rem; color: var(--text-dim); line-height: 1.6; }
@@ -309,7 +337,6 @@ body {
 .subscribe-box p { margin-bottom: 0.6rem; }
 .subscribe-box p strong { color: var(--neon-magenta); }
 .subscribe-box a { color: var(--neon-cyan); }
-.warning-box { margin: 1rem 0; padding: 1rem; background: rgba(255,189,46,0.08); border: 1px solid var(--neon-yellow); border-radius: var(--radius-md); font-size: 0.85rem; color: #ffd76a; }
 .checkbox-label { display: flex; align-items: flex-start; gap: 0.6rem; font-size: 0.85rem; cursor: pointer; line-height: 1.5; }
 .checkbox-label input { width: auto; margin-top: 0.2rem; accent-color: var(--neon-cyan); }
 .radio-group, .checkbox-group { display: flex; flex-direction: column; gap: 0.6rem; margin-top: 0.4rem; }
@@ -546,122 +573,4 @@ a.contact-card:hover .contact-value { color: var(--neon-cyan); text-shadow: 0 0 
     .platform-grid { grid-template-columns: 1fr; }
     .dossier-grid { grid-template-columns: repeat(2, 1fr); }
     .contact-grid { grid-template-columns: 1fr; }
-    
-    /* ===== ФИЛЬТРЫ ДОСЬЕ ===== */
-.dossier-filters-wrapper {
-    margin-bottom: 2rem;
-}
-.episode-title-filters {
-    color: var(--neon-magenta);
-    font-size: 1.2rem;
-    letter-spacing: 3px;
-    margin-bottom: 1rem;
-    text-shadow: 0 0 10px rgba(255,0,170,0.5);
-    border-bottom: 1px dashed rgba(255,0,170,0.3);
-    display: inline-block;
-    padding-bottom: 5px;
-}
-.dossier-tabs {
-    display: flex;
-    gap: 0.5rem;
-    justify-content: center;
-    flex-wrap: wrap;
-    padding: 4px;
-    background: rgba(0,0,0,0.3);
-    border-radius: 20px;
-    border: 1px solid rgba(255,255,255,0.08);
-    max-width: 600px;
-    margin: 0 auto;
-}
-.dossier-tab {
-    flex: 1;
-    padding: 0.6rem 1rem;
-    background: transparent;
-    border: none;
-    color: var(--text-dim);
-    font-family: inherit;
-    font-size: 0.85rem;
-    letter-spacing: 1px;
-    cursor: pointer;
-    transition: all 0.3s;
-    border-radius: 16px;
-    min-width: 100px;
-}
-.dossier-tab:hover {
-    color: var(--neon-cyan);
-}
-.dossier-tab.active {
-    background: rgba(0,240,255,0.15);
-    color: var(--neon-cyan);
-    text-shadow: 0 0 10px var(--neon-cyan);
-    box-shadow: 0 0 10px rgba(0,240,255,0.2) inset;
-}
-    /* ===== БЛОГЕРЫ ===== */
-.blogger-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-    gap: 1.5rem;
-    margin-top: 2rem;
-}
-.blogger-card {
-    padding: 2rem 1.5rem 1.6rem;
-    background: rgba(255,255,255,0.03);
-    border: 1px solid rgba(255,255,255,0.1);
-    border-radius: var(--radius-lg);
-    transition: all 0.4s;
-    text-align: center;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-}
-.blogger-card:hover {
-    border-color: var(--neon-cyan);
-    box-shadow: 0 0 30px rgba(0,240,255,0.2);
-    transform: translateY(-5px);
-}
-.blogger-avatar {
-    width: 80px;
-    height: 80px;
-    border-radius: 50%;
-    background: linear-gradient(135deg, var(--neon-cyan), var(--neon-magenta));
-    color: var(--bg-dark);
-    font-size: 2rem;
-    font-weight: bold;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin-bottom: 1rem;
-    box-shadow: 0 0 20px rgba(0,240,255,0.4);
-}
-.blogger-name {
-    color: var(--neon-cyan);
-    font-size: 1.2rem;
-    margin-bottom: 0.3rem;
-    letter-spacing: 1px;
-}
-.blogger-tg {
-    color: var(--text-dim);
-    font-size: 0.8rem;
-    margin-bottom: 1.1rem;
-}
-.blogger-socials {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: 0.5rem;
-    margin-top: auto;
-}
-.blogger-social-btn {
-    padding: 0.4rem 0.8rem;
-    border-radius: 20px;
-    border: 1px solid var(--neon-cyan);
-    color: var(--neon-cyan);
-    text-decoration: none;
-    font-size: 0.78rem;
-    transition: all 0.3s;
-}
-.blogger-social-btn:hover {
-    background: var(--neon-cyan);
-    color: var(--bg-dark);
-    box-shadow: 0 0 10px var(--neon-cyan);
 }
