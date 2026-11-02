@@ -1,6 +1,14 @@
 // ===== FIREBASE ИМПОРТЫ =====
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+import { 
+    getAuth, 
+    createUserWithEmailAndPassword, 
+    signInWithEmailAndPassword, 
+    signOut,
+    setPersistence,
+    browserLocalPersistence,
+    onAuthStateChanged
+} from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
 // Твои ключи от Firebase
@@ -16,6 +24,11 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
+
+// ВКЛЮЧАЕМ СОХРАНЕНИЕ СЕССИИ (чтобы не выкидывало при перезагрузке)
+setPersistence(auth, browserLocalPersistence).catch((error) => {
+    console.error("Ошибка сохранения сессии:", error);
+});
 
 // ===== МАТРИЦА =====
 const canvas = document.getElementById('matrix');
@@ -257,14 +270,12 @@ window.registerUser = async function() {
         const userCredential = await createUserWithEmailAndPassword(auth, email, pass);
         const firebaseUser = userCredential.user;
         
-        // Генерируем уникальный токен
         const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
         let t1 = '', t2 = '';
         for (let i = 0; i < 4; i++) t1 += chars.charAt(Math.floor(Math.random() * chars.length));
         for (let i = 0; i < 4; i++) t2 += chars.charAt(Math.floor(Math.random() * chars.length));
         const token = `TSC-${t1}-${t2}`;
 
-        // Сохраняем в Firestore
         await setDoc(doc(db, "users", firebaseUser.uid), {
             email: email,
             username: user,
@@ -276,7 +287,6 @@ window.registerUser = async function() {
             createdAt: new Date().toISOString()
         });
 
-        // Сохраняем локально для быстрого доступа
         localStorage.setItem('tsc_user', user);
         localStorage.setItem('tsc_name', name);
         localStorage.setItem('tsc_age', age);
@@ -328,6 +338,21 @@ window.loginUser = async function() {
             return showError(err, box, "Неверный Email или пароль.");
         }
         showError(err, box, "Ошибка: " + error.message);
+    }
+};
+
+// ВЫХОД ИЗ АККАУНТА
+window.logoutUser = async function() {
+    try {
+        await signOut(auth);
+        localStorage.removeItem('tsc_token');
+        localStorage.removeItem('tsc_user');
+        // Очищаем сессию
+        document.getElementById('main-content').classList.add('hidden');
+        document.getElementById('auth-overlay').classList.remove('hidden');
+        location.reload();
+    } catch (error) {
+        console.error("Ошибка выхода:", error);
     }
 };
 
@@ -415,18 +440,25 @@ function launchSiteReveal() {
     document.querySelectorAll('.section').forEach(s => observer.observe(s));
 }
 
-// ===== СТАРТ =====
+// ===== СТАРТ (Проверка авторизации через Firebase) =====
 window.addEventListener('load', () => {
-    const savedToken = localStorage.getItem('tsc_token');
-    if (savedToken) {
-        document.getElementById('intro-overlay').classList.add('hidden');
-        document.getElementById('auth-overlay').classList.add('hidden');
-        document.getElementById('main-content').classList.remove('hidden');
-        updateProfileUI();
-        launchSiteReveal();
-    } else {
-        runIntro();
-    }
+    // Слушаем состояние Firebase. Если пользователь вошел, он сразу попадет на сайт
+    onAuthStateChanged(auth, (user) => {
+        if (user) {
+            // Пользователь авторизован (сессия сохранена)
+            document.getElementById('intro-overlay').classList.add('hidden');
+            document.getElementById('auth-overlay').classList.add('hidden');
+            document.getElementById('main-content').classList.remove('hidden');
+            updateProfileUI();
+            launchSiteReveal();
+        } else {
+            // Пользователь не авторизован
+            document.getElementById('main-content').classList.add('hidden');
+            document.getElementById('auth-overlay').classList.add('hidden');
+            document.getElementById('intro-overlay').classList.remove('hidden');
+            runIntro();
+        }
+    });
 });
 
 // ===== ПРОФИЛЬ =====
