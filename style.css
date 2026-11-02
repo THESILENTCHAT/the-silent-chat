@@ -111,17 +111,39 @@ body { background-color: var(--bg-dark); background-image: radial-gradient(ellip
 .input-group { text-align: left; margin-bottom: 1rem; }
 .input-group label { display: block; font-size: 0.8rem; color: var(--neon-cyan); margin-bottom: 0.5rem; }
 .input-group input, .input-group select, .input-group textarea { width: 100%; padding: 0.8rem; background: rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.2); color: white; font-family: inherit; border-radius: var(--radius-md); }
-.profile-tabs { display: flex; gap: 0.5rem; margin-bottom: 2rem; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 1rem; justify-content: center; }
-.profile-tab { flex: 1; background: transparent; border: none; color: var(--text-dim); font-family: inherit; font-size: 1rem; cursor: pointer; padding: 0.5rem; }
-.profile-tab.active { color: var(--neon-cyan); border-bottom: 2px solid var(--neon-cyan); text-shadow: 0 0 10px var(--neon-cyan); }
-.profile-actions { display: flex; flex-direction: column; gap: 0.7rem; margin-top: 1.5rem; }
-.profile-actions .btn { padding: 0.6rem; font-size: 0.85rem; }
-.avatar-large { width: 120px; height: 120px; border-radius: 50%; background-color: var(--neon-cyan); color: var(--bg-dark); display: flex; justify-content: center; align-items: center; font-size: 3rem; font-weight: bold; margin: 0 auto 1rem; background-size: cover; cursor: pointer; border: 3px solid var(--neon-cyan); box-shadow: 0 0 30px rgba(0,240,255,0.4); }
+.profile-header { display: flex; flex-direction: column; align-items: center; margin-bottom: 1rem; }
 .profile-roles { display: flex; gap: 0.5rem; justify-content: center; flex-wrap: wrap; margin-bottom: 1rem; }
 .role-badge { padding: 0.3rem 0.8rem; border-radius: 20px; font-size: 0.75rem; border: 1px solid; }
 .role-badge.admin { border-color: var(--neon-magenta); color: var(--neon-magenta); text-shadow: 0 0 10px var(--neon-magenta); }
 .role-badge.player { border-color: var(--text-dim); color: var(--text-dim); }
 .profile-info { text-align: left; background: rgba(0,240,255,0.05); padding: 1rem; border: 1px solid rgba(0,240,255,0.2); margin-bottom: 1.5rem; border-radius: var(--radius-md); }
+.profile-section { margin-bottom: 1.5rem; text-align: left; }
+.profile-section-title { font-size: 0.85rem; color: var(--neon-cyan); letter-spacing: 2px; margin-bottom: 0.8rem; text-transform: uppercase; border-bottom: 1px solid rgba(0,240,255,0.3); padding-bottom: 0.4rem; }
+.profile-empty { color: var(--text-dim); font-size: 0.85rem; font-style: italic; text-align: center; padding: 0.8rem; }
+.profile-app-item { padding: 0.9rem 1.1rem; border-radius: var(--radius-md); margin-bottom: 0.6rem; border: 1px solid; font-size: 0.85rem; }
+.profile-app-item.pending { background: rgba(255,189,46,0.08); border-color: var(--neon-yellow); }
+.profile-app-item.approved { background: rgba(39,201,63,0.08); border-color: var(--neon-green); }
+.profile-app-item.rejected { background: rgba(255,95,86,0.08); border-color: var(--neon-red); }
+.profile-app-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.4rem; flex-wrap: wrap; }
+.profile-app-type { color: var(--neon-cyan); font-weight: bold; }
+.profile-actions { display: flex; flex-direction: column; gap: 0.7rem; margin-top: 1.5rem; }
+.profile-actions .btn { padding: 0.6rem; font-size: 0.85rem; }
+.avatar-large { width: 120px; height: 120px; border-radius: 50%; background-color: var(--neon-cyan); color: var(--bg-dark); display: flex; justify-content: center; align-items: center; font-size: 3rem; font-weight: bold; margin: 0 auto 1rem; background-size: cover; cursor: pointer; border: 3px solid var(--neon-cyan); box-shadow: 0 0 30px rgba(0,240,255,0.4); }
+
+/* АДМИНКА */
+.admin-content { max-width: 900px; text-align: left; }
+.admin-tabs { display: flex; gap: 0.4rem; margin-bottom: 1.5rem; flex-wrap: wrap; padding: 4px; background: rgba(0,0,0,0.3); border-radius: 16px; border: 1px solid rgba(255,255,255,0.08); }
+.admin-tab { flex: 1; padding: 0.6rem 0.8rem; background: transparent; border: none; color: var(--text-dim); font-family: inherit; font-size: 0.78rem; cursor: pointer; transition: all 0.3s; border-radius: 12px; min-width: 100px; }
+.admin-tab.active { background: rgba(255,0,170,0.15); color: var(--neon-magenta); }
+.admin-panel { max-height: 60vh; overflow-y: auto; padding-right: 0.5rem; }
+.admin-filters { display: flex; gap: 0.6rem; margin-bottom: 1rem; align-items: center; flex-wrap: wrap; }
+.admin-filters select { padding: 0.5rem 0.8rem; background: rgba(0,0,0,0.35); border: 1px solid rgba(255,255,255,0.12); color: white; font-family: inherit; border-radius: var(--radius-md); }
+.admin-app-item { padding: 1rem 1.2rem; margin-bottom: 0.8rem; background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.1); border-radius: var(--radius-md); font-size: 0.85rem; }
+.admin-app-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.6rem; flex-wrap: wrap; gap: 0.5rem; }
+.admin-app-type { color: var(--neon-cyan); font-weight: bold; text-transform: uppercase; font-size: 0.9rem; }
+.admin-app-details { display: grid; grid-template-columns: max-content 1fr; gap: 0.3rem 0.8rem; margin-bottom: 0.8rem; font-size: 0.8rem; }
+.admin-app-details dt { color: var(--text-dim); }
+.admin-app-details dd { color: var(--text); word-break: break-word; }
 
 /* ЭФФЕКТЫ */
 .intro-overlay { position: fixed; inset: 0; background: #030306; z-index: 10000; display: flex; justify-content: center; align-items: center; transition: opacity 0.8s ease; }
@@ -170,5 +192,4 @@ body { background-color: var(--bg-dark); background-image: radial-gradient(ellip
 @media (max-width: 900px) { 
     .nav { flex-wrap: wrap; } .nav-links { display: none; } 
     .section { padding: 3rem 1rem; } 
-    .profile-tabs { flex-direction: column; } 
 }
