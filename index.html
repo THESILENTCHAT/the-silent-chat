@@ -252,7 +252,6 @@
             <div id="app-status-blogger" class="hidden"></div>
             <div class="input-group"><label>ФИО (из профиля)</label><input type="text" id="blogger-realname" readonly></div>
             <div class="input-group"><label>Возраст (из профиля)</label><input type="number" id="blogger-age" readonly></div>
-            <div class="input-group checkbox-label"><input type="checkbox" id="blogger-hide-name"> Скрыть ФИО в публичном профиле</div>
             <div class="input-group"><label>Контакт (Telegram)</label><input type="text" id="blogger-contact-value" placeholder="@nickname"></div>
             <div class="socials-section">
                 <label>Соцсети</label><div id="blogger-socials-list"></div>
@@ -266,7 +265,6 @@
             <div id="app-status-obt" class="hidden"></div>
             <div class="input-group"><label>ФИО (из профиля)</label><input type="text" id="obt-realname" readonly></div>
             <div class="input-group"><label>Возраст (из профиля)</label><input type="number" id="obt-age" readonly></div>
-            <div class="input-group checkbox-label"><input type="checkbox" id="obt-hide-name"> Скрыть ФИО</div>
             <div class="input-group"><label>Контакт</label><input type="text" id="obt-contact-value" placeholder="@nickname"></div>
             <div class="input-group"><label>Платформа</label><select id="obt-platform"><option value="Android">Android</option><option value="iOS">iOS</option><option value="PC">PC</option></select></div>
             <div class="subscribe-box"><label class="checkbox-label"><input type="checkbox" id="obt-subscribed"> Я подписался</label></div>
@@ -277,7 +275,6 @@
             <div id="app-status-tester" class="hidden"></div>
             <div class="input-group"><label>ФИО (из профиля)</label><input type="text" id="tester-realname" readonly></div>
             <div class="input-group"><label>Возраст (из профиля)</label><input type="number" id="tester-age" readonly></div>
-            <div class="input-group checkbox-label"><input type="checkbox" id="tester-hide-name"> Скрыть ФИО</div>
             <div class="input-group"><label>Контакт</label><input type="text" id="tester-contact-value" placeholder="@nickname"></div>
             <div class="input-group"><label>Платформа</label><select id="tester-platform"><option value="Android">Android</option><option value="iOS">iOS</option><option value="PC">PC</option></select></div>
             <div class="subscribe-box"><label class="checkbox-label"><input type="checkbox" id="tester-subscribed"> Я подписался</label></div>
@@ -319,49 +316,33 @@
     <div class="modal-content profile-content glass" onclick="event.stopPropagation()" style="max-width: 600px;">
         <button class="modal-close" onclick="closeProfileModal(event)">✕</button>
         <h2 class="modal-title glitch" data-text="ПРОФИЛЬ">ПРОФИЛЬ</h2>
-        <div class="profile-tabs">
-            <button class="profile-tab active" onclick="switchProfileTab('info')">ИНФО</button>
-            <button class="profile-tab" onclick="switchProfileTab('history')">ИСТОРИЯ</button>
-            <button class="profile-tab" onclick="switchProfileTab('settings')">НАСТРОЙКИ</button>
+        
+        <div class="profile-header">
+            <div class="avatar-large" id="profile-avatar-large" onclick="showImagePreview()">?</div>
+            <input type="file" id="avatar-upload" accept="image/*" style="display:none;" onchange="uploadAvatar(event)">
+            <button class="btn-small" onclick="document.getElementById('avatar-upload').click()">Загрузить аватар</button>
         </div>
-        <div id="prof-tab-info">
-            <div class="profile-header">
-                <div class="avatar-large" id="profile-avatar-large" onclick="showImagePreview()">?</div>
-                <input type="file" id="avatar-upload" accept="image/*" style="display:none;" onchange="uploadAvatar(event)">
-                <button class="btn-small" onclick="document.getElementById('avatar-upload').click()">Загрузить аватар</button>
-            </div>
-            <div class="profile-roles" id="profile-roles"></div>
-            <div class="profile-info">
-                <p><span class="info-label">Имя:</span> <span id="prof-name"></span></p>
-                <p><span class="info-label">Возраст:</span> <span id="prof-age"></span></p>
-                <p><span class="info-label">Юзернейм:</span> <span id="prof-user"></span></p>
-            </div>
-            <div class="profile-actions">
-                <button class="btn" onclick="changePassword()">Сменить пароль</button>
-                <button class="btn" onclick="changeToken()">Сменить токен</button>
-                <button class="btn btn-admin hidden" id="admin-panel-btn" onclick="openAdminPanel()">👑 АДМИН-ПАНЕЛЬ</button>
-                <button class="btn btn-danger" onclick="logoutUser()">Выйти</button>
-            </div>
+        <div class="profile-roles" id="profile-roles"></div>
+        <div class="profile-info">
+            <p><span class="info-label">Имя:</span> <span id="prof-name"></span></p>
+            <p><span class="info-label">Возраст:</span> <span id="prof-age"></span></p>
+            <p><span class="info-label">Юзернейм:</span> <span id="prof-user"></span></p>
         </div>
-        <div id="prof-tab-history" class="hidden">
-            <div class="profile-section"><h3 class="profile-section-title">История наград</h3><div id="profile-history-list"></div></div>
+        
+        <div class="profile-section">
+            <h3 class="profile-section-title">Мои заявки</h3>
+            <div id="profile-apps-active"><p class="profile-empty">Нет активных заявок.</p></div>
         </div>
-        <div id="prof-tab-settings" class="hidden">
-            <div class="profile-section">
-                <h3 class="profile-section-title">Изменить данные</h3>
-                <div class="input-group"><label>Имя</label><input type="text" id="set-name"></div>
-                <div class="input-group"><label>Возраст</label><input type="number" id="set-age"></div>
-                <div class="input-group"><label>Юзернейм</label><input type="text" id="set-username"></div>
-                <button class="btn" onclick="saveSettings()">СОХРАНИТЬ</button>
-            </div>
-            <div class="profile-section">
-                <h3 class="profile-section-title">Аккаунты</h3>
-                <button class="btn-small" onclick="addAccount()">Добавить второй аккаунт</button>
-            </div>
-            <div class="profile-section">
-                <h3 class="profile-section-title" style="color: var(--neon-red);">Опасная зона</h3>
-                <button class="btn btn-danger" onclick="deleteAccount()">Удалить аккаунт</button>
-            </div>
+        <div class="profile-section">
+            <h3 class="profile-section-title">История <span id="history-count" style="color:var(--text-dim);font-size:0.8rem;"></span></h3>
+            <div id="profile-apps-history"><p class="profile-empty">Пока пусто.</p></div>
+        </div>
+
+        <div class="profile-actions">
+            <button class="btn" onclick="changePassword()">Сменить пароль</button>
+            <button class="btn" onclick="changeToken()">Сменить токен</button>
+            <button class="btn btn-admin hidden" id="admin-panel-btn" onclick="openAdminPanel()">👑 АДМИН-ПАНЕЛЬ</button>
+            <button class="btn btn-danger" onclick="logoutUser()">Выйти</button>
         </div>
     </div>
 </div>
@@ -374,14 +355,35 @@
         <div class="admin-tabs">
             <button class="admin-tab active" onclick="switchAdminTab('apps')">ЗАЯВКИ</button>
             <button class="admin-tab" onclick="switchAdminTab('promo')">ПРОМОКОДЫ</button>
+            <button class="admin-tab" onclick="switchAdminTab('notif')">УВЕДОМЛЕНИЯ</button>
+            <button class="admin-tab" onclick="switchAdminTab('settings')">НАСТРОЙКИ</button>
         </div>
-        <div id="admin-apps" class="admin-panel"><div id="admin-app-list"></div></div>
+        <div id="admin-apps" class="admin-panel">
+            <div class="admin-filters">
+                <select id="admin-app-filter" onchange="loadAdminApplications()">
+                    <option value="pending">⏳ На рассмотрении</option>
+                    <option value="approved">✅ Одобренные</option>
+                    <option value="rejected">❌ Отклонённые</option>
+                </select>
+            </div>
+            <div id="admin-app-list"></div>
+        </div>
         <div id="admin-promo" class="admin-panel hidden">
              <h3 style="margin-bottom:1rem;">Создать промокод</h3>
              <div class="input-group"><label>Тип</label><select id="promo-type"><option value="crystals">Кристаллы</option><option value="coins">Монеты</option></select></div>
              <div class="input-group"><label>Количество</label><input type="number" id="promo-value"></div>
              <button class="btn-small" onclick="generatePromocode()">Создать</button>
              <div id="promo-result" style="margin-top:1rem;"></div>
+        </div>
+        <div id="admin-notif" class="admin-panel hidden">
+            <h3 style="margin-bottom:1rem;">Массовая рассылка</h3>
+            <div class="input-group"><label>Заголовок</label><input type="text" id="notif-title-input"></div>
+            <div class="input-group"><label>Текст</label><textarea id="notif-text-input" rows="4"></textarea></div>
+            <button class="btn-small" onclick="sendMassNotification()">ОТПРАВИТЬ ВСЕМ</button>
+        </div>
+        <div id="admin-settings" class="admin-panel hidden">
+            <h3 style="margin-bottom:1rem;">Глобальные настройки</h3>
+            <label class="checkbox-label" style="margin-bottom:1rem;"><input type="checkbox" id="frozen-purchases-toggle" onchange="togglePurchasesFrozen()"> 🛑 Заморозить покупки</label>
         </div>
     </div>
 </div>
