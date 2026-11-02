@@ -130,12 +130,12 @@ window.changeLang = function(lang) {
     document.getElementById(`lang-${lang}`).classList.add('active');
     if(lang === 'ru') {
         document.querySelectorAll('.nav-links a').forEach((a, i) => {
-            const texts = ['О игре', 'Версия', 'Трекер', 'Особенности', 'Досье', 'Блогеры', 'Отзывы', 'Арт', 'Заявки', 'Магазин'];
+            const texts = ['О игре', 'Версия', 'Трекер', 'Особенности', 'Досье', 'Блогеры', 'ОБТ', 'Тестеры', 'Заявки', 'Магазин'];
             if(texts[i]) a.textContent = texts[i];
         });
         return;
     }
-    const dict = { en: ['About', 'Version', 'Tracker', 'Features', 'Dossiers', 'Bloggers', 'Reviews', 'Art', 'Applications', 'Shop'] };
+    const dict = { en: ['About', 'Version', 'Tracker', 'Features', 'Dossiers', 'Bloggers', 'OBT', 'Testers', 'Applications', 'Shop'] };
     document.querySelectorAll('.nav-links a').forEach((a, i) => { if(dict[lang] && dict[lang][i]) a.textContent = dict[lang][i]; });
 };
 
@@ -188,7 +188,7 @@ window.addEventListener('load', () => {
 function launchSiteReveal() {
     const title = document.getElementById('hero-title'); if (title) splitLetters(title, 0.06);
     document.querySelectorAll('.section').forEach(s => observer.observe(s));
-    loadDossiers(); loadTeam(); loadReviews(); loadGallery();
+    loadDossiers(); loadTeam();
     if(window.currentUserData) {
         document.getElementById('my-token-display').textContent = window.currentUserData.tscToken;
         document.getElementById('token-box').classList.remove('hidden');
@@ -262,48 +262,21 @@ window.openDossierModal = function(id) {
     let html = `<h3 class="dossier-detail-name">${d.name}</h3>`;
     if(d.bio) html += `<div class="dossier-detail-bio" style="text-align:left; margin-top:1rem;">${d.bio}</div>`;
     if(d.quote) html += `<div class="dossier-detail-quote" style="text-align:left; margin-top:1rem;">«${d.quote}»</div>`;
-    if(d.fullBioUrl) html += `<div style="margin-top:1.5rem;text-align:center;"><a href="${d.fullBioUrl}" target="_blank" class="btn-small" style="padding:1rem; display:inline-block;">ПРОЧИТАТЬ ПОЛНУЮ БИОГРАФИЮ</a></div>`;
+    if(d.fullBioUrl) html += `<div style="margin-top:1.5rem;text-align:center;"><a href="${d.fullBioUrl}" target="_blank" class="btn-small" style="padding:1rem; display:inline-block;">📖 ПРОЧИТАТЬ ПОЛНУЮ БИОГРАФИЮ</a></div>`;
     const modal = document.createElement('div'); modal.className = 'modal-overlay';
     modal.innerHTML = `<div class="modal-content glass" style="text-align:left;"><button class="modal-close" onclick="this.parentElement.parentElement.remove()">✕</button>${html}</div>`;
     document.body.appendChild(modal);
 };
-
-window.openReviewModal = () => document.getElementById('review-modal').classList.remove('hidden');
-window.closeReviewModal = (e) => { if(e) e.stopPropagation(); document.getElementById('review-modal').classList.add('hidden'); };
-window.submitReview = async function() {
-    const text = document.getElementById('review-text').value; if(!text) return;
-    try { await addDoc(collection(db, "reviews"), { uid: auth.currentUser.uid, username: window.currentUserData.username, text, createdAt: serverTimestamp() }); closeReviewModal(); loadReviews(); showToast('approved', 'Успех', 'Отзыв добавлен!'); } catch(e) { alert(e.message); }
-};
-async function loadReviews() {
-    const snap = await getDocs(query(collection(db, "reviews"), orderBy("createdAt", "desc")));
-    document.getElementById('reviews-list').innerHTML = snap.docs.map(d => `<div class="review-card"><div class="review-header"><div class="review-avatar">${d.data().username.charAt(1).toUpperCase()}</div><div><div class="review-name">${d.data().username}</div><div class="review-date">${formatDateTime(d.data().createdAt)}</div></div></div><p>${d.data().text}</p></div>`).join('');
-}
-window.openGalleryUpload = () => document.getElementById('gallery-modal').classList.remove('hidden');
-window.closeGalleryModal = (e) => { if(e) e.stopPropagation(); document.getElementById('gallery-modal').classList.add('hidden'); };
-window.submitGallery = async function() {
-    const url = document.getElementById('gallery-url').value; if(!url) return;
-    try { await addDoc(collection(db, "gallery"), { url, author: window.currentUserData.username, createdAt: serverTimestamp() }); closeGalleryModal(); loadGallery(); showToast('approved', 'Успех', 'Арт добавлен!'); } catch(e) { alert(e.message); }
-};
-async function loadGallery() {
-    const snap = await getDocs(collection(db, "gallery"));
-    document.getElementById('gallery-grid').innerHTML = snap.docs.map(d => `<div class="gallery-item" style="background-image:url(${d.data().url})"></div>`).join('');
-}
 
 async function loadTeam() {
     try {
         const snap = await getDocs(query(collection(db, "applications"), where("status", "==", "approved")));
         const b = [], o = [], t = []; window.allTeamMembers = [];
         snap.forEach(d => { const data = { id: d.id, ...d.data() }; window.allTeamMembers.push(data); if(data.type === 'blogger') b.push(data); else if(data.type === 'obt') o.push(data); else if(data.type === 'tester') t.push(data); });
-        const render = (id, arr) => document.getElementById(id).innerHTML = arr.map(m => `<div class="blogger-card" onclick="openTeamProfile('${m.id}')"><div class="blogger-avatar">${(m.hideRealName ? m.username : m.realName).charAt(0)}</div><h3 class="blogger-name">${m.hideRealName ? m.username : m.realName}</h3><div class="verify-badge">✅ Подтвержден</div></div>`).join('');
+        const render = (id, arr) => document.getElementById(id).innerHTML = arr.map(m => `<div class="blogger-card"><div class="blogger-avatar">${(m.hideRealName ? m.username : m.realName).charAt(0)}</div><h3 class="blogger-name">${m.hideRealName ? m.username : m.realName}</h3><div class="verify-badge">✅ Подтвержден</div></div>`).join('');
         render('bloggers-grid', b); render('obt-grid', o); render('testers-grid', t);
     } catch(e) { console.error(e); document.getElementById('bloggers-grid').innerHTML = '<p class="profile-empty">Ошибка загрузки.</p>'; }
 }
-window.openTeamProfile = function(id) {
-    const m = window.allTeamMembers.find(x => x.id === id); const name = m.hideRealName ? m.username : m.realName;
-    const modal = document.createElement('div'); modal.className = 'modal-overlay';
-    modal.innerHTML = `<div class="modal-content glass" style="text-align:left;"><button class="modal-close" onclick="this.parentElement.parentElement.remove()">✕</button><h3 style="color:var(--neon-cyan); text-align:center;">${name}</h3><div class="profile-info" style="margin-top:1rem;"><p>Юзер: ${m.username}</p><p>Возраст: ${m.realAge || 'Не указан'}</p><p>Контакт: ${m.contactValue || 'Не указан'}</p></div><p style="color:#27c93f; margin-top:1rem; text-align:center;">✅ Аккаунт подтвержден владельцем сайта</p></div>`;
-    document.body.appendChild(modal);
-};
 
 window.switchAppTab = function(t) { ['blogger','obt','tester'].forEach(x => document.getElementById(`app-${x}`).classList.toggle('hidden', x !== t)); };
 window.addBloggerSocial = function() { document.getElementById('blogger-socials-list').innerHTML += `<div class="social-row" style="margin-top:5px;"><input type="text" class="social-url" placeholder="Ссылка"><button onclick="this.parentElement.remove()" class="btn-small">X</button></div>`; };
@@ -318,25 +291,13 @@ async function submitApp(type) {
 
 window.openAdminPanel = function() { document.getElementById('admin-modal').classList.remove('hidden'); loadAdminApps(); };
 window.closeAdminPanel = function(e) { if(e) e.stopPropagation(); document.getElementById('admin-modal').classList.add('hidden'); };
-window.switchAdminTab = function(t) { ['apps','promo','content'].forEach(x => document.getElementById(`admin-${x}`).classList.toggle('hidden', x !== t)); };
-
-// ВЕРНУЛ КНОПКИ ОДОБРЕНИЯ И ОТКЛОНЕНИЯ В АДМИНКУ
+window.switchAdminTab = function(t) { ['apps','promo'].forEach(x => document.getElementById(`admin-${x}`).classList.toggle('hidden', x !== t)); };
 async function loadAdminApps() {
     const snap = await getDocs(query(collection(db, "applications"), where("status", "==", "pending")));
-    document.getElementById('admin-app-list').innerHTML = snap.docs.map(d => `
-        <div class="admin-app-item pending">
-            <b>${d.data().type.toUpperCase()}</b> - ${d.data().username}
-            <div style="font-size:0.8rem; color:var(--text-dim); margin-top:5px;">ФИО: ${d.data().realName || 'Нет'} | Возраст: ${d.data().realAge || 'Нет'} | Контакт: ${d.data().contactValue || 'Нет'}</div>
-            <div class="app-actions">
-                <button class="btn-approve" onclick="appAction('${d.id}', 'approved')">Одобрить</button>
-                <button class="btn-reject" onclick="appAction('${d.id}', 'rejected')">Отклонить</button>
-            </div>
-        </div>
-    `).join('');
+    document.getElementById('admin-app-list').innerHTML = snap.docs.map(d => `<div class="admin-app-item pending"><b>${d.data().type}</b> - ${d.data().username} <br><button class="btn-small" style="margin-top:5px;" onclick="appAction('${d.id}', 'approved')">Одобрить</button></div>`).join('');
 }
 window.appAction = async function(id, status) { await updateDoc(doc(db, "applications", id), { status }); loadAdminApps(); loadTeam(); };
 window.generatePromocode = async function() { const code = `TSC-${Math.random().toString(36).substr(2,4).toUpperCase()}`; await setDoc(doc(db, "promocodes", code), { type: document.getElementById('promo-type').value, value: parseInt(document.getElementById('promo-value').value), usedCount: 0, active: true }); document.getElementById('promo-result').textContent = "Код: " + code; };
-window.createPoll = async function() { const q = document.getElementById('poll-q').value; const opts = document.getElementById('poll-opts').value.split(','); await addDoc(collection(db, "polls"), { question: q, options: opts, votes: {} }); alert("Опрос добавлен!"); };
 
 window.copyToken = function(id) { const el = document.getElementById(id); if(el) navigator.clipboard.writeText(el.textContent); };
 window.redeemPromo = async function() { const code = document.getElementById('promo-input').value.toUpperCase(); const snap = await getDoc(doc(db, "promocodes", code)); if(snap.exists()) { alert("Промокод активирован!"); } else { alert("Неверный код"); } };
