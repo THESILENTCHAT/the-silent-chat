@@ -6,8 +6,10 @@
     <meta name="description" content="THE SILENT CHAT — хакерский триллер в неоновом нуаре.">
     <title>THE SILENT CHAT</title>
     <link rel="stylesheet" href="style.css">
-    <!-- ТВОЯ ИКОНКА САЙТА -->
-    <link rel="icon" type="image/png" href="https://i.ibb.co/0jLFZ8Ck/5415731015122099624-2.jpg">
+    <link rel="icon" type="image/jpeg" href="https://i.ibb.co/0jLFZ8Ck/5415731015122099624-2.jpg">
+    <!-- PWA -->
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#0a0a0f">
 </head>
 <body>
 
@@ -47,6 +49,7 @@
             <div class="input-group"><label>Пароль</label><input type="password" id="login-password" placeholder="••••••••"></div>
             <p id="login-error" class="error-text"></p>
             <button class="btn auth-btn" onclick="loginUser()">ВОЙТИ</button>
+            <div id="saved-accounts-list" style="margin-top: 1rem; font-size: 0.8rem; text-align: left;"></div>
         </div>
 
         <div id="auth-register" class="auth-panel hidden">
@@ -71,11 +74,6 @@
             <p>Ваш TSC-Token для входа в игру:</p>
             <div class="token-display" id="generated-token">TSC-XXXX-XXXX</div>
             <button class="btn-small" onclick="copyToken('generated-token')" style="margin-bottom:1rem;">📋 Копировать токен</button>
-            <div class="token-warning">
-                ⚠️ <strong>НИКОМУ НЕ ПЕРЕДАВАЙТЕ ЭТОТ ТОКЕН.</strong><br>
-                Любой, кто его получит, сможет войти в ваш аккаунт в игре.<br>
-                Мы никогда не спросим ваш токен.
-            </div>
             <button class="btn auth-btn" onclick="switchAuthTab('login')">ПЕРЕЙТИ К ВХОДУ</button>
         </div>
     </div>
@@ -94,22 +92,25 @@
         <div class="nav-logo">THE SILENT CHAT</div>
         <ul class="nav-links">
             <li><a href="#about">О игре</a></li>
-            <li><a href="#updates">Версия</a></li>
-            <li><a href="#tracker">Трекер</a></li>
-            <li><a href="#features">Особенности</a></li>
             <li><a href="#dossier">Досье</a></li>
             <li><a href="#bloggers">Блогеры</a></li>
             <li><a href="#obt-testers">ОБТ</a></li>
             <li><a href="#testers">Тестеры</a></li>
+            <li><a href="#reviews">Отзывы</a></li>
+            <li><a href="#polls">Опросы</a></li>
+            <li><a href="#gallery">Арт</a></li>
+            <li><a href="#leaderboard">Топ</a></li>
             <li><a href="#applications">Заявки</a></li>
-            <li><a href="#shop">Магазин</a></li>
-            <li><a href="#socials">Соц сети</a></li>
-            <li><a href="#contacts">Контакты</a></li>
         </ul>
         <div class="nav-right">
             <div class="lang-switch">
-                <button onclick="changeLang('ru')" class="lang-btn active" id="btn-ru">RU</button>
-                <button onclick="changeLang('en')" class="lang-btn" id="btn-en">EN</button>
+                <select id="lang-select" onchange="changeLang(this.value)" style="background:transparent; border:1px solid var(--neon-cyan); color:var(--neon-cyan); padding: 0.2rem 0.5rem; border-radius: 20px; font-family: inherit; font-size: 0.75rem; cursor:pointer;">
+                    <option value="ru">RU</option>
+                    <option value="en">EN</option>
+                    <option value="tt">TT</option>
+                    <option value="es">ES</option>
+                    <option value="de">DE</option>
+                </select>
             </div>
             <div class="nav-bell" id="nav-bell" onclick="openNotifPanel()" title="Уведомления">
                 <span class="bell-icon">🔔</span>
@@ -125,33 +126,25 @@
         <h1 class="hero-title glitch" data-text="THE SILENT CHAT" id="hero-title">THE SILENT CHAT</h1>
         <p class="tagline" id="hero-tagline">Тишина — это не отсутствие звука. Это присутствие тьмы.</p>
         <button class="btn pulse-btn" onclick="openDownloadModal()">ВОЙТИ В THE SILENT CHAT</button>
-        <p class="hint">▸ нажми <kbd>~</kbd> чтобы открыть терминал</p>
     </header>
 
-    <!-- СЕКЦИЯ С ТОКЕНОМ И ПРОМОКОДОМ -->
+    <!-- ТОКЕН И ПРОМОКОД -->
     <section id="token" class="section glass">
         <h2 class="split-title">Ваш TSC-Токен</h2>
-        <p class="shop-desc">Ваш уникальный ключ для входа в игру. <strong>Никому не передавайте его.</strong></p>
         <div id="token-box" class="hidden" style="max-width: 400px; margin: 0 auto;">
             <div class="token-display" id="my-token-display">TSC-XXXX-XXXX</div>
             <button class="btn" onclick="copyToken('my-token-display')" style="margin-top: 1rem;">📋 КОПИРОВАТЬ ТОКЕН</button>
         </div>
-        <div id="token-error" class="hidden">
-            <p style="color: var(--neon-red);">Вы не авторизованы. Пожалуйста, войдите в аккаунт.</p>
-        </div>
-
         <hr style="border-color: rgba(255,255,255,0.1); margin: 2.5rem 0;">
-        
-        <h3 style="color: var(--neon-magenta); margin-bottom: 1rem; letter-spacing: 2px; text-shadow: 0 0 10px var(--neon-magenta);">АКТИВАЦИЯ ПРОМОКОДА</h3>
-        <p class="shop-desc" style="margin-bottom: 1rem; font-size: 0.9rem;">Введи код, чтобы получить кристаллы или монеты.</p>
-        <div style="max-width: 400px; margin: 0 auto; display: flex; gap: 10px; justify-content: center;">
+        <h3 style="color: var(--neon-magenta); margin-bottom: 1rem;">АКТИВАЦИЯ ПРОМОКОДА</h3>
+        <div style="max-width: 400px; margin: 0 auto; display: flex; gap: 10px;">
             <input type="text" id="promo-input" placeholder="TSC-XXXX-XXXX" style="flex: 1; padding: 0.8rem; background: rgba(0,0,0,0.5); border: 1px solid var(--neon-cyan); color: white; font-family: inherit; border-radius: var(--radius-md); text-transform: uppercase;">
             <button class="btn" onclick="redeemPromo()" style="padding: 0.8rem 1.5rem;">ВВЕСТИ</button>
         </div>
         <p id="promo-status" style="margin-top: 1rem; font-size: 0.95rem; font-weight: bold;"></p>
     </section>
 
-    <!-- О ИГРЕ -->
+    <!-- О ИГРЕ (текст не тронут) -->
     <section id="about" class="section glass">
         <h2 class="split-title">О игре</h2>
         <div class="about-text">
@@ -170,65 +163,6 @@
         </div>
     </section>
 
-    <!-- ВЕРСИЯ -->
-    <section id="updates" class="section glass">
-        <h2 class="split-title">Версия: 1.0</h2>
-        <div class="updates-container">
-            <div class="update-card tilt">
-                <h3>ЧТО НОВОГО</h3>
-                <ul class="update-list">
-                    <li>Игра стала доступна для всех игроков!</li>
-                    <li>Эпизод 1 полностью готов.</li>
-                </ul>
-                <div class="episode-title">EPISODE 1:<br><strong>DEAD MEN DON'T LIE</strong></div>
-            </div>
-            <div class="update-card future tilt">
-                <h3>В БУДУЩИХ ОБНОВЛЕНИЯХ</h3>
-                <ul class="update-list future-list">
-                    <li>Фон шапки профиля</li>
-                    <li>Фон чата</li>
-                    <li>Рамки для аватаров</li>
-                    <li>Аккаунт в игре (синхронизация)</li>
-                    <li>И многое другое...</li>
-                </ul>
-            </div>
-        </div>
-    </section>
-
-    <!-- ТРЕКЕР -->
-    <section id="tracker" class="section glass">
-        <h2 class="split-title">TSC TRACKER</h2>
-        <div class="tracker-container">
-            <div class="tracker-item">
-                <div class="tracker-info"><span>Эпизод 1</span><span>100%</span></div>
-                <div class="progress-bar"><div class="progress-fill" style="width:100%;"></div></div>
-            </div>
-            <div class="tracker-item">
-                <div class="tracker-info"><span>Эпизод 2</span><span>0%</span></div>
-                <div class="progress-bar"><div class="progress-fill" style="width:0%;"></div></div>
-            </div>
-            <div class="tracker-header">Ивентовые сюжеты</div>
-            <div class="tracker-item sub-item">
-                <div class="tracker-info"><span>Новогодний сюжет</span><span>5%</span></div>
-                <div class="progress-bar"><div class="progress-fill" style="width:5%;"></div></div>
-            </div>
-        </div>
-        <div class="news-box">
-            <p>Вся информация и новости в нашем Telegram-канале!</p>
-            <a href="https://t.me/THESILENTCHAT" target="_blank" class="btn">СЛЕДИТЬ ЗА РАЗРАБОТКОЙ</a>
-        </div>
-    </section>
-
-    <!-- ОСОБЕННОСТИ -->
-    <section id="features" class="section glass">
-        <h2 class="split-title">Особенности</h2>
-        <div class="features-grid">
-            <div class="feature-card tilt"><h3>Мини-игры</h3><p>Взлом, расшифровка, логика — каждая задача уникальна.</p></div>
-            <div class="feature-card tilt"><h3>Сюжет</h3><p>Многослойная история с выборами, которые меняют финал.</p></div>
-            <div class="feature-card tilt"><h3>Атмосфера</h3><p>Неоновый нуар, матричный дождь, живые диалоги.</p></div>
-        </div>
-    </section>
-
     <!-- ДОСЬЕ -->
     <section id="dossier" class="section glass">
         <h2 class="split-title">Досье</h2>
@@ -236,7 +170,6 @@
             <p class="dossier-header-line">🔒 <strong>ДОСЬЕ ЗАСЕКРЕЧЕНО</strong></p>
             <p class="dossier-desc">Все профили заблокированы. По мере прохождения сюжета вы будете открывать новые имена, новые тайны и новые тени прошлого.</p>
         </div>
-        
         <div class="dossier-filters-wrapper">
             <h3 class="episode-title-filters">EPISODE 1</h3>
             <div class="dossier-tabs">
@@ -246,282 +179,247 @@
                 <button class="dossier-tab" onclick="filterDossiers('dead')" id="tab-dossier-dead">Мертвые</button>
             </div>
         </div>
-
         <div class="dossier-progress" id="dossier-progress">Открыто 0 из 18</div>
         <div class="dossier-grid" id="dossier-grid"></div>
     </section>
 
-    <!-- БЛОГЕРЫ -->
+    <!-- КОМАНДА -->
     <section id="bloggers" class="section glass">
         <h2 class="split-title">Блогеры игры</h2>
-        <p class="shop-desc">Люди, которые освещают THE SILENT CHAT. Подписывайтесь на их каналы!</p>
-        <div id="bloggers-grid" class="blogger-grid">
-            <p class="profile-empty">Загрузка...</p>
-        </div>
-        <p style="margin-top: 2.5rem; color: var(--neon-cyan); font-style: italic; font-size: 1.1rem; text-shadow: 0 0 10px rgba(0,240,255,0.4);">
-            Спасибо за вашу поддержку и то, что делаете THE SILENT CHAT известным!
-        </p>
+        <div id="bloggers-grid" class="blogger-grid"></div>
     </section>
-
-    <!-- ОБТ ТЕСТЕРЫ -->
     <section id="obt-testers" class="section glass">
         <h2 class="split-title">ОБТ Тестеры</h2>
-        <p class="shop-desc">Те, кто тестирует ивенты и помогает делать игру лучше.</p>
-        <div id="obt-grid" class="blogger-grid">
-            <p class="profile-empty">Загрузка...</p>
-        </div>
+        <div id="obt-grid" class="blogger-grid"></div>
     </section>
-
-    <!-- ТЕСТЕРЫ -->
     <section id="testers" class="section glass">
         <h2 class="split-title">Тестеры игры</h2>
-        <p class="shop-desc">Люди, которые находят баги и помогают нам с разработкой.</p>
-        <div id="testers-grid" class="blogger-grid">
-            <p class="profile-empty">Загрузка...</p>
-        </div>
+        <div id="testers-grid" class="blogger-grid"></div>
+    </section>
+
+    <!-- ОТЗЫВЫ -->
+    <section id="reviews" class="section glass">
+        <h2 class="split-title">Отзывы</h2>
+        <button class="btn" onclick="openReviewModal()" style="margin-bottom: 2rem;">ОСТАВИТЬ ОТЗЫВ</button>
+        <div id="reviews-list" class="reviews-grid"></div>
+    </section>
+
+    <!-- ОПРОСЫ -->
+    <section id="polls" class="section glass">
+        <h2 class="split-title">Опросы</h2>
+        <div id="polls-list"></div>
+    </section>
+
+    <!-- ГАЛЕРЕЯ -->
+    <section id="gallery" class="section glass">
+        <h2 class="split-title">Фан-Арт</h2>
+        <button class="btn" onclick="openGalleryUpload()" style="margin-bottom: 2rem;">ЗАГРУЗИТЬ АРТ</button>
+        <div id="gallery-grid" class="gallery-grid"></div>
+    </section>
+
+    <!-- ТОП -->
+    <section id="leaderboard" class="section glass">
+        <h2 class="split-title">Таблица Лидеров</h2>
+        <div id="leaderboard-list"></div>
     </section>
 
     <!-- ЗАЯВКИ -->
     <section id="applications" class="section glass">
         <h2 class="split-title">Заявки</h2>
-        <p class="shop-desc">Подай заявку на роль блогера, ОБТ-тестера или тестера.</p>
-        <div id="app-blocked-notice" class="app-status-box rejected hidden"></div>
         <div class="app-tabs">
             <button class="app-tab active" id="app-tab-blogger" onclick="switchAppTab('blogger')">БЛОГЕР</button>
             <button class="app-tab" id="app-tab-obt" onclick="switchAppTab('obt')">ОБТ</button>
             <button class="app-tab" id="app-tab-tester" onclick="switchAppTab('tester')">ТЕСТЕР</button>
         </div>
 
+        <!-- БЛОГЕР -->
         <div id="app-blogger" class="app-panel">
             <div id="app-status-blogger" class="hidden"></div>
-            <div class="input-group"><label>ФИО (полностью)</label><input type="text" id="blogger-realname" placeholder="Иванов Иван Иванович"></div>
-            <div class="input-group"><label>Возраст</label><input type="number" id="blogger-age" placeholder="25"></div>
+            <div class="input-group"><label>ФИО (из профиля)</label><input type="text" id="blogger-realname" readonly></div>
+            <div class="input-group"><label>Возраст (из профиля)</label><input type="number" id="blogger-age" readonly></div>
+            <div class="input-group checkbox-label"><input type="checkbox" id="blogger-hide-name"> Скрыть ФИО в публичном профиле</div>
             <div class="input-group"><label>Платформа для связи</label>
                 <select id="blogger-contact-platform" onchange="updateContactField('blogger')">
-                    <option value="Telegram">Telegram</option><option value="Discord">Discord</option><option value="VK">VK</option><option value="Email">Email</option><option value="Телефон">Телефон</option>
+                    <option value="Telegram">Telegram</option><option value="Discord">Discord</option><option value="VK">VK</option><option value="Email">Email</option>
                 </select>
             </div>
-            <div class="input-group"><label id="blogger-contact-label">Контакт (Telegram)</label><input type="text" id="blogger-contact-value" placeholder="@nickname"></div>
+            <div class="input-group"><label id="blogger-contact-label">Контакт</label><input type="text" id="blogger-contact-value" placeholder="@nickname"></div>
             <div class="socials-section">
-                <label style="color:var(--neon-cyan);font-size:0.85rem;display:block;margin-bottom:0.6rem;">Ваши соцсети</label>
+                <label style="color:var(--neon-cyan); font-size:0.85rem;">Ваши соцсети</label>
                 <div id="blogger-socials-list"></div>
-                <button class="btn-small" onclick="addBloggerSocial()" id="add-social-btn">+ Добавить соцсеть</button>
+                <button class="btn-small" onclick="addBloggerSocial()">+ Добавить соцсеть</button>
             </div>
-            <div class="input-group"><label>Комментарий (опционально)</label><textarea id="blogger-message" rows="3"></textarea></div>
             <div class="subscribe-box">
                 <p><strong>📢 ОБЯЗАТЕЛЬНОЕ УСЛОВИЕ</strong></p>
-                <p>Подпишитесь на соцсети TSC: <a href="https://t.me/THESILENTCHAT" target="_blank">TG</a> · <a href="https://www.tiktok.com/@thesilentchat" target="_blank">TikTok</a></p>
-                <div class="input-group"><label>Юзернейм в Telegram</label><input type="text" id="blogger-tg" placeholder="@nickname"></div>
-                <div class="input-group"><label>Юзернейм в TikTok</label><input type="text" id="blogger-tt" placeholder="@nickname"></div>
-                <label class="checkbox-label"><input type="checkbox" id="blogger-subscribed"> Я подписался(ась) на соцсети</label>
+                <p>Подпишитесь: <a href="https://t.me/THESILENTCHAT" target="_blank">TG</a> · <a href="https://www.tiktok.com/@thesilentchat" target="_blank">TikTok</a></p>
+                <label class="checkbox-label"><input type="checkbox" id="blogger-subscribed"> Я подписался(ась)</label>
             </div>
             <p id="blogger-error" class="error-text"></p>
-            <button class="btn auth-btn" onclick="submitBloggerApplication()">ОТПРАВИТЬ ЗАЯВКУ</button>
+            <button class="btn auth-btn" onclick="submitBloggerApplication()">ОТПРАВИТЬ</button>
         </div>
 
+        <!-- ОБТ -->
         <div id="app-obt" class="app-panel hidden">
             <div id="app-status-obt" class="hidden"></div>
-            <div class="input-group"><label>ФИО (полностью)</label><input type="text" id="obt-realname"></div>
-            <div class="input-group"><label>Возраст</label><input type="number" id="obt-age"></div>
+            <div class="input-group"><label>ФИО (из профиля)</label><input type="text" id="obt-realname" readonly></div>
+            <div class="input-group"><label>Возраст (из профиля)</label><input type="number" id="obt-age" readonly></div>
+            <div class="input-group checkbox-label"><input type="checkbox" id="obt-hide-name"> Скрыть ФИО в публичном профиле</div>
             <div class="input-group"><label>Контакт</label>
                 <select id="obt-contact-platform" onchange="updateContactField('obt')">
                     <option value="Telegram">Telegram</option><option value="Discord">Discord</option><option value="VK">VK</option><option value="Email">Email</option>
                 </select>
             </div>
-            <div class="input-group"><label id="obt-contact-label">Контакт (Telegram)</label><input type="text" id="obt-contact-value" placeholder="@nickname"></div>
+            <div class="input-group"><label id="obt-contact-label">Контакт</label><input type="text" id="obt-contact-value" placeholder="@nickname"></div>
             <div class="input-group"><label>Платформа</label>
                 <select id="obt-platform"><option value="Android">Android</option><option value="iOS">iOS</option><option value="PC">PC</option></select>
             </div>
-            <div class="input-group"><label>Что тестировать</label>
-                <div class="radio-group">
-                    <label><input type="radio" name="obt-target" value="episode" onchange="toggleObtScope()"> Эпизод</label>
-                    <label><input type="radio" name="obt-target" value="event" onchange="toggleObtScope()"> Ивент</label>
-                </div>
-            </div>
-            <div class="input-group hidden" id="obt-scope-episode">
-                <label>Эпизоды</label>
-                <div class="checkbox-group">
-                    <label><input type="checkbox" class="obt-scope-cb" value="episode_1"> Эпизод 1</label>
-                    <label><input type="checkbox" class="obt-scope-cb" value="episode_2"> Эпизод 2</label>
-                </div>
-            </div>
-            <div class="input-group hidden" id="obt-scope-event">
-                <label>Ивенты</label>
-                <div class="checkbox-group">
-                    <label><input type="checkbox" class="obt-scope-cb" value="event_newyear"> Новогодний</label>
-                </div>
-            </div>
             <div class="subscribe-box">
                 <p><strong>📢 ОБЯЗАТЕЛЬНОЕ УСЛОВИЕ</strong></p>
-                <p>Подпишитесь на соцсети TSC: <a href="https://t.me/THESILENTCHAT" target="_blank">TG</a> · <a href="https://www.tiktok.com/@thesilentchat" target="_blank">TikTok</a></p>
-                <div class="input-group"><label>Юзернейм в Telegram</label><input type="text" id="obt-tg"></div>
-                <div class="input-group"><label>Юзернейм в TikTok</label><input type="text" id="obt-tt"></div>
-                <label class="checkbox-label"><input type="checkbox" id="obt-subscribed"> Я подписался(ась) на соцсети</label>
+                <label class="checkbox-label"><input type="checkbox" id="obt-subscribed"> Я подписался(ась)</label>
             </div>
-            <p id="obt-error" class="error-text"></p>
-            <button class="btn auth-btn" onclick="submitOBTApplication()">ОТПРАВИТЬ ЗАЯВКУ</button>
+            <button class="btn auth-btn" onclick="submitOBTApplication()">ОТПРАВИТЬ</button>
         </div>
 
+        <!-- ТЕСТЕР -->
         <div id="app-tester" class="app-panel hidden">
             <div id="app-status-tester" class="hidden"></div>
-            <div class="input-group"><label>ФИО (полностью)</label><input type="text" id="tester-realname"></div>
-            <div class="input-group"><label>Возраст</label><input type="number" id="tester-age"></div>
+            <div class="input-group"><label>ФИО (из профиля)</label><input type="text" id="tester-realname" readonly></div>
+            <div class="input-group"><label>Возраст (из профиля)</label><input type="number" id="tester-age" readonly></div>
+            <div class="input-group checkbox-label"><input type="checkbox" id="tester-hide-name"> Скрыть ФИО в публичном профиле</div>
             <div class="input-group"><label>Контакт</label>
                 <select id="tester-contact-platform" onchange="updateContactField('tester')">
                     <option value="Telegram">Telegram</option><option value="Discord">Discord</option><option value="VK">VK</option><option value="Email">Email</option>
                 </select>
             </div>
-            <div class="input-group"><label id="tester-contact-label">Контакт (Telegram)</label><input type="text" id="tester-contact-value" placeholder="@nickname"></div>
+            <div class="input-group"><label id="tester-contact-label">Контакт</label><input type="text" id="tester-contact-value" placeholder="@nickname"></div>
             <div class="input-group"><label>Платформа</label>
                 <select id="tester-platform"><option value="Android">Android</option><option value="iOS">iOS</option><option value="PC">PC</option></select>
             </div>
             <div class="subscribe-box">
                 <p><strong>📢 ОБЯЗАТЕЛЬНОЕ УСЛОВИЕ</strong></p>
-                <p>Подпишитесь на соцсети TSC: <a href="https://t.me/THESILENTCHAT" target="_blank">TG</a> · <a href="https://www.tiktok.com/@thesilentchat" target="_blank">TikTok</a></p>
-                <div class="input-group"><label>Юзернейм в Telegram</label><input type="text" id="tester-tg"></div>
-                <div class="input-group"><label>Юзернейм в TikTok</label><input type="text" id="tester-tt"></div>
-                <label class="checkbox-label"><input type="checkbox" id="tester-subscribed"> Я подписался(ась) на соцсети</label>
+                <label class="checkbox-label"><input type="checkbox" id="tester-subscribed"> Я подписался(ась)</label>
             </div>
-            <p id="tester-error" class="error-text"></p>
-            <button class="btn auth-btn" onclick="submitTesterApplication()">ОТПРАВИТЬ ЗАЯВКУ</button>
+            <button class="btn auth-btn" onclick="submitTesterApplication()">ОТПРАВИТЬ</button>
         </div>
     </section>
-
-    <!-- МАГАЗИН -->
-    <section id="shop" class="section glass">
-        <h2 class="split-title">Магазин</h2>
-        <p class="shop-desc">Все покупки проходят через официального Telegram-бота. Кристаллы, монеты, эксклюзивный контент.</p>
-        <div id="shop-frozen-notice" class="app-status-box rejected hidden" style="max-width:500px;margin:0 auto 1.5rem;">🛑 Покупки временно приостановлены</div>
-        <div style="text-align:center;margin-top:2rem;">
-            <a href="https://t.me/tscofficialbot" target="_blank" class="btn pulse-btn" id="shop-btn" style="font-size:1.2rem;padding:1.2rem 3rem;">💎 КУПИТЬ ЧЕРЕЗ ТГ-БОТА</a>
-        </div>
-        <p class="note">* Кнопка ведёт в официального Telegram-бота @tscofficialbot</p>
-    </section>
-
-    <!-- СОЦ СЕТИ -->
-    <section id="socials" class="section glass">
-        <h2 class="split-title">Соц сети</h2>
-        <p>Наши официальные каналы. Подпишитесь, чтобы не пропустить новости.</p>
-        <div class="contact-grid">
-            <a href="https://t.me/THESILENTCHAT" target="_blank" class="contact-card tilt">
-                <div class="contact-icon">📱</div><div class="contact-label">Telegram-канал</div><div class="contact-value">@THESILENTCHAT</div>
-            </a>
-            <a href="https://www.tiktok.com/@thesilentchat" target="_blank" class="contact-card tilt">
-                <div class="contact-icon">🎵</div><div class="contact-label">TikTok</div><div class="contact-value">@thesilentchat</div>
-            </a>
-            <a href="https://t.me/tscofficialbot" target="_blank" class="contact-card tilt">
-                <div class="contact-icon">🤖</div><div class="contact-label">Telegram-бот</div><div class="contact-value">@tscofficialbot</div>
-            </a>
-        </div>
-    </section>
-
-    <!-- КОНТАКТЫ -->
-    <section id="contacts" class="section glass">
-        <h2 class="split-title">Контакты</h2>
-        <p>Связь с разработчиком.</p>
-        <div class="contact-grid">
-            <a href="mailto:tscstudiogame@gmail.com" class="contact-card tilt">
-                <div class="contact-icon">✉️</div><div class="contact-label">Email</div><div class="contact-value">tscstudiogame@gmail.com</div>
-            </a>
-            <a href="https://t.me/TheSilentChatgame" target="_blank" class="contact-card tilt">
-                <div class="contact-icon">✈️</div><div class="contact-label">Telegram</div><div class="contact-value">@TheSilentChatgame</div>
-            </a>
-            <a href="https://www.tiktok.com/@thesilentchat" target="_blank" class="contact-card tilt">
-                <div class="contact-icon">🎵</div><div class="contact-label">TikTok</div><div class="contact-value">@thesilentchat</div>
-            </a>
-            <div class="contact-card tilt" style="cursor:not-allowed;opacity:0.5;">
-                <div class="contact-icon">📘</div><div class="contact-label">VK</div><div class="contact-value">Скоро</div>
-            </div>
-        </div>
-    </section>
-
-    <footer class="footer">
-        <p>© 2026 THE SILENT CHAT. Все права защищены.</p>
-    </footer>
-</div>
-
-<!-- МОДАЛКА СКАЧИВАНИЯ -->
-<div id="download-modal" class="modal-overlay hidden">
-    <div class="modal-content glass">
-        <button class="modal-close" onclick="closeDownloadModal()">✕</button>
-        <h2 class="modal-title glitch" data-text="ТОЧКА ВХОДА">ТОЧКА ВХОДА</h2>
-        <p class="modal-text" style="text-align:center;font-size:0.95rem;margin-bottom:1.5rem;">Система поддерживает несколько устройств. Выберите свою точку входа.</p>
-        <div class="platform-grid">
-            <a href="https://thesilentchat.itch.io/the-silent-chat" target="_blank" class="platform-btn"><span class="platform-icon">🖥</span><span class="platform-name">WINDOWS</span><span class="platform-sub">Погружение на ПК</span></a>
-            <a href="https://thesilentchat.itch.io/the-silent-chat" target="_blank" class="platform-btn"><span class="platform-icon">🍎</span><span class="platform-name">macOS</span><span class="platform-sub">Погружение на Mac</span></a>
-            <a href="https://thesilentchat.itch.io/the-silent-chat" target="_blank" class="platform-btn"><span class="platform-icon">🐧</span><span class="platform-name">LINUX</span><span class="platform-sub">Погружение на Linux</span></a>
-            <a href="https://thesilentchat.itch.io/the-silent-chat" target="_blank" class="platform-btn"><span class="platform-icon">📱</span><span class="platform-name">iOS</span><span class="platform-sub">Погружение на iPhone</span></a>
-            <a href="#" onclick="alert('RuStore — на модерации. Скоро!'); return false;" class="platform-btn platform-btn-disabled"><span class="platform-icon">🤖</span><span class="platform-name">ANDROID</span><span class="platform-sub">RuStore — скоро</span></a>
-        </div>
-    </div>
 </div>
 
 <!-- ПРОФИЛЬ -->
 <div id="profile-modal" class="modal-overlay hidden" onclick="closeProfileModal(event)">
-    <div class="modal-content profile-content glass" onclick="event.stopPropagation()">
+    <div class="modal-content profile-content glass" onclick="event.stopPropagation()" style="max-width: 600px;">
         <button class="modal-close" onclick="closeProfileModal(event)">✕</button>
         <h2 class="modal-title glitch" data-text="ПРОФИЛЬ">ПРОФИЛЬ</h2>
-        <div class="profile-header">
-            <div class="avatar-large" id="profile-avatar-large" onclick="showImagePreview()">?</div>
-            <input type="file" id="avatar-upload" accept="image/*" style="display:none;" onchange="uploadAvatar(event)">
-            <button class="btn-small" onclick="document.getElementById('avatar-upload').click()">Загрузить аватар</button>
+        
+        <div class="profile-tabs">
+            <button class="profile-tab active" onclick="switchProfileTab('info')">ИНФО</button>
+            <button class="profile-tab" onclick="switchProfileTab('history')">ИСТОРИЯ</button>
+            <button class="profile-tab" onclick="switchProfileTab('settings')">НАСТРОЙКИ</button>
         </div>
-        <div class="profile-roles" id="profile-roles"></div>
-        <div class="profile-info">
-            <p><span class="info-label">Имя:</span> <span id="prof-name">Неизвестно</span></p>
-            <p><span class="info-label">Возраст:</span> <span id="prof-age">0</span></p>
-            <p><span class="info-label">Пол:</span> <span id="prof-gender">Неизвестно</span></p>
-            <p><span class="info-label">Юзернейм:</span> <span id="prof-user">@...</span></p>
+
+        <!-- ВКЛАДКА ИНФО -->
+        <div id="prof-tab-info">
+            <div class="profile-header">
+                <div class="avatar-large" id="profile-avatar-large" onclick="showImagePreview()">?</div>
+                <input type="file" id="avatar-upload" accept="image/*" style="display:none;" onchange="uploadAvatar(event)">
+                <button class="btn-small" onclick="document.getElementById('avatar-upload').click()">Загрузить аватар</button>
+            </div>
+            <div class="profile-roles" id="profile-roles"></div>
+            <div class="profile-info">
+                <p><span class="info-label">Имя:</span> <span id="prof-name">Неизвестно</span></p>
+                <p><span class="info-label">Возраст:</span> <span id="prof-age">0</span></p>
+                <p><span class="info-label">Пол:</span> <span id="prof-gender">Неизвестно</span></p>
+                <p><span class="info-label">Юзернейм:</span> <span id="prof-user">@...</span></p>
+            </div>
+            <div class="profile-actions">
+                <button class="btn btn-admin hidden" id="admin-panel-btn" onclick="openAdminPanel()">👑 АДМИН-ПАНЕЛЬ</button>
+                <button class="btn btn-danger" onclick="logoutUser()">Выйти</button>
+            </div>
         </div>
-        <div class="profile-section">
-            <h3 class="profile-section-title">Мои заявки</h3>
-            <div id="profile-apps-active"><p class="profile-empty">Нет активных заявок.</p></div>
+
+        <!-- ВКЛАДКА ИСТОРИЯ -->
+        <div id="prof-tab-history" class="hidden">
+            <div class="profile-section">
+                <h3 class="profile-section-title">История наград</h3>
+                <div id="profile-history-list"><p class="profile-empty">Пока пусто.</p></div>
+            </div>
         </div>
-        <div class="profile-section">
-            <h3 class="profile-section-title">История <span id="history-count" style="color:var(--text-dim);font-size:0.8rem;"></span></h3>
-            <div id="profile-apps-history"><p class="profile-empty">Пока пусто.</p></div>
-        </div>
-        <div class="profile-actions">
-            <button class="btn" onclick="changePassword()">Сменить пароль</button>
-            <button class="btn" onclick="changeToken()">Сменить токен</button>
-            <button class="btn btn-admin hidden" id="admin-panel-btn" onclick="openAdminPanel()">👑 АДМИН-ПАНЕЛЬ</button>
-            <button class="btn btn-danger" onclick="logoutUser()">Выйти</button>
-            <button class="btn" style="border-color: #555; color: #888; font-size: 0.8rem; margin-top: 1rem;" onclick="deleteAccount()">Удалить аккаунт</button>
+
+        <!-- ВКЛАДКА НАСТРОЙКИ -->
+        <div id="prof-tab-settings" class="hidden">
+            <div class="profile-section">
+                <h3 class="profile-section-title">Изменить данные</h3>
+                <div class="input-group"><label>Имя</label><input type="text" id="set-name"></div>
+                <div class="input-group"><label>Возраст</label><input type="number" id="set-age"></div>
+                <div class="input-group"><label>Юзернейм</label><input type="text" id="set-username"></div>
+                <button class="btn" onclick="saveSettings()">СОХРАНИТЬ</button>
+            </div>
+            <div class="profile-section">
+                <h3 class="profile-section-title">Аккаунты</h3>
+                <button class="btn-small" onclick="addAccount()">Добавить второй аккаунт</button>
+                <div id="accounts-list" style="margin-top: 1rem;"></div>
+            </div>
+            <div class="profile-section">
+                <h3 class="profile-section-title" style="color: var(--neon-red);">Опасная зона</h3>
+                <button class="btn" style="border-color: var(--neon-red); color: var(--neon-red);" onclick="deleteAccount()">Удалить аккаунт</button>
+            </div>
         </div>
     </div>
 </div>
 
-<!-- МОДАЛКА ПРОФИЛЯ ТЕСТЕРА/БЛОГЕРА -->
+<!-- МОДАЛКА ПУБЛИЧНОГО ПРОФИЛЯ -->
 <div id="tester-profile-modal" class="modal-overlay hidden" onclick="closeTesterProfileModal(event)">
     <div class="modal-content glass" onclick="event.stopPropagation()" style="max-width: 500px; text-align: left;">
         <button class="modal-close" onclick="closeTesterProfileModal(event)">✕</button>
         <h2 class="modal-title glitch" data-text="ПРОФИЛЬ" style="text-align: center; margin-bottom: 2rem;">ПРОФИЛЬ</h2>
-        
-        <div id="tester-profile-body">
-            <!-- Заполняется через JS -->
+        <div id="tester-profile-body"></div>
+    </div>
+</div>
+
+<!-- МОДАЛКИ ОТЗЫВОВ, ОПРОСОВ, ГАЛЕРЕИ -->
+<div id="review-modal" class="modal-overlay hidden" onclick="closeReviewModal(event)">
+    <div class="modal-content glass" onclick="event.stopPropagation()" style="max-width: 500px;">
+        <button class="modal-close" onclick="closeReviewModal(event)">✕</button>
+        <h2 class="modal-title glitch" data-text="ОТЗЫВ">ОТЗЫВ</h2>
+        <div class="input-group"><label>Ваш отзыв</label><textarea id="review-text" rows="4"></textarea></div>
+        <button class="btn auth-btn" onclick="submitReview()">ОТПРАВИТЬ</button>
+    </div>
+</div>
+
+<div id="gallery-modal" class="modal-overlay hidden" onclick="closeGalleryModal(event)">
+    <div class="modal-content glass" onclick="event.stopPropagation()" style="max-width: 500px;">
+        <button class="modal-close" onclick="closeGalleryModal(event)">✕</button>
+        <h2 class="modal-title glitch" data-text="АРТ">АРТ</h2>
+        <div class="input-group"><label>Ссылка на картинку (imgbb)</label><input type="text" id="gallery-url"></div>
+        <div class="input-group"><label>Описание</label><input type="text" id="gallery-desc"></div>
+        <button class="btn auth-btn" onclick="submitGallery()">ОТПРАВИТЬ</button>
+    </div>
+</div>
+
+<!-- СКАЧИВАНИЕ -->
+<div id="download-modal" class="modal-overlay hidden">
+    <div class="modal-content glass">
+        <button class="modal-close" onclick="closeDownloadModal()">✕</button>
+        <h2 class="modal-title glitch" data-text="ТОЧКА ВХОДА">ТОЧКА ВХОДА</h2>
+        <div class="platform-grid">
+            <a href="https://thesilentchat.itch.io/the-silent-chat" target="_blank" class="platform-btn"><span class="platform-icon">🖥</span><span class="platform-name">WINDOWS</span></a>
+            <a href="https://thesilentchat.itch.io/the-silent-chat" target="_blank" class="platform-btn"><span class="platform-icon">🍎</span><span class="platform-name">macOS</span></a>
+            <a href="https://thesilentchat.itch.io/the-silent-chat" target="_blank" class="platform-btn"><span class="platform-icon">🐧</span><span class="platform-name">LINUX</span></a>
+            <a href="https://thesilentchat.itch.io/the-silent-chat" target="_blank" class="platform-btn"><span class="platform-icon">📱</span><span class="platform-name">iOS</span></a>
         </div>
     </div>
 </div>
 
-<!-- ДОСЬЕ -->
-<div id="dossier-modal" class="modal-overlay hidden" onclick="closeDossierModal(event)">
-    <div class="modal-content dossier-detail-content glass" onclick="event.stopPropagation()">
-        <button class="modal-close" onclick="closeDossierModal(event)">✕</button>
-        <div id="dossier-detail-body"></div>
-    </div>
-</div>
-
-<!-- КОЛОКОЛЬЧИК -->
+<!-- УВЕДОМЛЕНИЯ -->
 <div id="notif-panel" class="notif-panel glass hidden">
     <div class="notif-header">
         <h3>УВЕДОМЛЕНИЯ</h3>
         <button class="modal-close" style="position:static;" onclick="closeNotifPanel()">✕</button>
     </div>
-    <div id="notif-list" class="notif-list"><p class="profile-empty">Пока тихо. Система молчит.</p></div>
-    <div class="notif-footer"><button class="btn-small" onclick="markAllNotifRead()">Отметить всё прочитанным</button></div>
+    <div id="notif-list" class="notif-list"></div>
+    <div class="notif-footer"><button class="btn-small" onclick="markAllNotifRead()">Прочитать всё</button></div>
 </div>
 
-<!-- АДМИН-ПАНЕЛЬ -->
+<!-- АДМИНКА (сокращенно для экономии места) -->
 <div id="admin-modal" class="modal-overlay hidden" onclick="closeAdminPanel(event)">
     <div class="modal-content admin-content glass" onclick="event.stopPropagation()">
         <button class="modal-close" onclick="closeAdminPanel(event)">✕</button>
@@ -529,70 +427,18 @@
         <div class="admin-tabs">
             <button class="admin-tab active" onclick="switchAdminTab('apps')">ЗАЯВКИ</button>
             <button class="admin-tab" onclick="switchAdminTab('promo')">ПРОМОКОДЫ</button>
-            <button class="admin-tab" onclick="switchAdminTab('notif')">УВЕДОМЛЕНИЯ</button>
-            <button class="admin-tab" onclick="switchAdminTab('settings')">НАСТРОЙКИ</button>
+            <button class="admin-tab" onclick="switchAdminTab('content')">КОНТЕНТ</button>
         </div>
         <div id="admin-apps" class="admin-panel">
-            <div class="admin-filters">
-                <select id="admin-app-filter" onchange="loadAdminApplications()">
-                    <option value="pending">⏳ На рассмотрении</option>
-                    <option value="approved">✅ Одобренные</option>
-                    <option value="rejected">❌ Отклонённые</option>
-                    <option value="revoked">🚫 Отозванные</option>
-                </select>
-                <button class="btn-small" onclick="loadAdminApplications()">Обновить</button>
-            </div>
             <div id="admin-app-list"></div>
         </div>
         <div id="admin-promo" class="admin-panel hidden">
-            <h3 style="color:var(--neon-cyan);margin-bottom:1rem;font-size:1rem;">Сгенерировать промокод</h3>
-            <div class="input-group"><label>Тип награды</label><select id="promo-type"><option value="crystals">💎 Кристаллы</option><option value="coins">🪙 Монеты</option></select></div>
-            <div class="input-group"><label>Количество</label><input type="number" id="promo-value" placeholder="100"></div>
-            <div class="input-group"><label>Кому</label><select id="promo-scope" onchange="togglePromoScope()"><option value="global">🌍 Общий</option><option value="user">👤 Для юзера</option><option value="admin">👑 Для себя</option></select></div>
-            <div class="input-group hidden" id="promo-token-field"><label>TSC-Token пользователя</label><input type="text" id="promo-token-input" placeholder="TSC-XXXX-XXXX"></div>
-            <div class="input-group"><label>Максимум активаций (0 = безлимит)</label><input type="number" id="promo-maxuses" value="0"></div>
-            <div class="input-group"><label>Срок действия</label><input type="datetime-local" id="promo-expires"></div>
-            <div class="input-group"><label>Комментарий</label><input type="text" id="promo-comment" placeholder="Для новогоднего ивента"></div>
-            <button class="btn auth-btn" onclick="generatePromocode()">СГЕНЕРИРОВАТЬ</button>
-            <div id="promo-result" style="margin-top:1rem;"></div>
-            <h3 style="color:var(--neon-cyan);margin:2rem 0 1rem;font-size:1rem;">Существующие промокоды</h3>
-            <div id="promo-list"></div>
+             <div id="promo-result"></div>
         </div>
-        <div id="admin-notif" class="admin-panel hidden">
-            <h3 style="color:var(--neon-cyan);margin-bottom:1rem;font-size:1rem;">Массовая рассылка</h3>
-            <div class="input-group"><label>Заголовок</label><input type="text" id="notif-title-input" placeholder="ОБНОВЛЕНИЕ"></div>
-            <div class="input-group"><label>Текст</label><textarea id="notif-text-input" rows="4" placeholder="Вышло обновление 1.1!"></textarea></div>
-            <button class="btn auth-btn" onclick="sendMassNotification()">ОТПРАВИТЬ ВСЕМ</button>
-            <div id="notif-send-result" style="margin-top:1rem;"></div>
+        <div id="admin-content" class="admin-panel hidden">
+            <h3>Управление контентом</h3>
+            <p>Добавить опрос или модерация арта (в разработке)</p>
         </div>
-        <div id="admin-settings" class="admin-panel hidden">
-            <h3 style="color:var(--neon-cyan);margin-bottom:1rem;font-size:1rem;">Глобальные настройки</h3>
-            <label class="checkbox-label" style="margin-bottom:1rem;"><input type="checkbox" id="frozen-purchases-toggle" onchange="togglePurchasesFrozen()"> 🛑 Заморозить покупки</label>
-            <div id="settings-status" style="color:var(--text-dim);font-size:0.85rem;"></div>
-        </div>
-    </div>
-</div>
-
-<div id="image-preview-modal" class="image-preview hidden" onclick="closeImagePreview()">
-    <img id="preview-img" src="" alt="Avatar">
-</div>
-
-<div id="toast-container" class="toast-container"></div>
-
-<!-- ТЕРМИНАЛ -->
-<div id="terminal" class="terminal glass hidden">
-    <div class="terminal-header">
-        <span class="dot dot-red"></span><span class="dot dot-yellow"></span><span class="dot dot-green"></span>
-        <span class="terminal-title">root@silent_chat:~$</span>
-        <button id="terminal-close" class="terminal-close">✕</button>
-    </div>
-    <div id="terminal-output" class="terminal-output">
-        <p class="term-line">Добро пожаловать, оператор.</p>
-        <p class="term-line">Введи <span class="term-cmd">help</span> для списка команд.</p>
-    </div>
-    <div class="terminal-input-line">
-        <span class="term-prompt">&gt;</span>
-        <input type="text" id="terminal-input" autocomplete="off" spellcheck="false" />
     </div>
 </div>
 
