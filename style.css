@@ -596,4 +596,72 @@ a.contact-card:hover .contact-value { color: var(--neon-cyan); text-shadow: 0 0 
     text-shadow: 0 0 10px var(--neon-cyan);
     box-shadow: 0 0 10px rgba(0,240,255,0.2) inset;
 }
+    /* ===== БЛОГЕРЫ ===== */
+.blogger-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 1.5rem;
+    margin-top: 2rem;
+}
+.blogger-card {
+    padding: 2rem 1.5rem 1.6rem;
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: var(--radius-lg);
+    transition: all 0.4s;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+.blogger-card:hover {
+    border-color: var(--neon-cyan);
+    box-shadow: 0 0 30px rgba(0,240,255,0.2);
+    transform: translateY(-5px);
+}
+.blogger-avatar {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--neon-cyan), var(--neon-magenta));
+    color: var(--bg-dark);
+    font-size: 2rem;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 1rem;
+    box-shadow: 0 0 20px rgba(0,240,255,0.4);
+}
+.blogger-name {
+    color: var(--neon-cyan);
+    font-size: 1.2rem;
+    margin-bottom: 0.3rem;
+    letter-spacing: 1px;
+}
+.blogger-tg {
+    color: var(--text-dim);
+    font-size: 0.8rem;
+    margin-bottom: 1.1rem;
+}
+.blogger-socials {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.5rem;
+    margin-top: auto;
+}
+.blogger-social-btn {
+    padding: 0.4rem 0.8rem;
+    border-radius: 20px;
+    border: 1px solid var(--neon-cyan);
+    color: var(--neon-cyan);
+    text-decoration: none;
+    font-size: 0.78rem;
+    transition: all 0.3s;
+}
+.blogger-social-btn:hover {
+    background: var(--neon-cyan);
+    color: var(--bg-dark);
+    box-shadow: 0 0 10px var(--neon-cyan);
 }
