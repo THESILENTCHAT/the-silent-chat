@@ -1,15 +1,11 @@
 // ============================================================
-// FIREBASE ИМПОРТЫ
+// THE SILENT CHAT — script.js (ПОЛНЫЙ)
 // ============================================================
+
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
 import { 
-    getAuth, 
-    createUserWithEmailAndPassword, 
-    signInWithEmailAndPassword, 
-    signOut,
-    setPersistence,
-    browserLocalPersistence,
-    onAuthStateChanged
+    getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut,
+    setPersistence, browserLocalPersistence, onAuthStateChanged
 } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 import { 
     getFirestore, doc, setDoc, getDoc, updateDoc,
@@ -31,7 +27,9 @@ const db = getFirestore(app);
 
 setPersistence(auth, browserLocalPersistence).catch(err => console.error("Persistence error:", err));
 
-// ===== ГЛОБАЛЬНОЕ СОСТОЯНИЕ =====
+// ============================================================
+// ГЛОБАЛЬНОЕ СОСТОЯНИЕ
+// ============================================================
 window.currentUserData = null;
 window.myApplications = { blogger: null, obt: null, tester: null };
 window.myNotifications = [];
@@ -88,16 +86,16 @@ function getTimeLeft(expiresAt) {
 }
 
 // ============================================================
-// ОПТИМИЗИРОВАННАЯ МАТРИЦА
+// ОПТИМИЗИРОВАННАЯ МАТРИЦА (Отключена на телефонах)
 // ============================================================
 const canvas = document.getElementById('matrix');
-if (canvas) {
+if (canvas && window.innerWidth > 768) {
     const ctx = canvas.getContext('2d');
     let width, height, columns, drops;
     const fontSize = 16;
     const chars = 'アイウエオカキクケコサシスセソタチツテトナニヌネノハヒフヘホ0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ@#$%&*+=<>/\\';
     let lastTime = 0;
-    const fps = 30; // Ограничиваем FPS для экономии ресурсов телефона
+    const fps = 30; 
 
     function initMatrix() {
         width = canvas.width = window.innerWidth;
@@ -126,6 +124,8 @@ if (canvas) {
     initMatrix();
     window.addEventListener('resize', initMatrix);
     requestAnimationFrame(drawMatrix);
+} else if (canvas) {
+    canvas.style.display = 'none'; // Убираем с экрана на мобилках
 }
 
 // ============================================================
@@ -314,7 +314,6 @@ window.registerUser = async function() {
         const tokenPanel = document.getElementById('auth-token');
         tokenPanel.classList.remove('hidden');
         
-        // Фикс для телефонов: убираем фокус и скроллим к токену
         if (document.activeElement) document.activeElement.blur();
         setTimeout(() => { tokenPanel.scrollIntoView({ behavior: 'smooth', block: 'center' }); }, 300);
 
@@ -477,7 +476,7 @@ async function loadUserData() {
 }
 
 // ============================================================
-// СЕКЦИЯ С ТОКЕНОМ НА ГЛАВНОЙ
+// СЕКЦИЯ С ТОКЕНОМ
 // ============================================================
 window.renderTokenSection = function() {
     const box = document.getElementById('token-box');
@@ -699,10 +698,9 @@ async function sendNotificationToBot(type, data) {
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
                 type: type,
-                realName: data.realName,
-                contact: data.contactPlatform + ' ' + data.contactValue,
                 username: localStorage.getItem('tsc_user') || '',
-                tscToken: localStorage.getItem('tsc_token') || ''
+                tscToken: localStorage.getItem('tsc_token') || '',
+                ...data
             })
         });
     } catch (e) { console.error('Ошибка при отправке в Telegram:', e); }
@@ -748,7 +746,15 @@ window.submitBloggerApplication = async function() {
             subscribedConfirmed: true, status: 'pending', adminComment: '', createdAt: serverTimestamp()
         });
         await loadApplicationStatus();
-        sendNotificationToBot('blogger', { realName, contactPlatform, contactValue });
+        
+        // Отправляем в фоне (не блокируем интерфейс)
+        sendNotificationToBot('blogger', { 
+            realName, realAge: age, contactPlatform, contactValue, socials,
+            tgUsername: document.getElementById('blogger-tg').value.trim(),
+            ttUsername: document.getElementById('blogger-tt').value.trim(),
+            message: document.getElementById('blogger-message').value.trim()
+        });
+
         showToast('pending', 'Заявка отправлена', 'Ожидайте решения.');
     } catch(e) { err.textContent = 'Ошибка: ' + e.message; }
 };
@@ -773,16 +779,24 @@ window.submitOBTApplication = async function() {
 
     err.textContent = '';
     try {
+        const platform = document.getElementById('obt-platform').value;
+        const tgUsername = document.getElementById('obt-tg').value.trim();
+        const ttUsername = document.getElementById('obt-tt').value.trim();
+
         await addDoc(collection(db, "applications"), {
             uid: user.uid, type: 'obt', email: user.email, username: localStorage.getItem('tsc_user') || '',
             realName, realAge: age, contactPlatform, contactValue,
-            platform: document.getElementById('obt-platform').value, testTarget, testScope,
-            tgUsername: document.getElementById('obt-tg').value.trim(),
-            ttUsername: document.getElementById('obt-tt').value.trim(),
+            platform, testTarget, testScope,
+            tgUsername, ttUsername,
             subscribedConfirmed: true, status: 'pending', adminComment: '', createdAt: serverTimestamp()
         });
         await loadApplicationStatus();
-        sendNotificationToBot('obt', { realName, contactPlatform, contactValue });
+        
+        sendNotificationToBot('obt', { 
+            realName, realAge: age, contactPlatform, contactValue,
+            platform, testTarget, testScope, tgUsername, ttUsername 
+        });
+
         showToast('pending', 'Заявка отправлена', 'Ожидайте решения.');
     } catch(e) { err.textContent = 'Ошибка: ' + e.message; }
 };
@@ -803,16 +817,23 @@ window.submitTesterApplication = async function() {
 
     err.textContent = '';
     try {
+        const platform = document.getElementById('tester-platform').value;
+        const tgUsername = document.getElementById('tester-tg').value.trim();
+        const ttUsername = document.getElementById('tester-tt').value.trim();
+
         await addDoc(collection(db, "applications"), {
             uid: user.uid, type: 'tester', email: user.email, username: localStorage.getItem('tsc_user') || '',
             realName, realAge: age, contactPlatform, contactValue,
-            platform: document.getElementById('tester-platform').value,
-            tgUsername: document.getElementById('tester-tg').value.trim(),
-            ttUsername: document.getElementById('tester-tt').value.trim(),
+            platform, tgUsername, ttUsername,
             subscribedConfirmed: true, status: 'pending', adminComment: '', createdAt: serverTimestamp()
         });
         await loadApplicationStatus();
-        sendNotificationToBot('tester', { realName, contactPlatform, contactValue });
+        
+        sendNotificationToBot('tester', { 
+            realName, realAge: age, contactPlatform, contactValue,
+            platform, tgUsername, ttUsername 
+        });
+
         showToast('pending', 'Заявка отправлена', 'Ожидайте решения.');
     } catch(e) { err.textContent = 'Ошибка: ' + e.message; }
 };
@@ -921,11 +942,22 @@ async function loadAdminApplications() {
     const list = document.getElementById('admin-app-list');
     if (!list) return;
     list.innerHTML = '<p class="profile-empty">Загрузка...</p>';
-    const snap = await getDocs(query(collection(db, "applications"), where("status", "==", filter)));
-    const apps = [];
-    snap.forEach(d => apps.push({ id: d.id, ...d.data() }));
-    apps.sort((a, b) => (b.createdAt?.toMillis?.() || 0) - (a.createdAt?.toMillis?.() || 0));
-    list.innerHTML = apps.length ? apps.map(renderAdminApp).join('') : '<p class="profile-empty">Заявок нет.</p>';
+    
+    try {
+        let q = collection(db, "applications");
+        if (filter !== 'all') {
+            q = query(q, where("status", "==", filter));
+        }
+        
+        const snap = await getDocs(q);
+        const apps = [];
+        snap.forEach(d => apps.push({ id: d.id, ...d.data() }));
+        apps.sort((a, b) => (b.createdAt?.toMillis?.() || 0) - (a.createdAt?.toMillis?.() || 0));
+        list.innerHTML = apps.length ? apps.map(renderAdminApp).join('') : '<p class="profile-empty">Заявок нет.</p>';
+    } catch(e) {
+        console.error("Ошибка загрузки заявок:", e);
+        list.innerHTML = `<p class="profile-empty">Ошибка: ${e.message}</p>`;
+    }
 }
 
 function renderAdminApp(app) {
@@ -954,7 +986,19 @@ window.approveApplication = async function(appId, type, uid) {
         else if (type === 'obt') { upd.isOBT = true; upd.obtExpiresAt = expiresAt; }
         else if (type === 'tester') { upd.isTester = true; upd.testerExpiresAt = expiresAt; }
         await updateDoc(doc(db, "users", uid), upd);
+        
         await addDoc(collection(db, "notifications"), { uid, type: 'app_approved', title: '✅ Заявка одобрена', text: 'Проверьте профиль.', read: false, createdAt: serverTimestamp() });
+        
+        // Отправляем в ТГ юзеру
+        const appSnap = await getDoc(doc(db, "applications", appId));
+        if (appSnap.exists() && appSnap.data().tgUsername) {
+            fetch('https://silent-bot-es3x.onrender.com/api/notify_user', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ username: appSnap.data().tgUsername, status: 'approved' })
+            }).catch(e => console.log('TG user notify error:', e));
+        }
+        
         showToast('approved', 'Одобрено', 'Роль выдана.'); loadAdminApplications();
     } catch(e) { alert(e.message); }
 };
@@ -962,9 +1006,20 @@ window.approveApplication = async function(appId, type, uid) {
 window.rejectApplication = async function(appId) {
     const comment = prompt('Причина отклонения (обязательно):', '');
     if (!comment || comment.length < 3) return alert('Причина обязательна.');
+    
     const snap = await getDoc(doc(db, "applications", appId));
     await updateDoc(doc(db, "applications", appId), { status: 'rejected', adminComment: comment, reviewedAt: serverTimestamp() });
     await addDoc(collection(db, "notifications"), { uid: snap.data().uid, type: 'app_rejected', title: '❌ Заявка отклонена', text: `Причина: ${comment}`, read: false, createdAt: serverTimestamp() });
+    
+    // Отправляем в ТГ юзеру
+    if (snap.data().tgUsername) {
+        fetch('https://silent-bot-es3x.onrender.com/api/notify_user', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ username: snap.data().tgUsername, status: 'rejected', reason: comment })
+        }).catch(e => console.log('TG user notify error:', e));
+    }
+    
     showToast('rejected', 'Отклонено', 'Заявка отклонена.'); loadAdminApplications();
 };
 
