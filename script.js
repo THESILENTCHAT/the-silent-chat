@@ -1,11 +1,11 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
 import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged, updatePassword, deleteUser } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-import { getFirestore, doc, setDoc, getDoc, updateDoc, deleteDoc, addDoc, collection, query, where, getDocs, serverTimestamp, orderBy, increment, arrayUnion } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+import { getFirestore, doc, setDoc, getDoc, updateDoc, deleteDoc, addDoc, collection, query, where, getDocs, serverTimestamp, orderBy, increment } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
 const firebaseConfig = { apiKey: "AIzaSyA24goApnS9GR3PnhKnJXqRqJN05DTG6cc", authDomain: "tsc-universe.firebaseapp.com", projectId: "tsc-universe", storageBucket: "tsc-universe.firebasestorage.app", messagingSenderId: "537337043396", appId: "1:537337043396:web:b86e9a24928eee9a0a6c91" };
 const app = initializeApp(firebaseConfig); const auth = getAuth(app); const db = getFirestore(app);
 
-window.currentUserData = null; window.allDossiers = []; window.allTeamMembers = []; window.isAdmin = false; window.currentDossierFilter = 'all';
+window.currentUserData = null; window.allDossiers = []; window.allTeamMembers = []; window.isAdmin = false; window.currentDossierFilter = 'all'; window.myApplications = { blogger: null, obt: null, tester: null };
 
 const escapeHtml = (str) => !str ? '' : String(str).replace(/[&<>"']/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
 const formatDateTime = (ts) => { if(!ts) return ''; let d = ts.toDate ? ts.toDate() : new Date(ts); return `${String(d.getDate()).padStart(2,'0')}.${String(d.getMonth()+1).padStart(2,'0')}.${d.getFullYear()} ${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`; };
@@ -188,7 +188,7 @@ window.addEventListener('load', () => {
 function launchSiteReveal() {
     const title = document.getElementById('hero-title'); if (title) splitLetters(title, 0.06);
     document.querySelectorAll('.section').forEach(s => observer.observe(s));
-    loadDossiers(); loadTeam();
+    loadDossiers(); loadTeam(); loadApplicationStatus();
     if(window.currentUserData) {
         document.getElementById('my-token-display').textContent = window.currentUserData.tscToken;
         document.getElementById('token-box').classList.remove('hidden');
@@ -212,33 +212,17 @@ function updateProfileUI() {
         document.getElementById('profile-avatar-large').style.backgroundImage = 'none'; document.getElementById('profile-avatar-large').textContent = (window.currentUserData?.name || '?').charAt(0);
         document.getElementById('nav-avatar-container').style.backgroundImage = 'none'; document.getElementById('nav-avatar-container').textContent = (window.currentUserData?.name || '?').charAt(0);
     }
-    document.getElementById('set-name').value = window.currentUserData?.name || ''; document.getElementById('set-age').value = window.currentUserData?.age || ''; document.getElementById('set-username').value = window.currentUserData?.username || '';
-    document.getElementById('admin-panel-btn')?.classList.toggle('hidden', !window.isAdmin); renderHistory();
+    document.getElementById('admin-panel-btn')?.classList.toggle('hidden', !window.isAdmin); 
+    renderProfileApps();
 }
 window.openProfileModal = function() { document.getElementById('profile-modal').classList.remove('hidden'); updateProfileUI(); };
 window.closeProfileModal = function(e) { if(e) e.stopPropagation(); document.getElementById('profile-modal').classList.add('hidden'); };
-window.switchProfileTab = function(tab) {
-    ['info', 'history', 'settings'].forEach(t => document.getElementById(`prof-tab-${t}`).classList.add('hidden'));
-    document.getElementById(`prof-tab-${tab}`).classList.remove('hidden');
-    document.querySelectorAll('.profile-tab').forEach(btn => btn.classList.remove('active'));
-    document.querySelector(`.profile-tab[onclick="switchProfileTab('${tab}')"]`).classList.add('active');
-};
 window.uploadAvatar = function(e) { const reader = new FileReader(); reader.onload = (re) => { localStorage.setItem('tsc_avatar', re.target.result); updateProfileUI(); }; reader.readAsDataURL(e.target.files[0]); };
-window.saveSettings = async function() {
-    const name = document.getElementById('set-name').value; const age = document.getElementById('set-age').value; const username = document.getElementById('set-username').value;
-    await updateDoc(doc(db, "users", auth.currentUser.uid), { name, age, username });
-    window.currentUserData.name = name; window.currentUserData.age = age; window.currentUserData.username = username;
-    updateProfileUI(); showToast('approved', 'Сохранено', 'Данные обновлены.');
-};
+window.showImagePreview = function() { const avatar = localStorage.getItem('tsc_avatar'); if (avatar) { document.getElementById('preview-img').src = avatar; document.getElementById('image-preview-modal').classList.remove('hidden'); } };
+window.closeImagePreview = function() { document.getElementById('image-preview-modal').classList.add('hidden'); };
 window.changePassword = async function() { const p = prompt('Новый пароль:'); if(p && p.length >= 6) await updatePassword(auth.currentUser, p); };
 window.changeToken = async function() { const newToken = `TSC-${Math.random().toString(36).substr(2,4).toUpperCase()}-${Math.random().toString(36).substr(2,4).toUpperCase()}`; await updateDoc(doc(db, "users", auth.currentUser.uid), { tscToken: newToken }); alert("Новый токен: " + newToken); };
-window.addAccount = function() { signOut(auth).then(() => location.reload()); };
-window.deleteAccount = async function() { if(confirm("Удалить навсегда?")) { await deleteDoc(doc(db, "users", auth.currentUser.uid)); await deleteUser(auth.currentUser); location.reload(); } };
 window.logoutUser = function() { signOut(auth).then(() => { localStorage.clear(); location.reload(); }); };
-function renderHistory() {
-    const history = window.currentUserData?.history || [];
-    document.getElementById('profile-history-list').innerHTML = history.length ? history.map(h => `<div class="profile-app-item approved" style="border-color:var(--neon-cyan);"><span style="color:var(--neon-cyan);">${h.text}</span><div class="profile-app-expires">${formatDateTime(h.date)}</div></div>`).join('') : '<p class="profile-empty">Пусто.</p>';
-}
 
 async function loadDossiers() {
     const snap = await getDocs(query(collection(db, "dossiers"), orderBy("order", "asc")));
@@ -273,7 +257,7 @@ async function loadTeam() {
         const snap = await getDocs(query(collection(db, "applications"), where("status", "==", "approved")));
         const b = [], o = [], t = []; window.allTeamMembers = [];
         snap.forEach(d => { const data = { id: d.id, ...d.data() }; window.allTeamMembers.push(data); if(data.type === 'blogger') b.push(data); else if(data.type === 'obt') o.push(data); else if(data.type === 'tester') t.push(data); });
-        const render = (id, arr) => document.getElementById(id).innerHTML = arr.map(m => `<div class="blogger-card"><div class="blogger-avatar">${(m.hideRealName ? m.username : m.realName).charAt(0)}</div><h3 class="blogger-name">${m.hideRealName ? m.username : m.realName}</h3><div class="verify-badge">✅ Подтвержден</div></div>`).join('');
+        const render = (id, arr) => document.getElementById(id).innerHTML = arr.map(m => `<div class="blogger-card"><div class="blogger-avatar">${(m.realName || m.username).charAt(0)}</div><h3 class="blogger-name">${m.realName || m.username}</h3><div class="verify-badge">✅ Подтвержден</div></div>`).join('');
         render('bloggers-grid', b); render('obt-grid', o); render('testers-grid', t);
     } catch(e) { console.error(e); document.getElementById('bloggers-grid').innerHTML = '<p class="profile-empty">Ошибка загрузки.</p>'; }
 }
@@ -285,19 +269,57 @@ window.submitOBTApplication = async function() { await submitApp('obt'); };
 window.submitTesterApplication = async function() { await submitApp('tester'); };
 async function submitApp(type) {
     const realName = document.getElementById(`${type}-realname`).value; const age = document.getElementById(`${type}-age`).value;
-    const hide = document.getElementById(`${type}-hide-name`).checked; const contact = document.getElementById(`${type}-contact-value`).value;
-    try { await addDoc(collection(db, "applications"), { uid: auth.currentUser.uid, type, username: window.currentUserData.username, realName, realAge: age, hideRealName: hide, contactValue: contact, status: 'pending', createdAt: serverTimestamp() }); alert("Отправлено!"); document.getElementById(`app-${type}`).classList.add('hidden'); document.getElementById(`app-status-${type}`).classList.remove('hidden'); document.getElementById(`app-status-${type}`).innerHTML = `<div class="app-status-box pending">Статус: На рассмотрении</div>`; } catch(e) { alert(e.message); }
+    const contact = document.getElementById(`${type}-contact-value`).value;
+    try { await addDoc(collection(db, "applications"), { uid: auth.currentUser.uid, type, username: window.currentUserData.username, realName, realAge: age, contactValue: contact, status: 'pending', createdAt: serverTimestamp() }); alert("Отправлено!"); loadApplicationStatus(); } catch(e) { alert(e.message); }
+}
+async function loadApplicationStatus() {
+    if(!auth.currentUser) return;
+    const snap = await getDocs(query(collection(db, "applications"), where("uid", "==", auth.currentUser.uid)));
+    window.myApplications = { blogger: null, obt: null, tester: null };
+    snap.forEach(docSnap => {
+        const data = docSnap.data();
+        const existing = window.myApplications[data.type];
+        if (!existing || (data.createdAt?.toMillis?.() || 0) > (existing.createdAt?.toMillis?.() || 0)) {
+            window.myApplications[data.type] = { id: docSnap.id, ...data };
+        }
+    });
+    ['blogger', 'obt', 'tester'].forEach(type => {
+        const app = window.myApplications[type];
+        const formEl = document.getElementById(`app-${type}`); const statusEl = document.getElementById(`app-status-${type}`);
+        if (!formEl || !statusEl) return;
+        if (!app || app.status === 'rejected' || app.status === 'revoked') {
+            formEl.classList.remove('hidden'); statusEl.classList.add('hidden');
+        } else {
+            formEl.classList.add('hidden'); statusEl.classList.remove('hidden');
+            if (app.status === 'pending') statusEl.innerHTML = `<div class="app-status-box pending">⏳ На рассмотрении.</div>`;
+            else if (app.status === 'approved') statusEl.innerHTML = `<div class="app-status-box approved">✅ Одобрено!</div>`;
+        }
+    });
+    renderProfileApps();
+}
+function renderProfileApps() {
+    const activeC = document.getElementById('profile-apps-active'); if (!activeC) return;
+    const apps = window.myApplications || {};
+    const active = [];
+    ['blogger', 'obt', 'tester'].forEach(type => {
+        const app = apps[type]; if (!app) return;
+        const typeLabel = type === 'blogger' ? 'БЛОГЕР' : type === 'obt' ? 'ОБТ' : 'ТЕСТЕР';
+        if (app.status === 'pending' || app.status === 'approved') active.push({ ...app, typeLabel });
+    });
+    activeC.innerHTML = active.length ? active.map(app => `<div class="profile-app-item ${app.status}"><div class="profile-app-header"><span class="profile-app-type">${app.typeLabel}</span></div><div style="color:var(--text-dim);font-size:0.8rem;">Статус: ${app.status}</div></div>`).join('') : '<p class="profile-empty">Нет активных заявок.</p>';
 }
 
 window.openAdminPanel = function() { document.getElementById('admin-modal').classList.remove('hidden'); loadAdminApps(); };
 window.closeAdminPanel = function(e) { if(e) e.stopPropagation(); document.getElementById('admin-modal').classList.add('hidden'); };
-window.switchAdminTab = function(t) { ['apps','promo'].forEach(x => document.getElementById(`admin-${x}`).classList.toggle('hidden', x !== t)); };
+window.switchAdminTab = function(t) { ['apps','promo','notif','settings'].forEach(x => document.getElementById(`admin-${x}`).classList.toggle('hidden', x !== t)); };
 async function loadAdminApps() {
     const snap = await getDocs(query(collection(db, "applications"), where("status", "==", "pending")));
     document.getElementById('admin-app-list').innerHTML = snap.docs.map(d => `<div class="admin-app-item pending"><b>${d.data().type}</b> - ${d.data().username} <br><button class="btn-small" style="margin-top:5px;" onclick="appAction('${d.id}', 'approved')">Одобрить</button></div>`).join('');
 }
 window.appAction = async function(id, status) { await updateDoc(doc(db, "applications", id), { status }); loadAdminApps(); loadTeam(); };
 window.generatePromocode = async function() { const code = `TSC-${Math.random().toString(36).substr(2,4).toUpperCase()}`; await setDoc(doc(db, "promocodes", code), { type: document.getElementById('promo-type').value, value: parseInt(document.getElementById('promo-value').value), usedCount: 0, active: true }); document.getElementById('promo-result').textContent = "Код: " + code; };
+window.sendMassNotification = async function() { alert("В разработке"); };
+window.togglePurchasesFrozen = async function() { alert("В разработке"); };
 
 window.copyToken = function(id) { const el = document.getElementById(id); if(el) navigator.clipboard.writeText(el.textContent); };
 window.redeemPromo = async function() { const code = document.getElementById('promo-input').value.toUpperCase(); const snap = await getDoc(doc(db, "promocodes", code)); if(snap.exists()) { alert("Промокод активирован!"); } else { alert("Неверный код"); } };
