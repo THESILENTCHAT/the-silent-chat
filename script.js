@@ -615,7 +615,11 @@ function renderDossiers() {
         
         const hasPhoto = d.photo && d.photo.trim() !== '';
         const photoHtml = hasPhoto ? `<div class="dossier-photo" style="background-image:url('${escapeHtml(d.photo)}');"></div>` : `<div class="dossier-photo silhouette">👤</div>`;
-        const statusLabel = status === 'alive' ? 'Жив' : status === 'missing' ? 'Пропал' : status === 'dead' ? 'Мёртв' : 'Неизвестно';
+                const isFemale = d.gender === 'female';
+        let statusLabel = 'Неизвестно';
+        if (status === 'alive') statusLabel = isFemale ? 'Жива' : 'Жив';
+        else if (status === 'missing') statusLabel = isFemale ? 'Пропала' : 'Пропал';
+        else if (status === 'dead') statusLabel = isFemale ? 'Мертва' : 'Мёртв';
         
         return `<div class="dossier-card" onclick="openDossierModal('${d.id}')">
                     ${photoHtml}
@@ -635,7 +639,11 @@ window.openDossierModal = function(id) {
     if (!d) return;
     const personalStatuses = window.currentUserData?.dossierStatuses || {};
     const status = personalStatuses[id] || d.status || 'unknown';
-    const statusLabel = status === 'alive' ? '🟢 Жив' : status === 'missing' ? '🟡 Пропал' : status === 'dead' ? '🔴 Мёртв' : '⚪ Неизвестно';
+        const isFemale = d.gender === 'female';
+    let statusLabel = '⚪ Неизвестно';
+    if (status === 'alive') statusLabel = isFemale ? '🟢 Жива' : '🟢 Жив';
+    else if (status === 'missing') statusLabel = isFemale ? '🟡 Пропала' : '🟡 Пропал';
+    else if (status === 'dead') statusLabel = isFemale ? '🔴 Мертва' : '🔴 Мёртв';
     
     document.getElementById('dossier-detail-body').innerHTML = `
         ${d.photo ? `<div class="dossier-detail-photo" style="background-image:url('${escapeHtml(d.photo)}');"></div>` : ''}
