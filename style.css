@@ -48,7 +48,6 @@ body { background-color: var(--bg-dark); background-image: radial-gradient(ellip
 .btn-small:hover { background: var(--neon-cyan); color: var(--bg-dark); }
 .btn-danger { border-color: var(--neon-red); color: var(--neon-red); }
 .btn-danger:hover { background: var(--neon-red); color: var(--bg-dark); }
-.btn-admin { border-color: var(--neon-magenta); color: var(--neon-magenta); }
 .section { padding: 4rem 3rem; max-width: 1200px; margin: 3rem auto; text-align: center; border-radius: 40px; opacity: 0; transform: translateY(40px) scale(0.98); transition: opacity 0.9s ease, transform 0.9s cubic-bezier(0.34, 1.2, 0.64, 1); }
 .section.in { opacity: 1; transform: translateY(0) scale(1); }
 .section h2 { font-size: clamp(1.5rem, 4vw, 2.5rem); color: var(--neon-magenta); text-shadow: 0 0 15px var(--neon-magenta); letter-spacing: 3px; margin-bottom: 2rem; text-transform: uppercase; }
@@ -124,18 +123,6 @@ body { background-color: var(--bg-dark); background-image: radial-gradient(ellip
 .role-badge.player { border-color: var(--text-dim); color: var(--text-dim); }
 .profile-info { text-align: left; background: rgba(0,240,255,0.05); padding: 1rem; border: 1px solid rgba(0,240,255,0.2); margin-bottom: 1.5rem; border-radius: var(--radius-md); }
 
-/* НОВЫЕ СТИЛИ */
-.reviews-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1.5rem; }
-.review-card { background: rgba(255,255,255,0.03); padding: 1.5rem; border-radius: var(--radius-md); border: 1px solid rgba(255,255,255,0.1); text-align: left; transition: 0.3s; }
-.review-card:hover { border-color: var(--neon-magenta); box-shadow: 0 0 20px rgba(255,0,170,0.2); }
-.review-header { display: flex; align-items: center; gap: 1rem; margin-bottom: 1rem; }
-.review-avatar { width: 40px; height: 40px; border-radius: 50%; background: var(--neon-cyan); color: var(--bg-dark); display: flex; align-items: center; justify-content: center; font-weight: bold; box-shadow: 0 0 10px var(--neon-cyan); }
-.review-name { color: var(--neon-cyan); font-weight: bold; }
-.review-date { font-size: 0.75rem; color: var(--text-dim); }
-.gallery-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 1rem; }
-.gallery-item { aspect-ratio: 1/1; background: #000 center/cover; border-radius: var(--radius-md); border: 1px solid var(--neon-cyan); cursor: pointer; transition: 0.3s; }
-.gallery-item:hover { transform: scale(1.05); box-shadow: 0 0 20px var(--neon-cyan); }
-
 /* ЭФФЕКТЫ */
 .intro-overlay { position: fixed; inset: 0; background: #030306; z-index: 10000; display: flex; justify-content: center; align-items: center; transition: opacity 0.8s ease; }
 .intro-overlay.fade-out { opacity: 0; pointer-events: none; }
@@ -177,28 +164,6 @@ body { background-color: var(--bg-dark); background-image: radial-gradient(ellip
 .auth-btn { width: 100%; margin-top: 0.8rem; }
 .token-display { font-size: 1.5rem; color: var(--neon-green); font-weight: bold; padding: 1rem; background: rgba(39,201,63,0.1); border: 1px dashed var(--neon-green); border-radius: var(--radius-md); margin: 1.5rem 0 0.5rem; }
 .error-text { color: var(--neon-red); font-size: 0.85rem; margin-bottom: 1rem; }
-
-/* ADMIN */
-.admin-tabs { display: flex; gap: 0.5rem; margin-bottom: 2rem; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 1rem; justify-content: center; }
-.admin-tab { flex: 1; background: transparent; border: none; color: var(--text-dim); font-family: inherit; font-size: 1rem; cursor: pointer; padding: 0.5rem; }
-.admin-tab.active { color: var(--neon-magenta); border-bottom: 2px solid var(--neon-magenta); text-shadow: 0 0 10px var(--neon-magenta); }
-.admin-app-item { padding: 1rem; border-radius: var(--radius-md); margin-bottom: 0.8rem; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.1); text-align: left; }
-.admin-app-item.pending { border-left: 3px solid var(--neon-yellow); }
-.admin-app-item.approved { border-left: 3px solid var(--neon-green); }
-.admin-app-item .app-actions { display: flex; gap: 10px; margin-top: 10px; }
-.btn-approve { background: rgba(39,201,63,0.1); border: 1px solid var(--neon-green); color: var(--neon-green); padding: 0.4rem 1rem; border-radius: 20px; cursor: pointer; font-family: inherit; }
-.btn-approve:hover { background: var(--neon-green); color: var(--bg-dark); }
-.btn-reject { background: rgba(255,95,86,0.1); border: 1px solid var(--neon-red); color: var(--neon-red); padding: 0.4rem 1rem; border-radius: 20px; cursor: pointer; font-family: inherit; }
-.btn-reject:hover { background: var(--neon-red); color: var(--bg-dark); }
-
-/* TOASTS */
-.toast-container { position: fixed; bottom: 20px; right: 20px; z-index: 9999; display: flex; flex-direction: column; gap: 10px; }
-.toast { padding: 1rem 1.5rem; border-radius: var(--radius-md); background: rgba(20, 20, 30, 0.9); border: 1px solid var(--neon-cyan); color: white; box-shadow: 0 10px 30px rgba(0,0,0,0.5); transition: opacity 0.3s; backdrop-filter: blur(10px); }
-.toast-title { font-weight: bold; color: var(--neon-cyan); margin-bottom: 0.3rem; }
-.toast.approved { border-color: var(--neon-green); }
-.toast.approved .toast-title { color: var(--neon-green); }
-.toast.rejected { border-color: var(--neon-red); }
-.toast.rejected .toast-title { color: var(--neon-red); }
 
 /* HIDDEN */
 .hidden { display: none !important; }
