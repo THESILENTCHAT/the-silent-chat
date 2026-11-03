@@ -570,13 +570,12 @@
     </div>
 </div>
 
-<div id="image-preview-modal" class="image-preview hidden" onclick="closeImagePreview()">
-    <img id="preview-img" src="" alt="Avatar">
-</div>
-
-<div id="toast-container" class="toast-container"></div>
-
 <!-- МОДАЛКА НАСТРОЕК -->
+<div id="settings-modal" class="modal-overlay hidden" onclick="closeSettingsModal(event)">
+    <div class="modal-content glass" onclick="event.stopPropagation()" style="max-width: 400px;">
+        <button class="modal-close" onclick="closeSettingsModal(event)">✕</button>
+        <h2 class="modal-title glitch" data-text="НАСТРОЙКИ">НАСТРОЙКИ</h2>
+        
         <div style="text-align: left; max-height: 50vh; overflow-y: auto; padding-right: 10px;">
             <div class="input-group"><label>Никнейм (Отображаемое имя)</label><input type="text" id="set-nickname" placeholder="Например: Призрак"></div>
             <div class="input-group"><label>Реальное Имя</label><input type="text" id="set-name" placeholder="Иван"></div>
@@ -604,6 +603,40 @@
         </div>
     </div>
 </div>
+
+<div id="image-preview-modal" class="image-preview hidden" onclick="closeImagePreview()">
+    <img id="preview-img" src="" alt="Avatar">
+</div>
+
+<div id="toast-container" class="toast-container"></div>
+
+<!-- МУЗЫКАЛЬНЫЙ ПЛЕЕР С ТАЙМЕРОМ -->
+<div id="tsc-audio-player" class="music-player glass">
+    <div class="music-visualizer" id="music-visualizer">
+        <span></span><span></span><span></span><span></span>
+    </div>
+    
+    <button id="music-toggle-btn" class="music-btn pulse-play" onclick="toggleMusic()">▶</button>
+    
+    <div class="music-info">
+        <div class="music-title" id="music-title">TSC — Саундтрек</div>
+        <div class="music-status">
+            <span id="music-status-text">Нажми Play</span> 
+            <span id="music-time" style="color: var(--neon-cyan); margin-left: 5px;">0:00 / 0:00</span>
+        </div>
+    </div>
+
+    <div class="music-playlists">
+        <button id="btn-playlist-friends" class="playlist-btn active" onclick="switchPlaylist('friends')">ДРУЗЬЯ</button>
+        <button id="btn-playlist-game" class="playlist-btn" onclick="switchPlaylist('game')">ИГРА</button>
+    </div>
+
+    <button class="music-btn next-btn" onclick="nextTrack()" title="Следующий трек">⏭</button>
+    
+    <input type="range" id="music-volume" class="music-volume" min="0" max="1" step="0.05" value="0.4" oninput="changeVolume(this.value)">
+</div>
+
+<audio id="bg-music"></audio>
     
 <!-- ТЕРМИНАЛ -->
 <div id="terminal" class="terminal glass hidden">
@@ -621,31 +654,6 @@
         <input type="text" id="terminal-input" autocomplete="off" spellcheck="false" />
     </div>
 </div>
-
-<!-- МУЗЫКАЛЬНЫЙ ПЛЕЕР С АНИМАЦИЯМИ -->
-<div id="tsc-audio-player" class="music-player glass">
-    <div class="music-visualizer" id="music-visualizer">
-        <span></span><span></span><span></span><span></span>
-    </div>
-    
-    <button id="music-toggle-btn" class="music-btn pulse-play" onclick="toggleMusic()">▶</button>
-    
-    <div class="music-info">
-        <div class="music-title" id="music-title">TSC — Саундтрек</div>
-        <div class="music-status" id="music-status">Нажми Play</div>
-    </div>
-
-    <div class="music-playlists">
-        <button id="btn-playlist-friends" class="playlist-btn active" onclick="switchPlaylist('friends')">ДРУЗЬЯ</button>
-        <button id="btn-playlist-game" class="playlist-btn" onclick="switchPlaylist('game')">ИГРА</button>
-    </div>
-
-    <button class="music-btn next-btn" onclick="nextTrack()" title="Следующий трек">⏭</button>
-    
-    <input type="range" id="music-volume" class="music-volume" min="0" max="1" step="0.05" value="0.4" oninput="changeVolume(this.value)">
-</div>
-
-<audio id="bg-music"></audio>
 
 <script type="module" src="script.js"></script>
 </body>
