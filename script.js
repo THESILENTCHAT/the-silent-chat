@@ -1669,3 +1669,42 @@ window.autoFillDossiers = async function() {
     }
     alert(`Успешно добавлено/обновлено ${count} персонажей!`);
 };
+
+// ============================================================
+// МУЗЫКАЛЬНЫЙ ПЛЕЕР
+// ============================================================
+const bgMusic = document.getElementById('bg-music');
+const musicBtn = document.getElementById('music-toggle-btn');
+const musicStatus = document.getElementById('music-status');
+const musicVolume = document.getElementById('music-volume');
+
+// Устанавливаем громкость по умолчанию (50%)
+if (bgMusic && musicVolume) {
+    bgMusic.volume = musicVolume.value;
+}
+
+window.toggleMusic = function() {
+    if (!bgMusic) return;
+    
+    if (bgMusic.paused) {
+        bgMusic.play().then(() => {
+            musicBtn.innerHTML = '⏸';
+            musicStatus.textContent = 'Играет...';
+            musicStatus.style.color = 'var(--neon-green)';
+        }).catch(e => {
+            console.log("Браузер заблокировал автоплей:", e);
+            musicStatus.textContent = 'Ошибка';
+        });
+    } else {
+        bgMusic.pause();
+        musicBtn.innerHTML = '▶';
+        musicStatus.textContent = 'На паузе';
+        musicStatus.style.color = 'var(--text-dim)';
+    }
+};
+
+window.changeVolume = function(val) {
+    if (bgMusic) {
+        bgMusic.volume = val;
+    }
+};
