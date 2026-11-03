@@ -467,12 +467,10 @@
             <button class="btn-small" onclick="document.getElementById('avatar-upload').click()">Загрузить аватар</button>
         </div>
         <div class="profile-roles" id="profile-roles"></div>
-        
-        <!-- Блок с информацией (будет меняться в зависимости от настроек) -->
+               <!-- Блок с информацией (будет меняться в зависимости от настроек) -->
         <div class="profile-info" id="profile-info-block">
             <!-- Сюда JS будет вставлять данные -->
         </div>
-
         <div class="profile-section">
             <h3 class="profile-section-title">Мои заявки</h3>
             <div id="profile-apps-active"><p class="profile-empty">Нет активных заявок.</p></div>
@@ -483,7 +481,7 @@
         </div>
         <div class="profile-actions">
             <button class="btn" onclick="linkGame()">🎮 ПРИВЯЗАТЬ ИГРУ</button>
-            <button class="btn" id="link-tg-btn" onclick="linkTelegram()">✈️ ПРИВЯЗАТЬ TSC-БОТА</button>
+            <button class="btn" onclick="linkTelegram()">✈️ ПРИВЯЗАТЬ TSC-БОТА</button>
             <button class="btn" onclick="openSettingsModal()">⚙️ НАСТРОЙКИ</button>
             <button class="btn btn-admin hidden" id="admin-panel-btn" onclick="openAdminPanel()">👑 АДМИН-ПАНЕЛЬ</button>
         </div>
@@ -572,12 +570,13 @@
     </div>
 </div>
 
-<!-- МОДАЛКА НАСТРОЕК (ВОТ ЗДЕСЬ ОНА ТЕПЕРЬ ПРАВИЛЬНО ОБЕРНУТА) -->
-<div id="settings-modal" class="modal-overlay hidden" onclick="closeSettingsModal(event)">
-    <div class="modal-content glass" onclick="event.stopPropagation()" style="max-width: 400px;">
-        <button class="modal-close" onclick="closeSettingsModal(event)">✕</button>
-        <h2 class="modal-title glitch" data-text="НАСТРОЙКИ">НАСТРОЙКИ</h2>
-        
+<div id="image-preview-modal" class="image-preview hidden" onclick="closeImagePreview()">
+    <img id="preview-img" src="" alt="Avatar">
+</div>
+
+<div id="toast-container" class="toast-container"></div>
+
+<!-- МОДАЛКА НАСТРОЕК -->
         <div style="text-align: left; max-height: 50vh; overflow-y: auto; padding-right: 10px;">
             <div class="input-group"><label>Никнейм (Отображаемое имя)</label><input type="text" id="set-nickname" placeholder="Например: Призрак"></div>
             <div class="input-group"><label>Реальное Имя</label><input type="text" id="set-name" placeholder="Иван"></div>
@@ -605,12 +604,6 @@
         </div>
     </div>
 </div>
-
-<div id="image-preview-modal" class="image-preview hidden" onclick="closeImagePreview()">
-    <img id="preview-img" src="" alt="Avatar">
-</div>
-
-<div id="toast-container" class="toast-container"></div>
     
 <!-- ТЕРМИНАЛ -->
 <div id="terminal" class="terminal glass hidden">
@@ -628,6 +621,22 @@
         <input type="text" id="terminal-input" autocomplete="off" spellcheck="false" />
     </div>
 </div>
+
+<!-- МУЗЫКАЛЬНЫЙ ПЛЕЕР -->
+<div id="tsc-audio-player" class="music-player glass">
+    <button id="music-toggle-btn" class="music-btn" onclick="toggleMusic()">▶</button>
+    <div class="music-info">
+        <div class="music-title">SENS — Холод</div>
+        <div class="music-status" id="music-status">Нажми Play</div>
+    </div>
+    <input type="range" id="music-volume" min="0" max="1" step="0.05" value="0.5" onchange="changeVolume(this.value)">
+</div>
+
+<!-- Скрытый аудио-тег. Сюда мы потом вставим ссылку на трек -->
+<audio id="bg-music" loop>
+    <!-- ЗАМЕНИ ССЫЛКУ НИЖЕ НА СВОЙ ТРЕК -->
+    <source src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" type="audio/mpeg">
+</audio>
 
 <script type="module" src="script.js"></script>
 </body>
