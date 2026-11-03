@@ -467,11 +467,9 @@
             <button class="btn-small" onclick="document.getElementById('avatar-upload').click()">Загрузить аватар</button>
         </div>
         <div class="profile-roles" id="profile-roles"></div>
-        <div class="profile-info">
-            <p><span class="info-label">Имя:</span> <span id="prof-name">Неизвестно</span></p>
-            <p><span class="info-label">Возраст:</span> <span id="prof-age">0</span></p>
-            <p><span class="info-label">Пол:</span> <span id="prof-gender">Неизвестно</span></p>
-            <p><span class="info-label">Юзернейм:</span> <span id="prof-user">@...</span></p>
+               <!-- Блок с информацией (будет меняться в зависимости от настроек) -->
+        <div class="profile-info" id="profile-info-block">
+            <!-- Сюда JS будет вставлять данные -->
         </div>
         <div class="profile-section">
             <h3 class="profile-section-title">Мои заявки</h3>
@@ -579,12 +577,26 @@
 <div id="toast-container" class="toast-container"></div>
 
 <!-- МОДАЛКА НАСТРОЕК -->
-<div id="settings-modal" class="modal-overlay hidden" onclick="closeSettingsModal(event)">
-    <div class="modal-content glass" onclick="event.stopPropagation()" style="max-width: 400px;">
-        <button class="modal-close" onclick="closeSettingsModal(event)">✕</button>
-        <h2 class="modal-title glitch" data-text="НАСТРОЙКИ">НАСТРОЙКИ</h2>
-        
-        <div class="profile-actions" style="margin-top: 2rem;">
+        <div style="text-align: left; max-height: 50vh; overflow-y: auto; padding-right: 10px;">
+            <div class="input-group"><label>Никнейм (Отображаемое имя)</label><input type="text" id="set-nickname" placeholder="Например: Призрак"></div>
+            <div class="input-group"><label>Реальное Имя</label><input type="text" id="set-name" placeholder="Иван"></div>
+            <div class="input-group"><label>Возраст</label><input type="number" id="set-age" placeholder="20"></div>
+            <div class="input-group"><label>Пол</label>
+                <select id="set-gender"><option value="Мужской">Мужской</option><option value="Женский">Женский</option><option value="Другое">Другое</option></select>
+            </div>
+            <div class="input-group"><label>Юзернейм</label><input type="text" id="set-username" placeholder="@nickname"></div>
+            
+            <label class="checkbox-label" style="margin: 1.5rem 0; background: rgba(255,0,170,0.1); padding: 1rem; border-radius: 10px; border: 1px solid var(--neon-magenta);">
+                <input type="checkbox" id="set-hide-all" style="accent-color: var(--neon-magenta);"> <strong>Скрыть всю личную информацию</strong> (Имя, Возраст, Пол)
+            </label>
+            
+            <button class="btn auth-btn" onclick="saveSettings()" style="margin-bottom: 1rem;">СОХРАНИТЬ ИЗМЕНЕНИЯ</button>
+        </div>
+
+        <hr style="border-color: rgba(255,255,255,0.1); margin: 1rem 0;">
+
+        <div class="profile-actions">
+            <button class="btn btn-danger" onclick="switchAccount()">🔄 Сменить / Добавить аккаунт</button>
             <button class="btn" onclick="changePassword()">Сменить пароль</button>
             <button class="btn" onclick="changeToken()">Сменить токен</button>
             <button class="btn btn-danger" onclick="logoutUser()">Выйти</button>
