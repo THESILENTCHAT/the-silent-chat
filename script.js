@@ -750,15 +750,57 @@ window.closeTesterProfileModal = function(e) {
 // ПРОФИЛЬ
 // ============================================================
 function updateProfileUI() {
-    const name = localStorage.getItem('tsc_name') || 'Неизвестно';
+    const data = window.currentUserData || {};
     const avatar = localStorage.getItem('tsc_avatar');
 
-    if (document.getElementById('prof-user')) {
-        document.getElementById('prof-user').textContent = localStorage.getItem('tsc_user') || '@...';
-        document.getElementById('prof-name').textContent = name;
-        document.getElementById('prof-age').textContent = localStorage.getItem('tsc_age') || '0';
-        document.getElementById('prof-gender').textContent = localStorage.getItem('tsc_gender') || 'Неизвестно';
+    // === 1. ОБНОВЛЕНИЕ КНОПОК ПРИВЯЗКИ ===
+    const tgBtn = document.getElementById('link-tg-btn');
+    if (data.telegram_id && tgBtn) {
+        tgBtn.innerHTML = '✅ TSC-БОТ ПРИВЯЗАН';
+        tgBtn.style.borderColor = 'var(--neon-green)';
+        tgBtn.style.color = 'var(--neon-green)';
+        tgBtn.onclick = () => showToast('approved', 'Привязано', 'Ваш Telegram уже привязан к аккаунту.');
     }
+
+    // === 2. ОТОБРАЖЕНИЕ ИНФОРМАЦИИ ===
+    const infoBlock = document.getElementById('profile-info-block');
+    if (infoBlock) {
+        const displayName = data.nickname || data.username || 'Неизвестно';
+        const displayUser = data.username || '@...';
+
+        if (data.hide_all_info) {
+            infoBlock.innerHTML = `
+                <p><span class="info-label">Никнейм:</span> <span style="color:var(--neon-cyan); font-weight:bold;">${displayName}</span></p>
+                <p><span class="info-label">Юзернейм:</span> <span>${displayUser}</span></p>
+                <p style="font-size: 0.75rem; color: var(--text-dim); margin-top: 1rem; text-align: center;">🔒 Личная информация скрыта.</p>
+            `;
+        } else {
+            infoBlock.innerHTML = `
+                <p><span class="info-label">Никнейм:</span> <span style="color:var(--neon-cyan); font-weight:bold;">${displayName}</span></p>
+                <p><span class="info-label">Имя:</span> <span>${data.name || 'Неизвестно'}</span></p>
+                <p><span class="info-label">Возраст:</span> <span>${data.age || '0'}</span></p>
+                <p><span class="info-label">Пол:</span> <span>${data.gender || 'Неизвестно'}</span></p>
+                <p><span class="info-label">Юзернейм:</span> <span>${displayUser}</span></p>
+            `;
+        }
+    }
+    
+    // === 3. АВАТАРКИ ===
+    const navAvatar = document.getElementById('nav-avatar-container');
+    const profAvatar = document.getElementById('profile-avatar-large');
+    const initial = (data.nickname || data.name || '?').charAt(0).toUpperCase();
+
+    if (avatar) {
+        if (navAvatar) { navAvatar.style.backgroundImage = `url(${avatar})`; navAvatar.textContent = ''; }
+        if (profAvatar) { profAvatar.style.backgroundImage = `url(${avatar})`; profAvatar.textContent = ''; }
+    } else {
+        if (navAvatar) { navAvatar.style.backgroundImage = 'none'; navAvatar.textContent = initial; }
+        if (profAvatar) { profAvatar.style.backgroundImage = 'none'; profAvatar.textContent = initial; }
+    }
+
+    renderProfileRoles();
+    document.getElementById('admin-panel-btn')?.classList.toggle('hidden', !window.isAdmin);
+}
     
     const navAvatar = document.getElementById('nav-avatar-container');
     const profAvatar = document.getElementById('profile-avatar-large');
@@ -1621,4 +1663,55 @@ window.autoFillDossiers = async function() {
         count++;
     }
     alert(`Успешно добавлено/обновлено ${count} персонажей!`);
+};
+
+// Открытие настроек с загрузкой текущих данных
+window.openSettingsModal = async function() {
+    if (!window.currentUserData) return;
+    const data = window.currentUserData;
+    
+    document.getElementById('set-nickname').value = data.nickname || '';
+    document.getElementById('set-name').value = data.name || '';
+    document.getElementById('set-age').value = data.age || '';
+    document.getElementById('set-gender').value = data.gender || 'Мужской';
+    document.getElementById('set-username').value = data.username || '';
+    document.getElementById('set-hide-all').checked = data.hide_all_info || false;
+
+    document.getElementById('settings-modal').classList.remove('hidden');
+    document.getElementById('profile-modal').classList.add('hidden');
+};
+
+// Сохранение настроек
+window.saveSettings = async function() {
+    const nickname = document.getElementById('set-nickname').value.trim();
+    const name = document.getElementById('set-name').value.trim();
+    const age = document.getElementById('set-age').value.trim();
+    const gender = document.getElementById('set-gender').value;
+    const username = document.getElementById('set-username').value.trim();
+    const hideAll = document.getElementById('set-hide-all').checked;
+
+    try {
+        await updateDoc(doc(db, "users", auth.currentUser.uid), {
+            nickname: nickname,
+            name: name,
+            age: age,
+            gender: gender,
+            username: username,
+            hide_all_info: hideAll
+        });
+        
+        await loadUserData(); // Обновляем локальные данные
+        updateProfileUI(); // Перерисовываем профиль
+        showToast('approved', 'Успех', 'Настройки сохранены!');
+        closeSettingsModal(); // Закрываем настройки
+    } catch (e) {
+        alert("Ошибка сохранения: " + e.message);
+    }
+};
+
+// Смена / Добавление аккаунта
+window.switchAccount = function() {
+    if(confirm("Чтобы войти в другой аккаунт, текущий нужно покинуть. Продолжить?")) {
+        logoutUser();
+    }
 };
