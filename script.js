@@ -1703,12 +1703,12 @@ const playerContainer = document.getElementById('tsc-audio-player');
 // ВАЖНО: Если папка называется musicSait, поменяй пути тут!
 const playlists = {
     friends: [
-        { title: "Трек 1", src: "music/Tsc.mp3" },
-        { title: "Трек 2", src: "music/TSC2.mp3" }
+        { title: "TSC", src: "music/tsc.mp3" },
+        { title: "TSC 2", src: "music/tsc2.mp3" }
     ],
     game: [
-        { title: "Dark Theme", src: "music/dark_theme.mp3" },
-        { title: "Day of Chaos", src: "music/day_of_chaos.mp3" },
+        { title: "Dark past", src: "music/dark_theme.mp3" },
+        { title: "The day of suffering", src: "music/day_of_chaos.mp3" },
         { title: "Horror Trailer", src: "music/horror_trailer.mp3" }
     ]
 };
