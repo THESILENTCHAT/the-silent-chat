@@ -1784,3 +1784,4 @@ bgMusic.addEventListener('ended', nextTrack);
 window.changeVolume = function(val) { if (bgMusic) bgMusic.volume = val; };
 loadTrack('friends', 0);
 if (musicVolume) bgMusic.volume = musicVolume.value;
+
