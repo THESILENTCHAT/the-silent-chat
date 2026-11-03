@@ -591,13 +591,31 @@ window.redeemPromo = async function() {
         }
         
         const userRef = doc(db, "users", auth.currentUser.uid);
-        const rewardField = promo.type === 'crystals' ? 'crystals' : 'coins';
+        const updates = {};
+        let rewardMessage = "✅ Успешно! Получено: ";
         
-        await updateDoc(userRef, { [rewardField]: increment(promo.value) });
+        // Проверяем, что выдать
+        if (promo.crystals && promo.crystals > 0) {
+            updates.crystals = increment(promo.crystals);
+            rewardMessage += `${promo.crystals} 💎 `;
+        }
+        if (promo.coins && promo.coins > 0) {
+            updates.coins = increment(promo.coins);
+            rewardMessage += `${promo.coins} 🪙`;
+        }
+
+        // Если старый промокод (от бота), где было только type и value
+        if (!promo.crystals && !promo.coins && promo.type && promo.value) {
+            const rewardField = promo.type === 'crystals' ? 'crystals' : 'coins';
+            updates[rewardField] = increment(promo.value);
+            rewardMessage += `${promo.value} ${promo.type === 'crystals' ? '💎' : '🪙'}`;
+        }
+        
+        await updateDoc(userRef, updates);
         await updateDoc(promoRef, { usedCount: increment(1), usedBy: [...(promo.usedBy || []), auth.currentUser.uid] });
         
         status.style.color = "var(--neon-green)";
-        status.textContent = `✅ Успешно! Получено ${promo.value} ${promo.type === 'crystals' ? '💎 кристаллов' : '🪙 монет'}.`;
+        status.textContent = rewardMessage;
         input.value = '';
         
     } catch(e) {
@@ -1307,8 +1325,8 @@ async function generatePromoCodeString() {
 }
 
 window.generatePromocode = async function() {
-    const type = document.getElementById('promo-type').value;
-    const value = parseInt(document.getElementById('promo-value').value);
+    const crystalsVal = parseInt(document.getElementById('promo-value-crystals').value) || 0;
+    const coinsVal = parseInt(document.getElementById('promo-value-coins').value) || 0;
     const scope = document.getElementById('promo-scope').value;
     const maxUses = parseInt(document.getElementById('promo-maxuses').value) || 0;
     const expiresInput = document.getElementById('promo-expires').value;
@@ -1316,7 +1334,8 @@ window.generatePromocode = async function() {
     const resultEl = document.getElementById('promo-result');
     const count = parseInt(prompt('Сколько кодов сгенерировать? (1-50)', '1')) || 1;
     
-    if (!value) return alert('Введите количество наград.');
+    if (crystalsVal <= 0 && coinsVal <= 0) return alert('Введите количество хотя бы одной награды больше нуля.');
+    
     let boundUid = '', boundToken = '';
     if (scope === 'user') {
         boundToken = document.getElementById('promo-token-input').value.trim();
@@ -1326,17 +1345,44 @@ window.generatePromocode = async function() {
     } else if (scope === 'admin') {
         boundUid = auth.currentUser.uid; boundToken = localStorage.getItem('tsc_token');
     }
+    
     const expiresAt = expiresInput ? new Date(expiresInput).toISOString() : null;
     resultEl.innerHTML = '<p style="color:var(--neon-cyan);">Генерация...</p>';
     const generated = [];
 
     for (let i = 0; i < count; i++) {
         let code = '', attempts = 0;
-        while (attempts < 5) { code = await generatePromoCodeString(); if (!(await getDoc(doc(db, "promocodes", code))).exists()) break; attempts++; }
-        await setDoc(doc(db, "promocodes", code), { code, type, value, scope, boundToUid: boundUid, boundToToken: boundToken, maxUses, usedCount: 0, expiresAt, active: true, usedBy: [], createdBy: auth.currentUser.uid, createdAt: serverTimestamp(), comment });
+        while (attempts < 5) { 
+            code = await generatePromoCodeString(); 
+            if (!(await getDoc(doc(db, "promocodes", code))).exists()) break; 
+            attempts++; 
+        }
+        
+        // СОХРАНЯЕМ ОБА ЗНАЧЕНИЯ (и crystals, и coins)
+        await setDoc(doc(db, "promocodes", code), { 
+            code, 
+            crystals: crystalsVal, 
+            coins: coinsVal, 
+            scope, 
+            boundToUid: boundUid, 
+            boundToToken: boundToken, 
+            maxUses, 
+            usedCount: 0, 
+            expiresAt, 
+            active: true, 
+            usedBy: [], 
+            createdBy: auth.currentUser.uid, 
+            createdAt: serverTimestamp(), 
+            comment 
+        });
         generated.push(code);
     }
-    resultEl.innerHTML = `<div class="promo-result-box"><p>✅ Сгенерировано:</p>${generated.map(c => `<div class="promo-result-code">${c}</div>`).join('')}<button class="btn-small" onclick="copyText('${generated.join(',')}')">📋 Копировать все</button></div>`;
+    
+    let rewardText = '';
+    if (crystalsVal > 0) rewardText += `💎 ${crystalsVal} `;
+    if (coinsVal > 0) rewardText += `🪙 ${coinsVal}`;
+
+    resultEl.innerHTML = `<div class="promo-result-box"><p>✅ Сгенерировано (${rewardText}):</p>${generated.map(c => `<div class="promo-result-code">${c}</div>`).join('')}<button class="btn-small" onclick="copyText('${generated.join(',')}')">📋 Копировать все</button></div>`;
     loadPromocodes();
 };
 
