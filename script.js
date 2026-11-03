@@ -1516,6 +1516,72 @@ function startNotificationPolling() {
     }, 15000);
 }
 
+// Открытие и закрытие Настроек
+window.openSettingsModal = function() {
+    document.getElementById('settings-modal').classList.remove('hidden');
+    // Если открыт профиль, можем его скрыть, чтобы не было наложения
+    document.getElementById('profile-modal').classList.add('hidden');
+};
+
+window.closeSettingsModal = function(e) {
+    if (e) e.stopPropagation();
+    document.getElementById('settings-modal').classList.add('hidden');
+    // Возвращаем профиль обратно
+    document.getElementById('profile-modal').classList.remove('hidden');
+};
+
+// Привязка игры
+window.linkGame = function() {
+    const token = window.currentUserData?.tscToken || localStorage.getItem('tsc_token');
+    if (!token) {
+        showToast('rejected', 'Ошибка', 'Токен не найден.');
+        return;
+    }
+    
+    // Копируем токен в буфер для удобства
+    navigator.clipboard.writeText(token).then(() => {
+        alert(`🎮 ИНСТРУКЦИЯ ПО ПРИВЯЗКЕ:\n\n1. Запустите игру THE SILENT CHAT.\n2. На экране входа введите ваш токен.\n\nВаш токен (уже скопирован в буфер): ${token}`);
+    }).catch(() => {
+        alert(`🎮 ИНСТРУКЦИЯ ПО ПРИВЯЗКЕ:\n\n1. Запустите игру THE SILENT CHAT.\n2. На экране входа введите ваш токен.\n\nВаш токен: ${token}`);
+    });
+};
+
+// Привязка Telegram (та самая, которую мы обсуждали)
+window.linkTelegram = async function() {
+    if (!auth.currentUser) return;
+    
+    // Генерируем случайный токен для привязки
+    const token = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
+    
+    try {
+        await setDoc(doc(db, "link_tokens", token), {
+            uid: auth.currentUser.uid,
+            createdAt: serverTimestamp()
+        });
+
+        // ВАЖНО: Замени "tscofficialbot" на реальный юзернейм твоего бота!
+        window.open(`https://t.me/tscofficialbot?start=link_${token}`, '_blank');
+        
+        showToast('pending', 'Ожидание...', 'Перейди в бота и нажми Start.');
+        
+        // Проверяем, привязался ли аккаунт
+        const interval = setInterval(async () => {
+            const userSnap = await getDoc(doc(db, "users", auth.currentUser.uid));
+            if (userSnap.exists() && userSnap.data().telegram_id) {
+                clearInterval(interval);
+                await loadUserData();
+                showToast('approved', 'Успех!', 'Telegram успешно привязан.');
+            }
+        }, 3000);
+        
+        setTimeout(() => clearInterval(interval), 120000);
+        
+    } catch(e) {
+        console.error(e);
+        alert("Ошибка привязки Telegram: " + e.message);
+    }
+};
+
 // ============================================================
 // АВТОЗАПОЛНЕНИЕ ДОСЬЕ
 // ============================================================
