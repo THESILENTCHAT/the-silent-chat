@@ -744,12 +744,27 @@ function updateProfileUI() {
     const avatar = localStorage.getItem('tsc_avatar');
 
     // 1. Кнопки привязки
+        // Проверка ТГ
     const tgBtn = document.getElementById('link-tg-btn');
     if (data.telegram_id && tgBtn) {
-        tgBtn.innerHTML = '✅ TSC-БОТ ПРИВЯЗАН';
-        tgBtn.style.borderColor = 'var(--neon-green)';
+        tgBtn.innerHTML = '✅ TSC-БОТ ПРИВЯЗАН'; 
+        tgBtn.style.borderColor = 'var(--neon-green)'; 
         tgBtn.style.color = 'var(--neon-green)';
-        tgBtn.onclick = () => showToast('approved', 'Привязано', 'Ваш Telegram уже привязан к аккаунту.');
+        tgBtn.onclick = () => showToast('approved', 'Привязано', 'Telegram уже привязан.');
+    } else if (tgBtn) {
+        tgBtn.innerHTML = '✈️ ПРИВЯЗАТЬ TSC-БОТА';
+        tgBtn.style.borderColor = 'var(--neon-cyan)'; 
+        tgBtn.style.color = 'var(--neon-cyan)';
+        tgBtn.onclick = linkTelegram;
+    }
+
+    // Проверка ИГРЫ
+    const gameBtn = document.getElementById('link-game-btn');
+    if (data.game_linked && gameBtn) {
+        gameBtn.innerHTML = '✅ ИГРА ПРИВЯЗАНА'; 
+        gameBtn.style.borderColor = 'var(--neon-green)'; 
+        gameBtn.style.color = 'var(--neon-green)';
+        gameBtn.onclick = () => showToast('approved', 'Привязано', 'Ваш токен сохранен для игры.');
     }
 
     // 2. Информация
@@ -895,18 +910,22 @@ window.switchAccount = function() {
     }
 };
 
-window.linkGame = function() {
+window.linkGame = async function() {
     const token = window.currentUserData?.tscToken || localStorage.getItem('tsc_token');
-    if (!token) {
-        showToast('rejected', 'Ошибка', 'Токен не найден.');
-        return;
-    }
+    if (!token) return showToast('rejected', 'Ошибка', 'Токен не найден.');
     
-    navigator.clipboard.writeText(token).then(() => {
-        alert(`🎮 ИНСТРУКЦИЯ ПО ПРИВЯЗКЕ:\n\n1. Запустите игру THE SILENT CHAT.\n2. На экране входа введите ваш токен.\n\nВаш токен (уже скопирован): ${token}`);
-    }).catch(() => {
-        alert(`🎮 ИНСТРУКЦИЯ ПО ПРИВЯЗКЕ:\n\n1. Запустите игру THE SILENT CHAT.\n2. На экране входа введите ваш токен.\n\nВаш токен: ${token}`);
-    });
+    try {
+        // СОХРАНЯЕМ В БАЗУ, ЧТО ИГРА ПРИВЯЗАНА
+        await updateDoc(doc(db, "users", auth.currentUser.uid), { game_linked: true });
+        if (window.currentUserData) window.currentUserData.game_linked = true;
+        updateProfileUI(); // Обновляем кнопку
+
+        navigator.clipboard.writeText(token).then(() => { 
+            alert(`🎮 ИНСТРУКЦИЯ:\n1. Запустите игру.\n2. Введите токен.\n\nТокен (скопирован): ${token}`); 
+        }).catch(() => {
+            alert(`Ваш токен: ${token}`);
+        });
+    } catch(e) { console.error(e); }
 };
 
 window.linkTelegram = async function() {
@@ -1671,21 +1690,21 @@ window.autoFillDossiers = async function() {
 };
 
 // ============================================================
-// МУЗЫКАЛЬНЫЙ ПЛЕЕР (ПЛЕЙЛИСТЫ + АНИМАЦИИ)
+// МУЗЫКАЛЬНЫЙ ПЛЕЕР (ПЛЕЙЛИСТЫ + ТАЙМЕР)
 // ============================================================
 const bgMusic = document.getElementById('bg-music');
 const musicBtn = document.getElementById('music-toggle-btn');
 const musicTitle = document.getElementById('music-title');
-const musicStatus = document.getElementById('music-status');
+const musicStatusText = document.getElementById('music-status-text');
+const musicTimeDisplay = document.getElementById('music-time');
 const musicVolume = document.getElementById('music-volume');
 const playerContainer = document.getElementById('tsc-audio-player');
 
-// ТВОИ ТРЕКИ (Убедись, что папка называется music и файлы лежат там)
+// ВАЖНО: Если папка называется musicSait, поменяй пути тут!
 const playlists = {
     friends: [
-        // Если папка называется по-другому (например, musicSait), поменяй путь тут:
-        { title: "TSC — Трек 1", src: "music/Tsc.mp3" },
-        { title: "TSC — Трек 2", src: "music/TSC2.mp3" }
+        { title: "Трек 1", src: "music/Tsc.mp3" },
+        { title: "Трек 2", src: "music/TSC2.mp3" }
     ],
     game: [
         { title: "Dark Theme", src: "music/dark_theme.mp3" },
@@ -1697,6 +1716,14 @@ const playlists = {
 let currentPlaylistType = 'friends'; 
 let currentTrackIndex = 0;
 
+// Формат времени (0:00)
+function formatTime(seconds) {
+    if (isNaN(seconds) || seconds === Infinity) return "0:00";
+    const m = Math.floor(seconds / 60);
+    const s = Math.floor(seconds % 60);
+    return `${m}:${s < 10 ? '0' : ''}${s}`;
+}
+
 function loadTrack(type, index) {
     currentPlaylistType = type;
     currentTrackIndex = index;
@@ -1706,10 +1733,11 @@ function loadTrack(type, index) {
 
     bgMusic.src = track.src;
     musicTitle.textContent = track.title;
-    musicStatus.textContent = 'Готов к запуску';
-    musicStatus.style.color = 'var(--text-dim)';
+    musicStatusText.textContent = 'Готов';
+    musicStatusText.style.color = 'var(--text-dim)';
     musicBtn.innerHTML = '▶';
     playerContainer.classList.remove('playing');
+    musicTimeDisplay.textContent = "0:00 / 0:00";
     
     document.getElementById('btn-playlist-friends').classList.toggle('active', type === 'friends');
     document.getElementById('btn-playlist-game').classList.toggle('active', type === 'game');
@@ -1721,44 +1749,46 @@ window.toggleMusic = function() {
     if (bgMusic.paused) {
         bgMusic.play().then(() => {
             musicBtn.innerHTML = '⏸';
-            musicStatus.textContent = 'Играет...';
-            musicStatus.style.color = 'var(--neon-green)';
-            playerContainer.classList.add('playing'); // Включает эквалайзер
-            musicBtn.style.animation = 'none'; // Отключаем пульсацию при игре
+            musicStatusText.textContent = 'Играет';
+            musicStatusText.style.color = 'var(--neon-green)';
+            playerContainer.classList.add('playing');
+            musicBtn.style.animation = 'none';
         }).catch(e => {
-            musicStatus.textContent = 'Ошибка загрузки';
+            musicStatusText.textContent = 'Ошибка (нет файла)';
+            musicStatusText.style.color = 'var(--neon-red)';
         });
     } else {
         bgMusic.pause();
         musicBtn.innerHTML = '▶';
-        musicStatus.textContent = 'Пауза';
-        musicStatus.style.color = 'var(--text-dim)';
-        playerContainer.classList.remove('playing'); // Выключает эквалайзер
-        musicBtn.style.animation = 'pulse-play-btn 2s infinite'; // Возвращаем пульсацию
+        musicStatusText.textContent = 'Пауза';
+        musicStatusText.style.color = 'var(--text-dim)';
+        playerContainer.classList.remove('playing');
+        musicBtn.style.animation = 'pulse-play-btn 2s infinite';
     }
 };
+
+// ОБНОВЛЕНИЕ ТАЙМЕРА
+bgMusic.addEventListener('timeupdate', () => {
+    if (musicTimeDisplay) {
+        musicTimeDisplay.textContent = `${formatTime(bgMusic.currentTime)} / ${formatTime(bgMusic.duration)}`;
+    }
+});
 
 window.switchPlaylist = function(type) {
     const wasPlaying = !bgMusic.paused;
     loadTrack(type, 0);
-    if (wasPlaying) toggleMusic(); // Автоматически запускаем первый трек из нового плейлиста
+    if (wasPlaying) toggleMusic();
 };
 
 window.nextTrack = function() {
     const wasPlaying = !bgMusic.paused;
     let nextIndex = currentTrackIndex + 1;
     if (nextIndex >= playlists[currentPlaylistType].length) nextIndex = 0;
-    
     loadTrack(currentPlaylistType, nextIndex);
     if (wasPlaying) toggleMusic();
 };
 
 bgMusic.addEventListener('ended', nextTrack);
-
-window.changeVolume = function(val) {
-    if (bgMusic) bgMusic.volume = val;
-};
-
-// Инициализация
+window.changeVolume = function(val) { if (bgMusic) bgMusic.volume = val; };
 loadTrack('friends', 0);
 if (musicVolume) bgMusic.volume = musicVolume.value;
