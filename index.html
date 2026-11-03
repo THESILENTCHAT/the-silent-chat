@@ -546,8 +546,8 @@
         </div>
         <div id="admin-promo" class="admin-panel hidden">
             <h3 style="color:var(--neon-cyan);margin-bottom:1rem;font-size:1rem;">Сгенерировать промокод</h3>
-            <div class="input-group"><label>Тип награды</label><select id="promo-type"><option value="crystals">💎 Кристаллы</option><option value="coins">🪙 Монеты</option></select></div>
-            <div class="input-group"><label>Количество</label><input type="number" id="promo-value" placeholder="100"></div>
+            <div class="input-group"><label>💎 Кристаллы (оставь 0, если не нужны)</label><input type="number" id="promo-value-crystals" placeholder="100" value="0" min="0"></div>
+            <div class="input-group"><label>🪙 Монеты (оставь 0, если не нужны)</label><input type="number" id="promo-value-coins" placeholder="100" value="0" min="0"></div>
             <div class="input-group"><label>Кому</label><select id="promo-scope" onchange="togglePromoScope()"><option value="global">🌍 Общий</option><option value="user">👤 Для юзера</option><option value="admin">👑 Для себя</option></select></div>
             <div class="input-group hidden" id="promo-token-field"><label>TSC-Token пользователя</label><input type="text" id="promo-token-input" placeholder="TSC-XXXX-XXXX"></div>
             <div class="input-group"><label>Максимум активаций (0 = безлимит)</label><input type="number" id="promo-maxuses" value="0"></div>
