@@ -1671,40 +1671,94 @@ window.autoFillDossiers = async function() {
 };
 
 // ============================================================
-// МУЗЫКАЛЬНЫЙ ПЛЕЕР
+// МУЗЫКАЛЬНЫЙ ПЛЕЕР (ПЛЕЙЛИСТЫ + АНИМАЦИИ)
 // ============================================================
 const bgMusic = document.getElementById('bg-music');
 const musicBtn = document.getElementById('music-toggle-btn');
+const musicTitle = document.getElementById('music-title');
 const musicStatus = document.getElementById('music-status');
 const musicVolume = document.getElementById('music-volume');
+const playerContainer = document.getElementById('tsc-audio-player');
 
-// Устанавливаем громкость по умолчанию (50%)
-if (bgMusic && musicVolume) {
-    bgMusic.volume = musicVolume.value;
+// ТВОИ ТРЕКИ (Убедись, что папка называется music и файлы лежат там)
+const playlists = {
+    friends: [
+        // Если папка называется по-другому (например, musicSait), поменяй путь тут:
+        { title: "TSC — Трек 1", src: "music/Tsc.mp3" },
+        { title: "TSC — Трек 2", src: "music/TSC2.mp3" }
+    ],
+    game: [
+        { title: "Dark Theme", src: "music/dark_theme.mp3" },
+        { title: "Day of Chaos", src: "music/day_of_chaos.mp3" },
+        { title: "Horror Trailer", src: "music/horror_trailer.mp3" }
+    ]
+};
+
+let currentPlaylistType = 'friends'; 
+let currentTrackIndex = 0;
+
+function loadTrack(type, index) {
+    currentPlaylistType = type;
+    currentTrackIndex = index;
+    
+    const track = playlists[type][index];
+    if (!track) return;
+
+    bgMusic.src = track.src;
+    musicTitle.textContent = track.title;
+    musicStatus.textContent = 'Готов к запуску';
+    musicStatus.style.color = 'var(--text-dim)';
+    musicBtn.innerHTML = '▶';
+    playerContainer.classList.remove('playing');
+    
+    document.getElementById('btn-playlist-friends').classList.toggle('active', type === 'friends');
+    document.getElementById('btn-playlist-game').classList.toggle('active', type === 'game');
 }
 
 window.toggleMusic = function() {
-    if (!bgMusic) return;
-    
+    if (!bgMusic.src) loadTrack('friends', 0);
+
     if (bgMusic.paused) {
         bgMusic.play().then(() => {
             musicBtn.innerHTML = '⏸';
             musicStatus.textContent = 'Играет...';
             musicStatus.style.color = 'var(--neon-green)';
+            playerContainer.classList.add('playing'); // Включает эквалайзер
+            musicBtn.style.animation = 'none'; // Отключаем пульсацию при игре
         }).catch(e => {
-            console.log("Браузер заблокировал автоплей:", e);
-            musicStatus.textContent = 'Ошибка';
+            musicStatus.textContent = 'Ошибка загрузки';
         });
     } else {
         bgMusic.pause();
         musicBtn.innerHTML = '▶';
-        musicStatus.textContent = 'На паузе';
+        musicStatus.textContent = 'Пауза';
         musicStatus.style.color = 'var(--text-dim)';
+        playerContainer.classList.remove('playing'); // Выключает эквалайзер
+        musicBtn.style.animation = 'pulse-play-btn 2s infinite'; // Возвращаем пульсацию
     }
 };
 
-window.changeVolume = function(val) {
-    if (bgMusic) {
-        bgMusic.volume = val;
-    }
+window.switchPlaylist = function(type) {
+    const wasPlaying = !bgMusic.paused;
+    loadTrack(type, 0);
+    if (wasPlaying) toggleMusic(); // Автоматически запускаем первый трек из нового плейлиста
 };
+
+window.nextTrack = function() {
+    const wasPlaying = !bgMusic.paused;
+    let nextIndex = currentTrackIndex + 1;
+    if (nextIndex >= playlists[currentPlaylistType].length) nextIndex = 0;
+    
+    loadTrack(currentPlaylistType, nextIndex);
+    if (wasPlaying) toggleMusic();
+};
+
+bgMusic.addEventListener('ended', nextTrack);
+
+window.changeVolume = function(val) {
+    if (bgMusic) bgMusic.volume = val;
+};
+
+// Инициализация
+loadTrack('friends', 0);
+if (musicVolume) bgMusic.volume = musicVolume.value;
