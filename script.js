@@ -665,7 +665,7 @@ function renderTeamGrid(gridId, members, type) {
     }
     
     grid.innerHTML = members.map(m => {
-        const initial = (m.realName || '?').trim().charAt(0).toUpperCase();
+        const initial = (m.nickname || m.username || '?').trim().charAt(0).toUpperCase();
         const tgRaw = (m.tgUsername || '').replace('@', '').trim();
         
         let socialsHtml = '';
@@ -681,7 +681,7 @@ function renderTeamGrid(gridId, members, type) {
         return `
             <div class="blogger-card" onclick="openTeamProfile('${m.id}')">
                 <div class="blogger-avatar">${initial}</div>
-                <h3 class="blogger-name">${escapeHtml(m.realName || 'Неизвестный')}</h3>
+                <h3 class="blogger-name">${escapeHtml(m.nickname || m.username || 'Аноним')}</h3>
                 <p class="blogger-tg">${tgRaw ? '@' + escapeHtml(tgRaw) : 'TSC Creator'}</p>
                 <div class="blogger-socials">${socialsHtml}${tgLink}</div>
             </div>
@@ -710,8 +710,8 @@ window.openTeamProfile = function(appId) {
     const body = document.getElementById('tester-profile-body');
     body.innerHTML = `
         <div style="text-align: center; margin-bottom: 1.5rem;">
-            <div class="blogger-avatar" style="margin: 0 auto 1rem auto; width: 100px; height: 100px; font-size: 2.5rem;">${(member.realName || '?').charAt(0).toUpperCase()}</div>
-            <h3 style="color: var(--neon-cyan); font-size: 1.5rem; margin-bottom: 0.5rem;">${escapeHtml(member.realName || 'Неизвестный')}</h3>
+            <div class="blogger-avatar" style="margin: 0 auto 1rem auto; width: 100px; height: 100px; font-size: 2.5rem;">${(member.nickname || member.username || '?').charAt(0).toUpperCase()}</div>
+           <h3 style="color: var(--neon-cyan); font-size: 1.5rem; margin-bottom: 0.5rem;">${escapeHtml(member.nickname || member.username || 'Аноним')}</h3>
             <div class="team-badge ${roleText}">${roleBadge}</div>
         </div>
         
