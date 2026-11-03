@@ -1382,37 +1382,44 @@ function renderAdminApp(app) {
 
 window.approveApplication = async function(appId, type, uid) {
     let expiresAt = null;
-    if (type === 'obt' || type === 'tester') {
-        const dateStr = prompt('Дата окончания (ГГГГ-ММ-ДД ЧЧ:ММ):', '2026-12-31 23:59');
-        if (!dateStr) return;
-        expiresAt = new Date(dateStr.replace(' ', 'T')).toISOString();
+    if (type === 'obt' || type === 'tester') { 
+        const dateStr = prompt('Дата окончания (ГГГГ-ММ-ДД ЧЧ:ММ):', '2026-12-31 23:59'); 
+        if (!dateStr) return; 
+        expiresAt = new Date(dateStr.replace(' ', 'T')).toISOString(); 
     }
     const comment = prompt('Комментарий (опционально):', '') || '';
     
     try {
+        // 1. Обновляем заявку и выдаем роль
         await updateDoc(doc(db, "applications", appId), { status: 'approved', adminComment: comment, reviewedAt: serverTimestamp(), expiresAt });
-        
         const upd = {};
-        if (type === 'blogger') upd.isBlogger = true;
-        else if (type === 'obt') { upd.isOBT = true; upd.obtExpiresAt = expiresAt; }
+        if (type === 'blogger') upd.isBlogger = true; 
+        else if (type === 'obt') { upd.isOBT = true; upd.obtExpiresAt = expiresAt; } 
         else if (type === 'tester') { upd.isTester = true; upd.testerExpiresAt = expiresAt; }
         await updateDoc(doc(db, "users", uid), upd);
-        
-        await addDoc(collection(db, "notifications"), { uid, type: 'app_approved', title: '✅ Заявка одобрена', text: 'Проверьте профиль.', read: false, createdAt: serverTimestamp() });
-        
-        // Отправка в Телеграм
+
+        // 2. Уведомление на сайте (в колокольчик)
+        const typeText = type === 'obt' ? 'ОБТ Тестер' : type === 'blogger' ? 'Блогер' : 'Тестер';
+        await addDoc(collection(db, "notifications"), { 
+            uid: uid, 
+            type: 'app_approved', 
+            title: `✅ Заявка на роль ${typeText} одобрена!`, 
+            text: comment ? `Комментарий админа: ${comment}` : 'Добро пожаловать в команду! Проверьте свой профиль.', 
+            read: false, 
+            createdAt: serverTimestamp() 
+        });
+
+        // 3. Уведомление в Telegram (если привязан)
         const userSnap = await getDoc(doc(db, "users", uid));
         if (userSnap.exists() && userSnap.data().telegram_id) {
-            let typeText = type === 'obt' ? 'ОБТ Тестер' : type === 'blogger' ? 'Блогер' : 'Тестер';
             let tgMessage = `✅ *Заявка одобрена!*\n\nВаша роль: *${typeText}*\n${comment ? '💬 Комментарий: ' + comment : ''}\n\nЗайдите на сайт: thesilentchat.ru`;
-            
-            fetch('https://silent-bot-es3x.onrender.com/api/send_user', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ telegram_id: userSnap.data().telegram_id, text: tgMessage })
+            fetch('https://silent-bot-es3x.onrender.com/api/send_user', { 
+                method: 'POST', 
+                headers: { 'Content-Type': 'application/json' }, 
+                body: JSON.stringify({ telegram_id: userSnap.data().telegram_id, text: tgMessage }) 
             }).catch(e => console.log('TG notify error:', e));
         }
-        
+
         showToast('approved', 'Одобрено', 'Роль выдана.'); 
         loadAdminApplications(); 
         loadTeam();
@@ -1420,22 +1427,42 @@ window.approveApplication = async function(appId, type, uid) {
 };
 
 window.rejectApplication = async function(appId) {
-    const comment = prompt('Причина отклонения (обязательно):', '');
+    const comment = prompt('Причина отклонения (обязательно):', ''); 
     if (!comment || comment.length < 3) return alert('Причина обязательна.');
     
-    const snap = await getDoc(doc(db, "applications", appId));
-    await updateDoc(doc(db, "applications", appId), { status: 'rejected', adminComment: comment, reviewedAt: serverTimestamp() });
-    await addDoc(collection(db, "notifications"), { uid: snap.data().uid, type: 'app_rejected', title: '❌ Заявка отклонена', text: `Причина: ${comment}`, read: false, createdAt: serverTimestamp() });
-    
-    if (snap.data().tgUsername) {
-        fetch('https://silent-bot-es3x.onrender.com/api/notify_user', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ username: snap.data().tgUsername, status: 'rejected', reason: comment })
-        }).catch(e => console.log('TG user notify error:', e));
-    }
-    
-    showToast('rejected', 'Отклонено', 'Заявка отклонена.'); loadAdminApplications();
+    try {
+        const snap = await getDoc(doc(db, "applications", appId));
+        const appData = snap.data();
+        const uid = appData.uid;
+        const type = appData.type;
+
+        await updateDoc(doc(db, "applications", appId), { status: 'rejected', adminComment: comment, reviewedAt: serverTimestamp() });
+        
+        // 1. Уведомление на сайте
+        const typeText = type === 'obt' ? 'ОБТ Тестер' : type === 'blogger' ? 'Блогер' : 'Тестер';
+        await addDoc(collection(db, "notifications"), { 
+            uid: uid, 
+            type: 'app_rejected', 
+            title: `❌ Заявка на роль ${typeText} отклонена`, 
+            text: `Причина: ${comment}`, 
+            read: false, 
+            createdAt: serverTimestamp() 
+        });
+
+        // 2. Уведомление в Telegram
+        const userSnap = await getDoc(doc(db, "users", uid));
+        if (userSnap.exists() && userSnap.data().telegram_id) {
+            let tgMessage = `❌ *Заявка отклонена*\n\nРоль: *${typeText}*\n💬 Причина: ${comment}`;
+            fetch('https://silent-bot-es3x.onrender.com/api/send_user', { 
+                method: 'POST', 
+                headers: { 'Content-Type': 'application/json' }, 
+                body: JSON.stringify({ telegram_id: userSnap.data().telegram_id, text: tgMessage }) 
+            }).catch(e => console.log('TG notify error:', e));
+        }
+
+        showToast('rejected', 'Отклонено', 'Заявка отклонена.'); 
+        loadAdminApplications();
+    } catch(e) { console.error(e); }
 };
 
 window.revokeApplication = async function(appId, type, uid) {
@@ -1784,4 +1811,3 @@ bgMusic.addEventListener('ended', nextTrack);
 window.changeVolume = function(val) { if (bgMusic) bgMusic.volume = val; };
 loadTrack('friends', 0);
 if (musicVolume) bgMusic.volume = musicVolume.value;
-
