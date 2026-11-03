@@ -38,7 +38,7 @@ window.lastKnownStatuses = {};
 window.notifPollInterval = null;
 window.isAdmin = false;
 window.currentDossierFilter = 'all';
-window.allTeamMembers = []; // Сюда собираем всех блогеров, тестеров и ОБТ
+window.allTeamMembers = []; 
 
 // ============================================================
 // УТИЛИТЫ
@@ -378,7 +378,7 @@ window.logoutUser = async function() {
 };
 
 window.deleteAccount = async function() {
-    if (!confirm("Ты уверен, что хочешь УДАЛИТЬ аккаунт? Это действие нельзя отменить. Твой токен, заявки и прогресс сгорят.")) return;
+    if (!confirm("Ты уверен, что хочешь УДАЛИТЬ аккаунт? Это действие нельзя отменить.")) return;
     if (!confirm("Точно-точно? Лучше подумай еще раз.")) return;
     
     try {
@@ -390,7 +390,7 @@ window.deleteAccount = async function() {
         alert("Аккаунт успешно удален. Прощай, оператор.");
         location.reload();
     } catch (e) {
-        if (e.code === 'auth/requires-recent-login') alert("Для удаления аккаунта нужно заново войти в систему (в целях безопасности). Выйди и зайди снова, а потом жми удалить.");
+        if (e.code === 'auth/requires-recent-login') alert("Для удаления аккаунта нужно заново войти в систему (в целях безопасности).");
         else alert("Ошибка при удалении: " + e.message);
     }
 };
@@ -403,7 +403,7 @@ window.changePassword = async function() {
         await updatePassword(auth.currentUser, newPass);
         alert("✅ Пароль успешно изменен!");
     } catch (e) {
-        if (e.code === 'auth/requires-recent-login') alert("Для смены пароля нужно заново войти в систему. Выйди и зайди, потом поменяй.");
+        if (e.code === 'auth/requires-recent-login') alert("Для смены пароля нужно заново войти в систему. Выйди и зайди.");
         else alert("Ошибка: " + e.message);
     }
 };
@@ -496,7 +496,7 @@ function launchSiteReveal() {
     document.querySelectorAll('.section').forEach(s => observer.observe(s));
     renderTokenSection();
     loadDossiers();
-    loadTeam(); // <--- Загружаем команду (блогеры, ОБТ, тестеры)
+    loadTeam(); 
     loadApplicationStatus();
     loadNotifications();
     loadShopStatus();
@@ -594,7 +594,6 @@ window.redeemPromo = async function() {
         const updates = {};
         let rewardMessage = "✅ Успешно! Получено: ";
         
-        // Проверяем, что выдать
         if (promo.crystals && promo.crystals > 0) {
             updates.crystals = increment(promo.crystals);
             rewardMessage += `${promo.crystals} 💎 `;
@@ -604,7 +603,7 @@ window.redeemPromo = async function() {
             rewardMessage += `${promo.coins} 🪙`;
         }
 
-        // Если старый промокод (от бота), где было только type и value
+        // Старый формат
         if (!promo.crystals && !promo.coins && promo.type && promo.value) {
             const rewardField = promo.type === 'crystals' ? 'crystals' : 'coins';
             updates[rewardField] = increment(promo.value);
@@ -630,19 +629,17 @@ window.redeemPromo = async function() {
 // ============================================================
 async function loadTeam() {
     try {
-        // Загружаем всех одобренных
         const q = query(collection(db, "applications"), where("status", "==", "approved"));
         const snap = await getDocs(q);
         
-        window.allTeamMembers = []; // Сбрасываем кэш
-        
+        window.allTeamMembers = []; 
         const bloggers = [];
         const obt = [];
         const testers = [];
         
         snap.forEach(doc => {
             const data = { id: doc.id, ...doc.data() };
-            window.allTeamMembers.push(data); // Сохраняем всех в массив для модалки
+            window.allTeamMembers.push(data); 
             
             if (data.type === 'blogger') bloggers.push(data);
             else if (data.type === 'obt') obt.push(data);
@@ -671,7 +668,6 @@ function renderTeamGrid(gridId, members, type) {
         const initial = (m.realName || '?').trim().charAt(0).toUpperCase();
         const tgRaw = (m.tgUsername || '').replace('@', '').trim();
         
-        // Собираем соцсети (если есть)
         let socialsHtml = '';
         if (m.socials && m.socials.length > 0) {
             socialsHtml = m.socials.map(s => {
@@ -693,21 +689,16 @@ function renderTeamGrid(gridId, members, type) {
     }).join('');
 }
 
-// ============================================================
-// МОДАЛКА ПРОФИЛЯ УЧАСТНИКА КОМАНДЫ
-// ============================================================
 window.openTeamProfile = function(appId) {
     const member = window.allTeamMembers.find(m => m.id === appId);
     if (!member) return;
 
-    // Определяем бейдж роли
     let roleBadge = '';
     let roleText = '';
     if (member.type === 'blogger') { roleBadge = '⭐ БЛОГЕР'; roleText = 'blogger'; }
     else if (member.type === 'obt') { roleBadge = '🟢 ОБТ ТЕСТЕР'; roleText = 'obt'; }
     else if (member.type === 'tester') { roleBadge = '🧪 ТЕСТЕР'; roleText = 'tester'; }
 
-    // Собираем соцсети
     let socialsHtml = '';
     if (member.socials && member.socials.length > 0) {
         socialsHtml = member.socials.map(s => {
@@ -730,7 +721,6 @@ window.openTeamProfile = function(appId) {
             ${member.contactValue ? `<p><strong>Контакт (${escapeHtml(member.contactPlatform || 'Связь')}):</strong> ${escapeHtml(member.contactValue)}</p>` : ''}
             ${member.tgUsername ? `<p><strong>Telegram:</strong> <a href="https://t.me/${escapeHtml(member.tgUsername.replace('@', ''))}" target="_blank" style="color: var(--neon-cyan);">@${escapeHtml(member.tgUsername.replace('@', ''))}</a></p>` : ''}
             
-            <!-- Информация специфичная для тестеров -->
             ${member.platform ? `<p><strong>Платформа:</strong> ${escapeHtml(member.platform)}</p>` : ''}
             ${member.testTarget ? `<p><strong>Что тестирует:</strong> ${member.testTarget === 'episode' ? 'Эпизоды' : 'Ивенты'} (${(member.testScope || []).join(', ')})</p>` : ''}
         </div>
@@ -747,13 +737,13 @@ window.closeTesterProfileModal = function(e) {
 };
 
 // ============================================================
-// ПРОФИЛЬ
+// ПРОФИЛЬ И НАСТРОЙКИ
 // ============================================================
 function updateProfileUI() {
     const data = window.currentUserData || {};
     const avatar = localStorage.getItem('tsc_avatar');
 
-    // === 1. ОБНОВЛЕНИЕ КНОПОК ПРИВЯЗКИ ===
+    // 1. Кнопки привязки
     const tgBtn = document.getElementById('link-tg-btn');
     if (data.telegram_id && tgBtn) {
         tgBtn.innerHTML = '✅ TSC-БОТ ПРИВЯЗАН';
@@ -762,7 +752,7 @@ function updateProfileUI() {
         tgBtn.onclick = () => showToast('approved', 'Привязано', 'Ваш Telegram уже привязан к аккаунту.');
     }
 
-    // === 2. ОТОБРАЖЕНИЕ ИНФОРМАЦИИ ===
+    // 2. Информация
     const infoBlock = document.getElementById('profile-info-block');
     if (infoBlock) {
         const displayName = data.nickname || data.username || 'Неизвестно';
@@ -785,7 +775,7 @@ function updateProfileUI() {
         }
     }
     
-    // === 3. АВАТАРКИ ===
+    // 3. Аватарки
     const navAvatar = document.getElementById('nav-avatar-container');
     const profAvatar = document.getElementById('profile-avatar-large');
     const initial = (data.nickname || data.name || '?').charAt(0).toUpperCase();
@@ -798,20 +788,6 @@ function updateProfileUI() {
         if (profAvatar) { profAvatar.style.backgroundImage = 'none'; profAvatar.textContent = initial; }
     }
 
-    renderProfileRoles();
-    document.getElementById('admin-panel-btn')?.classList.toggle('hidden', !window.isAdmin);
-}
-    
-    const navAvatar = document.getElementById('nav-avatar-container');
-    const profAvatar = document.getElementById('profile-avatar-large');
-    if (avatar) {
-        if (navAvatar) { navAvatar.style.backgroundImage = `url(${avatar})`; navAvatar.textContent = ''; }
-        if (profAvatar) { profAvatar.style.backgroundImage = `url(${avatar})`; profAvatar.textContent = ''; }
-    } else {
-        const initial = name.charAt(0).toUpperCase() || '?';
-        if (navAvatar) { navAvatar.style.backgroundImage = 'none'; navAvatar.textContent = initial; }
-        if (profAvatar) { profAvatar.style.backgroundImage = 'none'; profAvatar.textContent = initial; }
-    }
     renderProfileRoles();
     document.getElementById('admin-panel-btn')?.classList.toggle('hidden', !window.isAdmin);
 }
@@ -863,6 +839,107 @@ window.showImagePreview = function() {
     if (avatar) { document.getElementById('preview-img').src = avatar; document.getElementById('image-preview-modal').classList.remove('hidden'); }
 };
 window.closeImagePreview = function() { document.getElementById('image-preview-modal').classList.add('hidden'); };
+
+// НАСТРОЙКИ
+window.openSettingsModal = async function() {
+    if (!window.currentUserData) return;
+    const data = window.currentUserData;
+    
+    document.getElementById('set-nickname').value = data.nickname || '';
+    document.getElementById('set-name').value = data.name || '';
+    document.getElementById('set-age').value = data.age || '';
+    document.getElementById('set-gender').value = data.gender || 'Мужской';
+    document.getElementById('set-username').value = data.username || '';
+    document.getElementById('set-hide-all').checked = data.hide_all_info || false;
+
+    document.getElementById('settings-modal').classList.remove('hidden');
+    document.getElementById('profile-modal').classList.add('hidden');
+};
+
+window.closeSettingsModal = function(e) {
+    if (e) e.stopPropagation();
+    document.getElementById('settings-modal').classList.add('hidden');
+    document.getElementById('profile-modal').classList.remove('hidden');
+};
+
+window.saveSettings = async function() {
+    const nickname = document.getElementById('set-nickname').value.trim();
+    const name = document.getElementById('set-name').value.trim();
+    const age = document.getElementById('set-age').value.trim();
+    const gender = document.getElementById('set-gender').value;
+    const username = document.getElementById('set-username').value.trim();
+    const hideAll = document.getElementById('set-hide-all').checked;
+
+    try {
+        await updateDoc(doc(db, "users", auth.currentUser.uid), {
+            nickname: nickname,
+            name: name,
+            age: age,
+            gender: gender,
+            username: username,
+            hide_all_info: hideAll
+        });
+        
+        await loadUserData(); 
+        updateProfileUI();
+        showToast('approved', 'Успех', 'Настройки сохранены!');
+        closeSettingsModal(); 
+    } catch (e) {
+        alert("Ошибка сохранения: " + e.message);
+    }
+};
+
+window.switchAccount = function() {
+    if(confirm("Чтобы войти в другой аккаунт, текущий нужно покинуть. Продолжить?")) {
+        logoutUser();
+    }
+};
+
+window.linkGame = function() {
+    const token = window.currentUserData?.tscToken || localStorage.getItem('tsc_token');
+    if (!token) {
+        showToast('rejected', 'Ошибка', 'Токен не найден.');
+        return;
+    }
+    
+    navigator.clipboard.writeText(token).then(() => {
+        alert(`🎮 ИНСТРУКЦИЯ ПО ПРИВЯЗКЕ:\n\n1. Запустите игру THE SILENT CHAT.\n2. На экране входа введите ваш токен.\n\nВаш токен (уже скопирован): ${token}`);
+    }).catch(() => {
+        alert(`🎮 ИНСТРУКЦИЯ ПО ПРИВЯЗКЕ:\n\n1. Запустите игру THE SILENT CHAT.\n2. На экране входа введите ваш токен.\n\nВаш токен: ${token}`);
+    });
+};
+
+window.linkTelegram = async function() {
+    if (!auth.currentUser) return;
+    const token = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
+    
+    try {
+        await setDoc(doc(db, "link_tokens", token), {
+            uid: auth.currentUser.uid,
+            createdAt: serverTimestamp()
+        });
+
+        window.open(`https://t.me/tscofficialbot?start=link_${token}`, '_blank');
+        
+        showToast('pending', 'Ожидание...', 'Перейди в бота и нажми Start.');
+        
+        const interval = setInterval(async () => {
+            const userSnap = await getDoc(doc(db, "users", auth.currentUser.uid));
+            if (userSnap.exists() && userSnap.data().telegram_id) {
+                clearInterval(interval);
+                await loadUserData();
+                updateProfileUI();
+                showToast('approved', 'Успех!', 'Telegram успешно привязан.');
+            }
+        }, 3000);
+        
+        setTimeout(() => clearInterval(interval), 120000);
+        
+    } catch(e) {
+        console.error(e);
+        alert("Ошибка привязки Telegram: " + e.message);
+    }
+};
 
 // ============================================================
 // ДОСЬЕ
@@ -1302,20 +1379,17 @@ window.approveApplication = async function(appId, type, uid) {
     const comment = prompt('Комментарий (опционально):', '') || '';
     
     try {
-        // 1. Обновляем заявку
         await updateDoc(doc(db, "applications", appId), { status: 'approved', adminComment: comment, reviewedAt: serverTimestamp(), expiresAt });
         
-        // 2. Выдаем роль
         const upd = {};
         if (type === 'blogger') upd.isBlogger = true;
         else if (type === 'obt') { upd.isOBT = true; upd.obtExpiresAt = expiresAt; }
         else if (type === 'tester') { upd.isTester = true; upd.testerExpiresAt = expiresAt; }
         await updateDoc(doc(db, "users", uid), upd);
         
-        // 3. Добавляем уведомление на сайт
         await addDoc(collection(db, "notifications"), { uid, type: 'app_approved', title: '✅ Заявка одобрена', text: 'Проверьте профиль.', read: false, createdAt: serverTimestamp() });
         
-        // 4. Отправляем сообщение в Telegram через бота!
+        // Отправка в Телеграм
         const userSnap = await getDoc(doc(db, "users", uid));
         if (userSnap.exists() && userSnap.data().telegram_id) {
             let typeText = type === 'obt' ? 'ОБТ Тестер' : type === 'blogger' ? 'Блогер' : 'Тестер';
@@ -1333,6 +1407,7 @@ window.approveApplication = async function(appId, type, uid) {
         loadTeam();
     } catch(e) { alert(e.message); }
 };
+
 window.rejectApplication = async function(appId) {
     const comment = prompt('Причина отклонения (обязательно):', '');
     if (!comment || comment.length < 3) return alert('Причина обязательна.');
@@ -1410,7 +1485,6 @@ window.generatePromocode = async function() {
             attempts++; 
         }
         
-        // СОХРАНЯЕМ ОБА ЗНАЧЕНИЯ (и crystals, и coins)
         await setDoc(doc(db, "promocodes", code), { 
             code, 
             crystals: crystalsVal, 
@@ -1447,7 +1521,7 @@ async function loadPromocodes() {
     codes.sort((a, b) => (b.createdAt?.toMillis?.() || 0) - (a.createdAt?.toMillis?.() || 0));
     list.innerHTML = codes.length ? codes.slice(0, 50).map(p => `
         <div class="promo-item"><div class="promo-code">${escapeHtml(p.code)}</div>
-        <div class="promo-meta"><span>${p.type === 'crystals' ? '💎' : '🪙'} ${p.value}</span><span>${p.scope === 'global' ? '🌍' : p.scope === 'user' ? '👤' : '👑'}</span><span>${p.usedCount}/${p.maxUses === 0 ? '∞' : p.maxUses}</span></div>
+        <div class="promo-meta"><span>${p.crystals ? '💎' + p.crystals : ''} ${p.coins ? '🪙' + p.coins : ''} ${p.value ? p.value : ''}</span><span>${p.scope === 'global' ? '🌍' : p.scope === 'user' ? '👤' : '👑'}</span><span>${p.usedCount}/${p.maxUses === 0 ? '∞' : p.maxUses}</span></div>
         <div class="promo-actions"><button class="btn-small" onclick="copyText('${p.code}')">📋 Копировать</button></div></div>
     `).join('') : '<p class="profile-empty">Пусто.</p>';
 }
@@ -1461,14 +1535,12 @@ window.sendMassNotification = async function() {
     resultEl.innerHTML = '<p style="color:var(--neon-cyan);">Рассылка...</p>';
     
     try {
-        // 1. Отправляем на сайт (в колокольчик)
         await addDoc(collection(db, "announcements"), { title, text, active: true, dismissedBy: [], createdAt: serverTimestamp() });
         const usersSnap = await getDocs(collection(db, "users"));
         for (const u of usersSnap.docs) {
             await addDoc(collection(db, "notifications"), { uid: u.id, type: 'announcement', title, text, read: false, createdAt: serverTimestamp() });
         }
 
-        // 2. Отправляем команду боту в Телеграм
         const botRes = await fetch('https://silent-bot-es3x.onrender.com/api/broadcast', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -1482,8 +1554,7 @@ window.sendMassNotification = async function() {
             ✈️ В Telegram доставлено: ${botData.sent || 0} чел.
         </div>`;
         
-        document.getElementById('notif-title-input').value = ''; 
-        document.getElementById('notif-text-input').value = '';
+        document.getElementById('notif-title-input').value = ''; document.getElementById('notif-text-input').value = '';
         
     } catch(e) {
         resultEl.innerHTML = `<div class="promo-result-box" style="border-color:var(--neon-red);color:var(--neon-red);">
@@ -1554,75 +1625,9 @@ function startNotificationPolling() {
             window.lastKnownStatuses[d.id] = data.status;
         });
         localStorage.setItem('tsc_last_statuses', JSON.stringify(window.lastKnownStatuses));
-        await loadUserData(); renderProfileRoles();
+        await loadUserData(); renderProfileRoles(); updateProfileUI();
     }, 15000);
 }
-
-// Открытие и закрытие Настроек
-window.openSettingsModal = function() {
-    document.getElementById('settings-modal').classList.remove('hidden');
-    // Если открыт профиль, можем его скрыть, чтобы не было наложения
-    document.getElementById('profile-modal').classList.add('hidden');
-};
-
-window.closeSettingsModal = function(e) {
-    if (e) e.stopPropagation();
-    document.getElementById('settings-modal').classList.add('hidden');
-    // Возвращаем профиль обратно
-    document.getElementById('profile-modal').classList.remove('hidden');
-};
-
-// Привязка игры
-window.linkGame = function() {
-    const token = window.currentUserData?.tscToken || localStorage.getItem('tsc_token');
-    if (!token) {
-        showToast('rejected', 'Ошибка', 'Токен не найден.');
-        return;
-    }
-    
-    // Копируем токен в буфер для удобства
-    navigator.clipboard.writeText(token).then(() => {
-        alert(`🎮 ИНСТРУКЦИЯ ПО ПРИВЯЗКЕ:\n\n1. Запустите игру THE SILENT CHAT.\n2. На экране входа введите ваш токен.\n\nВаш токен (уже скопирован в буфер): ${token}`);
-    }).catch(() => {
-        alert(`🎮 ИНСТРУКЦИЯ ПО ПРИВЯЗКЕ:\n\n1. Запустите игру THE SILENT CHAT.\n2. На экране входа введите ваш токен.\n\nВаш токен: ${token}`);
-    });
-};
-
-// Привязка Telegram (та самая, которую мы обсуждали)
-window.linkTelegram = async function() {
-    if (!auth.currentUser) return;
-    
-    // Генерируем случайный токен для привязки
-    const token = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
-    
-    try {
-        await setDoc(doc(db, "link_tokens", token), {
-            uid: auth.currentUser.uid,
-            createdAt: serverTimestamp()
-        });
-
-        // ВАЖНО: Замени "tscofficialbot" на реальный юзернейм твоего бота!
-        window.open(`https://t.me/tscofficialbot?start=link_${token}`, '_blank');
-        
-        showToast('pending', 'Ожидание...', 'Перейди в бота и нажми Start.');
-        
-        // Проверяем, привязался ли аккаунт
-        const interval = setInterval(async () => {
-            const userSnap = await getDoc(doc(db, "users", auth.currentUser.uid));
-            if (userSnap.exists() && userSnap.data().telegram_id) {
-                clearInterval(interval);
-                await loadUserData();
-                showToast('approved', 'Успех!', 'Telegram успешно привязан.');
-            }
-        }, 3000);
-        
-        setTimeout(() => clearInterval(interval), 120000);
-        
-    } catch(e) {
-        console.error(e);
-        alert("Ошибка привязки Telegram: " + e.message);
-    }
-};
 
 // ============================================================
 // АВТОЗАПОЛНЕНИЕ ДОСЬЕ
@@ -1663,55 +1668,4 @@ window.autoFillDossiers = async function() {
         count++;
     }
     alert(`Успешно добавлено/обновлено ${count} персонажей!`);
-};
-
-// Открытие настроек с загрузкой текущих данных
-window.openSettingsModal = async function() {
-    if (!window.currentUserData) return;
-    const data = window.currentUserData;
-    
-    document.getElementById('set-nickname').value = data.nickname || '';
-    document.getElementById('set-name').value = data.name || '';
-    document.getElementById('set-age').value = data.age || '';
-    document.getElementById('set-gender').value = data.gender || 'Мужской';
-    document.getElementById('set-username').value = data.username || '';
-    document.getElementById('set-hide-all').checked = data.hide_all_info || false;
-
-    document.getElementById('settings-modal').classList.remove('hidden');
-    document.getElementById('profile-modal').classList.add('hidden');
-};
-
-// Сохранение настроек
-window.saveSettings = async function() {
-    const nickname = document.getElementById('set-nickname').value.trim();
-    const name = document.getElementById('set-name').value.trim();
-    const age = document.getElementById('set-age').value.trim();
-    const gender = document.getElementById('set-gender').value;
-    const username = document.getElementById('set-username').value.trim();
-    const hideAll = document.getElementById('set-hide-all').checked;
-
-    try {
-        await updateDoc(doc(db, "users", auth.currentUser.uid), {
-            nickname: nickname,
-            name: name,
-            age: age,
-            gender: gender,
-            username: username,
-            hide_all_info: hideAll
-        });
-        
-        await loadUserData(); // Обновляем локальные данные
-        updateProfileUI(); // Перерисовываем профиль
-        showToast('approved', 'Успех', 'Настройки сохранены!');
-        closeSettingsModal(); // Закрываем настройки
-    } catch (e) {
-        alert("Ошибка сохранения: " + e.message);
-    }
-};
-
-// Смена / Добавление аккаунта
-window.switchAccount = function() {
-    if(confirm("Чтобы войти в другой аккаунт, текущий нужно покинуть. Продолжить?")) {
-        logoutUser();
-    }
 };
