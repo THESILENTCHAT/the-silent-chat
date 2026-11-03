@@ -1258,29 +1258,39 @@ window.approveApplication = async function(appId, type, uid) {
         expiresAt = new Date(dateStr.replace(' ', 'T')).toISOString();
     }
     const comment = prompt('Комментарий (опционально):', '') || '';
+    
     try {
+        // 1. Обновляем заявку
         await updateDoc(doc(db, "applications", appId), { status: 'approved', adminComment: comment, reviewedAt: serverTimestamp(), expiresAt });
+        
+        // 2. Выдаем роль
         const upd = {};
         if (type === 'blogger') upd.isBlogger = true;
         else if (type === 'obt') { upd.isOBT = true; upd.obtExpiresAt = expiresAt; }
         else if (type === 'tester') { upd.isTester = true; upd.testerExpiresAt = expiresAt; }
         await updateDoc(doc(db, "users", uid), upd);
         
+        // 3. Добавляем уведомление на сайт
         await addDoc(collection(db, "notifications"), { uid, type: 'app_approved', title: '✅ Заявка одобрена', text: 'Проверьте профиль.', read: false, createdAt: serverTimestamp() });
         
-        const appSnap = await getDoc(doc(db, "applications", appId));
-        if (appSnap.exists() && appSnap.data().tgUsername) {
-            fetch('https://silent-bot-es3x.onrender.com/api/notify_user', {
+        // 4. Отправляем сообщение в Telegram через бота!
+        const userSnap = await getDoc(doc(db, "users", uid));
+        if (userSnap.exists() && userSnap.data().telegram_id) {
+            let typeText = type === 'obt' ? 'ОБТ Тестер' : type === 'blogger' ? 'Блогер' : 'Тестер';
+            let tgMessage = `✅ *Заявка одобрена!*\n\nВаша роль: *${typeText}*\n${comment ? '💬 Комментарий: ' + comment : ''}\n\nЗайдите на сайт: thesilentchat.ru`;
+            
+            fetch('https://silent-bot-es3x.onrender.com/api/send_user', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ username: appSnap.data().tgUsername, status: 'approved' })
-            }).catch(e => console.log('TG user notify error:', e));
+                body: JSON.stringify({ telegram_id: userSnap.data().telegram_id, text: tgMessage })
+            }).catch(e => console.log('TG notify error:', e));
         }
         
-        showToast('approved', 'Одобрено', 'Роль выдана.'); loadAdminApplications(); loadTeam();
+        showToast('approved', 'Одобрено', 'Роль выдана.'); 
+        loadAdminApplications(); 
+        loadTeam();
     } catch(e) { alert(e.message); }
 };
-
 window.rejectApplication = async function(appId) {
     const comment = prompt('Причина отклонения (обязательно):', '');
     if (!comment || comment.length < 3) return alert('Причина обязательна.');
@@ -1405,11 +1415,39 @@ window.sendMassNotification = async function() {
     const text = document.getElementById('notif-text-input').value.trim();
     const resultEl = document.getElementById('notif-send-result');
     if (!title || !text) return alert('Заполните поля.');
-    await addDoc(collection(db, "announcements"), { title, text, active: true, dismissedBy: [], createdAt: serverTimestamp() });
-    const usersSnap = await getDocs(collection(db, "users"));
-    for (const u of usersSnap.docs) await addDoc(collection(db, "notifications"), { uid: u.id, type: 'announcement', title, text, read: false, createdAt: serverTimestamp() });
-    resultEl.innerHTML = `<div class="promo-result-box" style="border-color:var(--neon-magenta);color:var(--neon-magenta);">✅ Отправлено ${usersSnap.size} пользователям.</div>`;
-    document.getElementById('notif-title-input').value = ''; document.getElementById('notif-text-input').value = '';
+    
+    resultEl.innerHTML = '<p style="color:var(--neon-cyan);">Рассылка...</p>';
+    
+    try {
+        // 1. Отправляем на сайт (в колокольчик)
+        await addDoc(collection(db, "announcements"), { title, text, active: true, dismissedBy: [], createdAt: serverTimestamp() });
+        const usersSnap = await getDocs(collection(db, "users"));
+        for (const u of usersSnap.docs) {
+            await addDoc(collection(db, "notifications"), { uid: u.id, type: 'announcement', title, text, read: false, createdAt: serverTimestamp() });
+        }
+
+        // 2. Отправляем команду боту в Телеграм
+        const botRes = await fetch('https://silent-bot-es3x.onrender.com/api/broadcast', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ title, text })
+        });
+        
+        const botData = await botRes.json();
+        
+        resultEl.innerHTML = `<div class="promo-result-box" style="border-color:var(--neon-magenta);color:var(--neon-magenta);">
+            ✅ На сайт отправлено всем.<br>
+            ✈️ В Telegram доставлено: ${botData.sent || 0} чел.
+        </div>`;
+        
+        document.getElementById('notif-title-input').value = ''; 
+        document.getElementById('notif-text-input').value = '';
+        
+    } catch(e) {
+        resultEl.innerHTML = `<div class="promo-result-box" style="border-color:var(--neon-red);color:var(--neon-red);">
+            ❌ Ошибка: ${e.message}
+        </div>`;
+    }
 };
 
 async function loadShopStatus() {
