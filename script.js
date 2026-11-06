@@ -9,7 +9,7 @@ import {
 } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 import { 
     getFirestore, doc, setDoc, getDoc, updateDoc, deleteDoc,
-    addDoc, collection, query, where, getDocs, serverTimestamp, orderBy, increment 
+    addDoc, collection, query, where, getDocs, serverTimestamp, orderBy, increment, writeBatch
 } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
 const firebaseConfig = {
@@ -292,7 +292,6 @@ window.registerUser = async function() {
     if (pass.length < 6) return showError(err, box, "Пароль должен быть не менее 6 символов.");
     if (pass !== confirmPass) return showError(err, box, "Пароли не совпадают.");
     
-    // ПРОВЕРКА ГАЛОЧКИ
     if (!document.getElementById('reg-privacy-check').checked) {
         return showError(err, box, "Вы должны согласиться с политикой конфиденциальности.");
     }
@@ -607,7 +606,6 @@ window.redeemPromo = async function() {
             rewardMessage += `${promo.coins} 🪙`;
         }
 
-        // Старый формат
         if (!promo.crystals && !promo.coins && promo.type && promo.value) {
             const rewardField = promo.type === 'crystals' ? 'crystals' : 'coins';
             updates[rewardField] = increment(promo.value);
@@ -746,7 +744,6 @@ window.closeTesterProfileModal = function(e) {
 function updateProfileUI() {
     const data = window.currentUserData || {}, avatar = localStorage.getItem('tsc_avatar');
     
-    // 1. Кнопки привязки
     const tgBtn = document.getElementById('link-tg-btn');
     if (data.telegram_id && tgBtn) {
         tgBtn.innerHTML = '✅ TSC-БОТ ПРИВЯЗАН'; 
@@ -773,7 +770,6 @@ function updateProfileUI() {
         gameBtn.onclick = linkGame;
     }
 
-    // 2. Информация
     const infoBlock = document.getElementById('profile-info-block');
     if (infoBlock) {
         const displayName = data.nickname || data.username || 'Неизвестно', displayUser = data.username || '@...';
@@ -790,7 +786,6 @@ function updateProfileUI() {
         }
     }
     
-    // 3. Аватарки
     const navAvatar = document.getElementById('nav-avatar-container'), profAvatar = document.getElementById('profile-avatar-large');
     const initial = (data.nickname || data.name || '?').charAt(0).toUpperCase();
     if (avatar) {
@@ -853,7 +848,6 @@ window.showImagePreview = function() {
 };
 window.closeImagePreview = function() { document.getElementById('image-preview-modal').classList.add('hidden'); };
 
-// НАСТРОЙКИ
 window.openSettingsModal = async function() {
     if (!window.currentUserData) return;
     const data = window.currentUserData;
@@ -913,11 +907,10 @@ window.linkGame = async function() {
     if (!token) return showToast('rejected', 'Ошибка', 'Токен не найден.');
     
     try {
-        // СОХРАНЯЕМ В БАЗУ, ЧТО ИГРА ПРИВЯЗАНА
         await updateDoc(doc(db, "users", auth.currentUser.uid), { game_linked: true });
         if (window.currentUserData) window.currentUserData.game_linked = true;
         
-        updateProfileUI(); // Мгновенно перекрашиваем кнопку в зеленый
+        updateProfileUI(); 
 
         navigator.clipboard.writeText(token).then(() => { 
             alert(`🎮 ИНСТРУКЦИЯ:\n1. Запустите игру.\n2. Введите токен.\n\nТокен (уже скопирован): ${token}`); 
@@ -937,7 +930,6 @@ window.linkTelegram = async function() {
     try {
         await setDoc(doc(db, "link_tokens", token), { uid: auth.currentUser.uid, createdAt: serverTimestamp() });
         
-        // ВАЖНО: Замени "tscofficialbot" на реальный юзернейм твоего бота!
         window.open(`https://t.me/tscofficialbot?start=link_${token}`, '_blank');
         
         showToast('pending', 'Ожидание...', 'Перейди в бота и нажми Start.');
@@ -947,7 +939,7 @@ window.linkTelegram = async function() {
             if (userSnap.exists() && userSnap.data().telegram_id) {
                 clearInterval(interval); 
                 await loadUserData(); 
-                updateProfileUI(); // Как только бот запишет ID, кнопка станет зеленой
+                updateProfileUI(); 
                 showToast('approved', 'Успех!', 'Telegram привязан.');
             }
         }, 3000); 
@@ -956,6 +948,7 @@ window.linkTelegram = async function() {
         alert("Ошибка привязки Telegram: " + e.message); 
     }
 };
+
 // ============================================================
 // ДОСЬЕ
 // ============================================================
@@ -1461,8 +1454,291 @@ window.nextTrack = function() {
 
 window.changeVolume = function(val) { if (bgMusic) bgMusic.volume = val; };
 
-// Инициализация плеера при загрузке
 if (bgMusic) {
     loadTrack('friends', 0);
     if (musicVolume) bgMusic.volume = musicVolume.value;
 }
+
+// ============================================================
+// ВОССТАНОВЛЕННЫЕ ФУНКЦИИ (ТЕРМИНАЛ, УВЕДОМЛЕНИЯ, АДМИНКА, МАГАЗИН)
+// ============================================================
+
+// --- ТЕРМИНАЛ ---
+const terminal = document.getElementById('terminal');
+const terminalInput = document.getElementById('terminal-input');
+const terminalOutput = document.getElementById('terminal-output');
+
+if (terminalInput) {
+    document.addEventListener('keydown', (e) => {
+        if (e.key === '~' || e.key === '`') {
+            e.preventDefault();
+            terminal.classList.toggle('hidden');
+            if (!terminal.classList.contains('hidden')) terminalInput.focus();
+        }
+    });
+
+    terminalInput.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') {
+            const cmd = terminalInput.value.trim();
+            terminalInput.value = '';
+            if (!cmd) return;
+            
+            const p = document.createElement('p');
+            p.className = 'term-line';
+            p.innerHTML = `<span class="term-cmd">&gt; ${escapeHtml(cmd)}</span>`;
+            terminalOutput.appendChild(p);
+            
+            const res = document.createElement('p');
+            res.className = 'term-line';
+            
+            if (cmd === 'help') res.innerHTML = 'Доступные команды: help, clear, token, whoami';
+            else if (cmd === 'clear') { terminalOutput.innerHTML = ''; return; }
+            else if (cmd === 'token') res.innerHTML = `Ваш токен: ${window.currentUserData?.tscToken || 'Не найден'}`;
+            else if (cmd === 'whoami') res.innerHTML = `Вы: ${window.currentUserData?.username || 'Гость'}`;
+            else res.innerHTML = `<span class="term-error">Команда не найдена: ${escapeHtml(cmd)}</span>`;
+            
+            terminalOutput.appendChild(res);
+            terminalOutput.scrollTop = terminalOutput.scrollHeight;
+        }
+    });
+
+    document.getElementById('terminal-close')?.addEventListener('click', () => {
+        terminal.classList.add('hidden');
+    });
+}
+
+// --- УВЕДОМЛЕНИЯ ---
+async function loadNotifications() {
+    if (!auth.currentUser) return;
+    try {
+        const q = query(collection(db, "notifications"), where("uid", "==", auth.currentUser.uid), orderBy("createdAt", "desc"));
+        const snap = await getDocs(q);
+        window.myNotifications = [];
+        snap.forEach(d => window.myNotifications.push({id: d.id, ...d.data()}));
+        renderNotifications();
+    } catch(e) { console.error("Ошибка загрузки уведомлений:", e); }
+}
+
+function renderNotifications() {
+    const list = document.getElementById('notif-list');
+    const dot = document.getElementById('bell-dot');
+    if (!list) return;
+
+    if (window.myNotifications.length === 0) {
+        list.innerHTML = '<p class="profile-empty">Пока тихо. Система молчит.</p>';
+        if(dot) dot.classList.add('hidden');
+        return;
+    }
+
+    const unread = window.myNotifications.filter(n => !n.read);
+    if (unread.length > 0) {
+        if (dot) dot.classList.remove('hidden');
+    } else {
+        if (dot) dot.classList.add('hidden');
+    }
+
+    list.innerHTML = window.myNotifications.map(n => `
+        <div class="notif-item ${n.read ? '' : 'unread'}">
+            <div class="notif-item-title">${escapeHtml(n.title || 'Уведомление')}</div>
+            <div>${escapeHtml(n.text || '')}</div>
+            <div class="notif-item-time">${formatDateTime(n.createdAt)}</div>
+        </div>
+    `).join('');
+}
+
+window.openNotifPanel = function() {
+    document.getElementById('notif-panel').classList.remove('hidden');
+    loadNotifications();
+};
+
+window.closeNotifPanel = function() {
+    document.getElementById('notif-panel').classList.add('hidden');
+};
+
+window.markAllNotifRead = async function() {
+    if (!auth.currentUser) return;
+    try {
+        const batch = window.myNotifications.filter(n => !n.read).map(n => updateDoc(doc(db, "notifications", n.id), { read: true }));
+        await Promise.all(batch);
+        await loadNotifications();
+    } catch(e) { console.error(e); }
+};
+
+function startNotificationPolling() {
+    if (window.notifPollInterval) clearInterval(window.notifPollInterval);
+    window.notifPollInterval = setInterval(async () => {
+        await loadNotifications();
+    }, 15000);
+}
+
+// --- МАГАЗИН ---
+async function loadShopStatus() {
+    try {
+        const docSnap = await getDoc(doc(db, "settings", "global"));
+        const notice = document.getElementById('shop-frozen-notice');
+        const btn = document.getElementById('shop-btn');
+        if (docSnap.exists() && docSnap.data().shopFrozen) {
+            if(notice) notice.classList.remove('hidden');
+            if(btn) { btn.classList.add('btn-disabled'); }
+        } else {
+            if(notice) notice.classList.add('hidden');
+            if(btn) { btn.classList.remove('btn-disabled'); }
+        }
+    } catch(e) { console.error("Ошибка проверки магазина:", e); }
+}
+
+// --- АДМИН-ПАНЕЛЬ ---
+window.openAdminPanel = function() {
+    document.getElementById('admin-modal').classList.remove('hidden');
+    document.getElementById('profile-modal').classList.add('hidden');
+    switchAdminTab('apps');
+    loadAdminApplications();
+};
+
+window.closeAdminPanel = function(e) { if(e) e.stopPropagation(); document.getElementById('admin-modal').classList.add('hidden'); };
+
+window.switchAdminTab = function(tab) {
+    document.querySelectorAll('.admin-tab').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.admin-panel').forEach(p => p.classList.add('hidden'));
+    document.getElementById(`admin-${tab}`).classList.remove('hidden');
+    const btn = document.querySelector(`.admin-tab[onclick="switchAdminTab('${tab}')"]`);
+    if(btn) btn.classList.add('active');
+    
+    if (tab === 'apps') loadAdminApplications();
+    if (tab === 'promo') loadPromocodes();
+    if (tab === 'settings') loadAdminSettings();
+};
+
+async function loadAdminApplications() {
+    const list = document.getElementById('admin-app-list');
+    if (!list) return;
+    const status = document.getElementById('admin-app-filter').value;
+    try {
+        const q = query(collection(db, "applications"), where("status", "==", status));
+        const snap = await getDocs(q);
+        if (snap.empty) {
+            list.innerHTML = '<p class="profile-empty">Заявок нет</p>';
+            return;
+        }
+        list.innerHTML = snap.docs.map(doc => {
+            const d = doc.data();
+            return `<div class="admin-app-item ${status}">
+                <div class="admin-app-head">
+                    <span class="admin-app-type">${d.type}</span>
+                    <span class="admin-app-status ${status}">${status}</span>
+                </div>
+                <dl class="admin-app-details">
+                    <dt>Юзер:</dt><dd>${escapeHtml(d.username)}</dd>
+                    <dt>ФИО:</dt><dd>${escapeHtml(d.realName)}</dd>
+                    <dt>Контакт:</dt><dd>${escapeHtml(d.contactValue)}</dd>
+                </dl>
+                ${status === 'pending' ? `
+                <div class="admin-app-actions">
+                    <button class="btn-small" onclick="adminAction('${doc.id}', 'approved')">Одобрить</button>
+                    <button class="btn-small btn-danger" onclick="adminAction('${doc.id}', 'rejected')">Отклонить</button>
+                </div>` : ''}
+            </div>`;
+        }).join('');
+    } catch(e) { list.innerHTML = 'Ошибка загрузки'; }
+}
+
+window.adminAction = async function(id, act) {
+    try {
+        await updateDoc(doc(db, "applications", id), { status: act });
+        loadAdminApplications();
+    } catch(e) { alert("Ошибка: " + e.message); }
+};
+
+async function loadPromocodes() {
+    const list = document.getElementById('promo-list');
+    if(!list) return;
+    try {
+        const snap = await getDocs(collection(db, "promocodes"));
+        if(snap.empty) { list.innerHTML = '<p class="profile-empty">Промокодов нет</p>'; return; }
+        list.innerHTML = snap.docs.map(doc => {
+            const d = doc.data();
+            return `<div class="promo-item">
+                <div class="promo-code">${doc.id}</div>
+                <div class="promo-meta">
+                    <span>💎 ${d.crystals || 0}</span>
+                    <span>🪙 ${d.coins || 0}</span>
+                    <span>Использован: ${d.usedCount || 0} / ${d.maxUses || '∞'}</span>
+                </div>
+            </div>`;
+        }).join('');
+    } catch(e) { console.error(e); }
+}
+
+window.togglePromoScope = function() {
+    const scope = document.getElementById('promo-scope').value;
+    document.getElementById('promo-token-field').classList.toggle('hidden', scope !== 'user');
+};
+
+window.generatePromocode = async function() {
+    const crystals = parseInt(document.getElementById('promo-value-crystals').value) || 0;
+    const coins = parseInt(document.getElementById('promo-value-coins').value) || 0;
+    const scope = document.getElementById('promo-scope').value;
+    const tokenInput = document.getElementById('promo-token-input').value.trim();
+    const maxUses = parseInt(document.getElementById('promo-maxuses').value) || 0;
+    const expires = document.getElementById('promo-expires').value;
+    const comment = document.getElementById('promo-comment').value.trim();
+    
+    const code = 'TSC-' + Math.random().toString(36).substring(2, 6).toUpperCase() + '-' + Math.random().toString(36).substring(2, 6).toUpperCase();
+    
+    try {
+        await setDoc(doc(db, "promocodes", code), {
+            crystals, coins, scope, token: tokenInput, maxUses, 
+            expiresAt: expires || null, comment, active: true, usedCount: 0, usedBy: []
+        });
+        document.getElementById('promo-result').innerHTML = `<div class="promo-result-box">
+            <div class="promo-result-code">${code}</div>
+            <button class="btn-small" onclick="navigator.clipboard.writeText('${code}');alert('Скопировано!')">Копировать</button>
+        </div>`;
+        loadPromocodes();
+    } catch(e) { alert("Ошибка: " + e.message); }
+};
+
+window.sendMassNotification = async function() {
+    const title = document.getElementById('notif-title-input').value.trim();
+    const text = document.getElementById('notif-text-input').value.trim();
+    if(!title || !text) return alert("Заполните оба поля");
+    
+    try {
+        const users = await getDocs(collection(db, "users"));
+        const batch = writeBatch(db); 
+        users.forEach(u => {
+            const notifRef = doc(collection(db, "notifications"));
+            batch.set(notifRef, { uid: u.id, title, text, read: false, createdAt: serverTimestamp() });
+        });
+        await batch.commit();
+        document.getElementById('notif-send-result').innerHTML = '<span style="color:var(--neon-green)">✅ Рассылка отправлена!</span>';
+        document.getElementById('notif-title-input').value = '';
+        document.getElementById('notif-text-input').value = '';
+    } catch(e) { alert("Ошибка: " + e.message); }
+};
+
+async function loadAdminSettings() {
+    try {
+        const snap = await getDoc(doc(db, "settings", "global"));
+        const toggle = document.getElementById('frozen-purchases-toggle');
+        if(snap.exists() && toggle) {
+            toggle.checked = snap.data().shopFrozen || false;
+        }
+    } catch(e) { console.error(e); }
+}
+
+window.togglePurchasesFrozen = async function() {
+    const checked = document.getElementById('frozen-purchases-toggle').checked;
+    try {
+        await setDoc(doc(db, "settings", "global"), { shopFrozen: checked }, { merge: true });
+        document.getElementById('settings-status').textContent = 'Статус обновлен';
+        setTimeout(() => document.getElementById('settings-status').textContent = '', 3000);
+        loadShopStatus();
+    } catch(e) { alert("Ошибка: " + e.message); }
+};
+
+window.changeLang = function(lang) {
+    document.querySelectorAll('.lang-btn').forEach(b => b.classList.remove('active'));
+    document.getElementById(`btn-${lang}`).classList.add('active');
+    showToast('approved', 'Язык', 'Смена языка в разработке.');
+};
