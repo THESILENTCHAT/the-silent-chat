@@ -291,9 +291,13 @@ window.registerUser = async function() {
     if (!user.startsWith('@') || user.length < 3) return showError(err, box, "Юзернейм должен начинаться с @.");
     if (pass.length < 6) return showError(err, box, "Пароль должен быть не менее 6 символов.");
     if (pass !== confirmPass) return showError(err, box, "Пароли не совпадают.");
+    
+    // ПРОВЕРКА ГАЛОЧКИ
+    if (!document.getElementById('reg-privacy-check').checked) {
+        return showError(err, box, "Вы должны согласиться с политикой конфиденциальности.");
+    }
 
     btn.disabled = true; btn.textContent = 'ЗАГРУЗКА...';
-
     try {
         const userCredential = await createUserWithEmailAndPassword(auth, email, pass);
         const firebaseUser = userCredential.user;
