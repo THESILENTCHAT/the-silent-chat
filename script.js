@@ -1340,3 +1340,129 @@ function renderAppItem(app) {
     }
     return `<div class="profile-app-item ${app.status}"><div class="profile-app-header"><span class="profile-app-type">${app.typeLabel}</span>${badge}</div>${extra}</div>`;
 }
+
+// ============================================================
+// СИСТЕМА УВЕДОМЛЕНИЙ (TOAST)
+// ============================================================
+window.showToast = function(type, title, message) {
+    const container = document.getElementById('toast-container'); if (!container) return;
+    const toast = document.createElement('div'); toast.className = `toast ${type}`;
+    toast.innerHTML = `<div class="toast-title">${escapeHtml(title)}</div><div>${escapeHtml(message)}</div>`;
+    container.appendChild(toast);
+    setTimeout(() => { toast.style.opacity = '0'; setTimeout(() => toast.remove(), 300); }, 6000);
+};
+
+// ============================================================
+// МУЗЫКАЛЬНЫЙ ПЛЕЕР (ПЛЕЙЛИСТЫ + ТАЙМЕР)
+// ============================================================
+const bgMusic = document.getElementById('bg-music');
+const musicBtn = document.getElementById('music-toggle-btn');
+const musicTitle = document.getElementById('music-title');
+const musicStatusText = document.getElementById('music-status-text');
+const musicTimeDisplay = document.getElementById('music-time');
+const musicVolume = document.getElementById('music-volume');
+const playerContainer = document.getElementById('tsc-audio-player');
+
+const playlists = {
+    friends: [
+        { title: "TSC", src: "music/tsc.mp3" },
+        { title: "TSC 2", src: "music/tsc2.mp3" }
+    ],
+    game: [
+        { title: "Dark past", src: "music/dark_theme.mp3" },
+        { title: "The day of suffering", src: "music/day_of_chaos.mp3" },
+        { title: "Horror Trailer", src: "music/horror_trailer.mp3" }
+    ]
+};
+
+let currentPlaylistType = 'friends'; 
+let currentTrackIndex = 0;
+
+function formatTime(seconds) {
+    if (isNaN(seconds) || seconds === Infinity) return "0:00";
+    const m = Math.floor(seconds / 60);
+    const s = Math.floor(seconds % 60);
+    return `${m}:${s < 10 ? '0' : ''}${s}`;
+}
+
+function loadTrack(type, index) {
+    currentPlaylistType = type;
+    currentTrackIndex = index;
+    
+    const track = playlists[type][index];
+    if (!track) return;
+
+    bgMusic.src = track.src;
+    musicTitle.textContent = track.title;
+    musicStatusText.textContent = 'Готов';
+    musicStatusText.style.color = 'var(--text-dim)';
+    musicBtn.innerHTML = '▶';
+    playerContainer.classList.remove('playing');
+    musicTimeDisplay.textContent = "0:00 / 0:00";
+    
+    const btnFriends = document.getElementById('btn-playlist-friends');
+    const btnGame = document.getElementById('btn-playlist-game');
+    if(btnFriends) btnFriends.classList.toggle('active', type === 'friends');
+    if(btnGame) btnGame.classList.toggle('active', type === 'game');
+}
+
+window.toggleMusic = function() {
+    if (!bgMusic.src) loadTrack('friends', 0);
+
+    if (bgMusic.paused) {
+        bgMusic.play().then(() => {
+            musicBtn.innerHTML = '⏸';
+            musicStatusText.textContent = 'Играет';
+            musicStatusText.style.color = 'var(--neon-green)';
+            playerContainer.classList.add('playing');
+            musicBtn.style.animation = 'none';
+        }).catch(e => {
+            musicStatusText.textContent = 'Ошибка (нет файла)';
+            musicStatusText.style.color = 'var(--neon-red)';
+        });
+    } else {
+        bgMusic.pause();
+        musicBtn.innerHTML = '▶';
+        musicStatusText.textContent = 'Пауза';
+        musicStatusText.style.color = 'var(--text-dim)';
+        playerContainer.classList.remove('playing');
+        musicBtn.style.animation = 'pulse-play-btn 2s infinite';
+    }
+};
+
+if (bgMusic) {
+    bgMusic.addEventListener('timeupdate', () => {
+        if (musicTimeDisplay) {
+            musicTimeDisplay.textContent = `${formatTime(bgMusic.currentTime)} / ${formatTime(bgMusic.duration)}`;
+        }
+    });
+    bgMusic.addEventListener('ended', () => {
+        const wasPlaying = !bgMusic.paused;
+        let nextIndex = currentTrackIndex + 1;
+        if (nextIndex >= playlists[currentPlaylistType].length) nextIndex = 0;
+        loadTrack(currentPlaylistType, nextIndex);
+        if (wasPlaying) toggleMusic();
+    });
+}
+
+window.switchPlaylist = function(type) {
+    const wasPlaying = !bgMusic.paused;
+    loadTrack(type, 0);
+    if (wasPlaying) toggleMusic();
+};
+
+window.nextTrack = function() {
+    const wasPlaying = !bgMusic.paused;
+    let nextIndex = currentTrackIndex + 1;
+    if (nextIndex >= playlists[currentPlaylistType].length) nextIndex = 0;
+    loadTrack(currentPlaylistType, nextIndex);
+    if (wasPlaying) toggleMusic();
+};
+
+window.changeVolume = function(val) { if (bgMusic) bgMusic.volume = val; };
+
+// Инициализация плеера при загрузке
+if (bgMusic) {
+    loadTrack('friends', 0);
+    if (musicVolume) bgMusic.volume = musicVolume.value;
+}
