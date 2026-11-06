@@ -1,673 +1,257 @@
 <!DOCTYPE html>
 <html lang="ru">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="THE SILENT CHAT — хакерский триллер в неоновом нуаре.">
-    <title>THE SILENT CHAT</title>
-    <link rel="stylesheet" href="style.css">
-    <!-- ТВОЯ ИКОНКА (ЗАХАРДКОДЕНА) -->
-    <link rel="icon" type="image/jpeg" href="https://i.ibb.co/0jLFZ8Ck/5415731015122099624-2.jpg">
-</head>
-<body>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0">
+		<title>THE SILENT CHAT</title>
+		<style>
+html, body, #canvas {
+	margin: 0;
+	padding: 0;
+	border: 0;
+}
 
-<canvas id="matrix"></canvas>
-<div class="noise"></div>
+body {
+	color: white;
+	background-color: black;
+	overflow: hidden;
+	touch-action: none;
+}
 
-<!-- ИНТРО -->
-<div id="intro-overlay" class="intro-overlay">
-    <div class="intro-scanlines"></div>
-    <div class="intro-content">
-        <div class="intro-glitch glitch" data-text="SYSTEM BREACH">SYSTEM BREACH</div>
-        <div class="intro-sub">// unauthorized access detected</div>
-        <div class="intro-terminal" id="intro-terminal"></div>
-        <div class="intro-progress">
-            <div class="intro-progress-bar"><div class="intro-progress-fill" id="intro-progress-fill"></div></div>
-            <div class="intro-progress-text" id="intro-progress-text">0%</div>
-        </div>
-        <button class="intro-skip" onclick="skipIntro()">ПРОПУСТИТЬ ▸</button>
-    </div>
-</div>
+#canvas {
+	display: block;
+}
 
-<!-- АВТОРИЗАЦИЯ -->
-<div id="auth-overlay" class="auth-overlay hidden">
-    <div class="auth-orb orb-1"></div>
-    <div class="auth-orb orb-2"></div>
-    <div class="auth-box glass">
-        <div class="auth-scanline"></div>
-        <h2 class="auth-title glitch" data-text="TSC TERMINAL">TSC TERMINAL</h2>
-        <div class="auth-tabs">
-            <button class="auth-tab active" id="tab-login" onclick="switchAuthTab('login')">ВХОД</button>
-            <button class="auth-tab" id="tab-register" onclick="switchAuthTab('register')">РЕГИСТРАЦИЯ</button>
-        </div>
+#canvas:focus {
+	outline: none;
+}
 
-        <div id="auth-login" class="auth-panel">
-            <p class="auth-desc">Вход в систему</p>
-            <div class="input-group"><label>Email</label><input type="email" id="login-email" placeholder="operator@blackwood.ru" autocomplete="off"></div>
-            <div class="input-group"><label>Пароль</label><input type="password" id="login-password" placeholder="••••••••"></div>
-            <p id="login-error" class="error-text"></p>
-            <button class="btn auth-btn" onclick="loginUser()">ВОЙТИ</button>
-        </div>
+#status, #status-splash, #status-progress {
+	position: absolute;
+	left: 0;
+	right: 0;
+}
 
-        <div id="auth-register" class="auth-panel hidden">
-            <p class="auth-desc">Создайте учетную запись оператора</p>
-            <div class="input-group"><label>Email</label><input type="email" id="reg-email" placeholder="operator@blackwood.ru" autocomplete="off"></div>
-            <div class="input-group"><label>Юзернейм (@)</label><input type="text" id="reg-username" placeholder="@Adellink" autocomplete="off"></div>
-            <div class="input-group"><label>Имя</label><input type="text" id="reg-name" placeholder="Иван" autocomplete="off"></div>
-            <div style="display:flex;gap:10px;">
-                <div class="input-group" style="flex:1;"><label>Возраст</label><input type="number" id="reg-age" placeholder="20"></div>
-                <div class="input-group" style="flex:1;"><label>Пол</label>
-                    <select id="reg-gender"><option value="Мужской">Мужской</option><option value="Женский">Женский</option><option value="Другое">Другое</option></select>
-                </div>
-            </div>
-            
-            <div class="input-group"><label>Пароль</label><input type="password" id="reg-password" placeholder="••••••••"></div>
-            <div class="input-group"><label>Повторите пароль</label><input type="password" id="reg-password-confirm" placeholder="••••••••"></div>
-            
-            <!-- ЧЕКБОКС ДОЛЖЕН БЫТЬ ЗДЕСЬ, ПЕРЕД КНОПКОЙ -->
-            <div class="input-group" style="margin-top: 1rem;">
-                <label class="checkbox-label" style="font-size: 0.8rem;">
-                    <input type="checkbox" id="reg-privacy-check"> Я согласен с <a href="/privacy.html" target="_blank" style="color: var(--neon-cyan);">политикой конфиденциальности</a> и даю согласие на обработку персональных данных.
-                </label>
-            </div>
+#status, #status-splash {
+	top: 0;
+	bottom: 0;
+}
 
-            <p id="reg-error" class="error-text"></p>
-            
-            <!-- А КНОПКА ТЕПЕРЬ ПОСЛЕ ЧЕКБОКСА -->
-            <button class="btn auth-btn" id="reg-submit-btn" onclick="registerUser()">ПРОДОЛЖИТЬ</button>
-        </div>
+#status {
+	background-color: #040404;
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
+	visibility: hidden;
+}
 
-        <div id="auth-token" class="auth-panel hidden">
-            <p class="auth-desc" style="color: var(--neon-green);">Регистрация успешна!</p>
-            <p>Ваш TSC-Token для входа в игру:</p>
-            <div class="token-display" id="generated-token">TSC-XXXX-XXXX</div>
-            <button class="btn-small" onclick="copyToken('generated-token')" style="margin-bottom:1rem;">📋 Копировать токен</button>
-            <div class="token-warning">
-                ⚠️ <strong>НИКОМУ НЕ ПЕРЕДАВАЙТЕ ЭТОТ ТОКЕН.</strong><br>
-                Любой, кто его получит, сможет войти в ваш аккаунт в игре.<br>
-                Мы никогда не спросим ваш токен.
-            </div>
-            <button class="btn auth-btn" onclick="switchAuthTab('login')">ПЕРЕЙТИ К ВХОДУ</button>
-        </div>
-    </div>
-</div>
+#status-splash {
+	max-height: 100%;
+	max-width: 100%;
+	margin: auto;
+}
 
-<!-- РАЗРЫВ ЭКРАНА -->
-<div id="breach-overlay" class="breach-overlay hidden">
-    <canvas id="breach-canvas"></canvas>
-    <div class="breach-flash" id="breach-flash"></div>
-    <div class="breach-text glitch" data-text="ACCESS GRANTED">ACCESS GRANTED</div>
-</div>
+#status-splash.show-image--false {
+	display: none;
+}
 
-<!-- ОСНОВНОЙ САЙТ -->
-<div id="main-content" class="hidden">
-    <nav class="nav glass">
-        <div class="nav-logo">THE SILENT CHAT</div>
-        <ul class="nav-links">
-            <li><a href="#about">О игре</a></li>
-            <li><a href="#updates">Версия</a></li>
-            <li><a href="#tracker">Трекер</a></li>
-            <li><a href="#features">Особенности</a></li>
-            <li><a href="#dossier">Досье</a></li>
-            <li><a href="#bloggers">Блогеры</a></li>
-            <li><a href="#obt-testers">ОБТ</a></li>
-            <li><a href="#testers">Тестеры</a></li>
-            <li><a href="#applications">Заявки</a></li>
-            <li><a href="#shop">Магазин</a></li>
-            <li><a href="#socials">Соц сети</a></li>
-            <li><a href="#contacts">Контакты</a></li>
-        </ul>
-        <div class="nav-right">
-            <div class="lang-switch">
-                <button onclick="changeLang('ru')" class="lang-btn active" id="btn-ru">RU</button>
-                <button onclick="changeLang('en')" class="lang-btn" id="btn-en">EN</button>
-            </div>
-            <div class="nav-bell" id="nav-bell" onclick="openNotifPanel()" title="Уведомления">
-                <span class="bell-icon">🔔</span>
-                <span class="bell-dot hidden" id="bell-dot"></span>
-            </div>
-            <div class="nav-profile" onclick="openProfileModal()">
-                <div id="nav-avatar-container" class="avatar-circle">?</div>
-            </div>
-        </div>
-    </nav>
+#status-splash.fullsize--true {
+	height: 100%;
+	width: 100%;
+	object-fit: contain;
+}
 
-    <header class="hero" id="hero">
-        <h1 class="hero-title glitch" data-text="THE SILENT CHAT" id="hero-title">THE SILENT CHAT</h1>
-        <p class="tagline" id="hero-tagline">Тишина — это не отсутствие звука. Это присутствие тьмы.</p>
-        <button class="btn pulse-btn" onclick="openDownloadModal()">ВОЙТИ В THE SILENT CHAT</button>
-        <p class="hint">▸ нажми <kbd>~</kbd> чтобы открыть терминал</p>
-    </header>
+#status-splash.use-filter--false {
+	image-rendering: pixelated;
+}
 
-    <!-- СЕКЦИЯ С ТОКЕНОМ И ПРОМОКОДОМ -->
-    <section id="token" class="section glass">
-        <h2 class="split-title">Ваш TSC-Токен</h2>
-        <p class="shop-desc">Ваш уникальный ключ для входа в игру. <strong>Никому не передавайте его.</strong></p>
-        <div id="token-box" class="hidden" style="max-width: 400px; margin: 0 auto;">
-            <div class="token-display" id="my-token-display">TSC-XXXX-XXXX</div>
-            <button class="btn" onclick="copyToken('my-token-display')" style="margin-top: 1rem;">📋 КОПИРОВАТЬ ТОКЕН</button>
-        </div>
-        <div id="token-error" class="hidden">
-            <p style="color: var(--neon-red);">Вы не авторизованы. Пожалуйста, войдите в аккаунт.</p>
-        </div>
+#status-progress, #status-notice {
+	display: none;
+}
 
-        <hr style="border-color: rgba(255,255,255,0.1); margin: 2.5rem 0;">
-        
-        <h3 style="color: var(--neon-magenta); margin-bottom: 1rem; letter-spacing: 2px; text-shadow: 0 0 10px var(--neon-magenta);">АКТИВАЦИЯ ПРОМОКОДА</h3>
-        <p class="shop-desc" style="margin-bottom: 1rem; font-size: 0.9rem;">Введи код, чтобы получить кристаллы или монеты.</p>
-        <div style="max-width: 400px; margin: 0 auto; display: flex; gap: 10px; justify-content: center;">
-            <input type="text" id="promo-input" placeholder="TSC-XXXX-XXXX" style="flex: 1; padding: 0.8rem; background: rgba(0,0,0,0.5); border: 1px solid var(--neon-cyan); color: white; font-family: inherit; border-radius: var(--radius-md); text-transform: uppercase;">
-            <button class="btn" onclick="redeemPromo()" style="padding: 0.8rem 1.5rem;">ВВЕСТИ</button>
-        </div>
-        <p id="promo-status" style="margin-top: 1rem; font-size: 0.95rem; font-weight: bold;"></p>
-    </section>
+#status-progress {
+	bottom: 10%;
+	width: 50%;
+	margin: 0 auto;
+}
 
-    <!-- О ИГРЕ -->
-    <section id="about" class="section glass">
-        <h2 class="split-title">О игре</h2>
-        <div class="about-text">
-            <p><strong>THE SILENT CHAT</strong><br>Одно сообщение. Одна ночь. Никаких свидетелей.</p>
-            <p>THE SILENT CHAT — это не игра. Это дверь, которую лучше было бы не открывать.</p>
-            <p>Добро пожаловать в Блэквуд — город, где дождь идёт круглый год, где фонари горят даже днём, потому что солнце здесь давно перестало быть чем-то большим, чем строчкой в старых календарях. Город, где люди привыкли не задавать вопросов. Город, где каждый знает всех — и никто не знает ничего. Город, в котором вы живёте уже много лет и в котором вы не живёте вовсе: вы просто существуете, отгородившись от мира наушниками, шторами и привычкой не отвечать на звонки.</p>
-            <p>Вы — не герой. Вы — тот, кто остался. Тот, кто не уехал. Тот, кто каждую ночь сидит в тёмной комнате, уставившись в экран смартфона, и ждёт, сам не зная чего. Вы давно разучились спать. Вы давно разучились доверять. Вы давно разучились говорить вслух — потому что говорить стало некому, а тишина стала единственным собеседником, который вас не перебивает.</p>
-            <p>И вот однажды ночью, ровно в 3:47, ваш телефон вибрирует.</p>
-            <p>Одно сообщение. От человека, которого вы знали много лет назад. От человека, с которым вы поклялись больше никогда не разговаривать. От человека, который, по всем законам этого мира, не должен был вам писать. И в этом сообщении — не «привет». Не «как дела». В этом сообщении — имя. Имя, которое вы похоронили. Имя, которое вы обещали забыть. Имя, которое теперь смотрит на вас из экрана и улыбается.</p>
-            <p>С этого момента всё, что вы знали о себе, о своём городе и о своём прошлом, начинает трескаться, как старое стекло. Вы начинаете копать — сначала осторожно, потом всё глубже, потом уже не можете остановиться, потому что каждый ответ рождает два новых вопроса, а каждый новый вопрос тянет за собой новую тень. Вы находите следы, которые лучше было бы не находить. Вы слышите голоса, которые лучше было бы не слышать. Вы открываете двери, которые лучше было бы оставить закрытыми. И за каждой дверью — ещё одна дверь. И за каждой тенью — ещё одна тень. И где-то в этом лабиринте — правда. Правда, которая, возможно, убьёт вас быстрее, чем ложь, в которой вы жили все эти годы.</p>
-            <p>THE SILENT CHAT — это психологический триллер, который разворачивается не на экране, а в вашей голове. Здесь нет открытых миров и героических сражений. Здесь есть только вы, ваш терминал и голос в темноте, который знает о вас слишком много. Голос, который называет вас по имени. Голос, который помнит то, что вы пытались забыть. Голос, который не спрашивает, готовы ли вы — он просто начинает говорить. И когда он заговорит, вы поймёте: обратной дороги нет.</p>
-            <p>Каждое ваше слово имеет последствия. Каждый выбор — это развилка, и каждая развилка ведёт в новую темноту. Вы можете довериться старому другу — и обнаружить, что друг давно уже не тот, кем был. Вы можете довериться незнакомцу — и обнаружить, что он знает о вас больше, чем вы сами. Вы можете не доверять никому — и остаться один на один с тем, что надвигается. Игра не простит вам ошибок. Игра не даст вам второй попытки. Игра просто будет наблюдать — молча, внимательно, с интересом — как вы принимаете решения, о которых потом пожалеете.</p>
-            <p>Это история о прошлом, которое не умирает. О секретах, которые не хотят оставаться секретами. О городе, который слишком долго молчал — и теперь готов заговорить. О людях, которые слишком долго врали — и теперь готовы заплатить. О вас — о том, кем вы были, кем вы стали и кем вы боитесь оказаться, когда всё это закончится.</p>
-            <p><strong>Добро пожаловать в THE SILENT CHAT. Добро пожаловать в Блэквуд. Добро пожаловать домой.</strong></p>
-            <p><strong>Только помните: тишина — это не отсутствие звука. Это присутствие тьмы. И она уже здесь.</strong></p>
-        </div>
-    </section>
+#status-notice {
+	background-color: #5b3943;
+	border-radius: 0.5rem;
+	border: 1px solid #9b3943;
+	color: #e0e0e0;
+	font-family: 'Noto Sans', 'Droid Sans', Arial, sans-serif;
+	line-height: 1.3;
+	margin: 0 2rem;
+	overflow: hidden;
+	padding: 1rem;
+	text-align: center;
+	z-index: 1;
+}
+		</style>
+		<link id="-gd-engine-icon" rel="icon" type="image/png" href="index.icon.png" />
+		<link rel="apple-touch-icon" href="index.apple-touch-icon.png"/>
+	</head>
+	<body>
+		<canvas id="canvas">
+			Your browser does not support the canvas tag.
+		</canvas>
 
-    <!-- ВЕРСИЯ -->
-    <section id="updates" class="section glass">
-        <h2 class="split-title">Версия: 1.0</h2>
-        <div class="updates-container">
-            <div class="update-card tilt">
-                <h3>ЧТО НОВОГО</h3>
-                <ul class="update-list">
-                    <li>Игра стала доступна для всех игроков!</li>
-                    <li>Эпизод 1 полностью готов.</li>
-                </ul>
-                <div class="episode-title">EPISODE 1:<br><strong>DEAD MEN DON'T LIE</strong></div>
-            </div>
-            <div class="update-card future tilt">
-                <h3>В БУДУЩИХ ОБНОВЛЕНИЯХ</h3>
-                <ul class="update-list future-list">
-                    <li>Фон шапки профиля</li>
-                    <li>Фон чата</li>
-                    <li>Рамки для аватаров</li>
-                    <li>Аккаунт в игре (синхронизация)</li>
-                    <li>И многое другое...</li>
-                </ul>
-            </div>
-        </div>
-    </section>
+		<noscript>
+			Your browser does not support JavaScript.
+		</noscript>
 
-    <!-- ТРЕКЕР -->
-    <section id="tracker" class="section glass">
-        <h2 class="split-title">TSC TRACKER</h2>
-        <div class="tracker-container">
-            <div class="tracker-item">
-                <div class="tracker-info"><span>Эпизод 1</span><span>100%</span></div>
-                <div class="progress-bar"><div class="progress-fill" style="width:100%;"></div></div>
-            </div>
-            <div class="tracker-item">
-                <div class="tracker-info"><span>Эпизод 2</span><span>0%</span></div>
-                <div class="progress-bar"><div class="progress-fill" style="width:0%;"></div></div>
-            </div>
-            <div class="tracker-header">Ивентовые сюжеты</div>
-            <div class="tracker-item sub-item">
-                <div class="tracker-info"><span>Новогодний сюжет</span><span>5%</span></div>
-                <div class="progress-bar"><div class="progress-fill" style="width:5%;"></div></div>
-            </div>
-        </div>
-        <div class="news-box">
-            <p>Вся информация и новости в нашем Telegram-канале!</p>
-            <a href="https://t.me/THESILENTCHAT" target="_blank" class="btn">СЛЕДИТЬ ЗА РАЗРАБОТКОЙ</a>
-        </div>
-    </section>
+		<div id="status">
+			<img id="status-splash" class="show-image--true fullsize--true use-filter--true" src="index.png" alt="">
+			<progress id="status-progress"></progress>
+			<div id="status-notice"></div>
+		</div>
 
-    <!-- ОСОБЕННОСТИ -->
-    <section id="features" class="section glass">
-        <h2 class="split-title">Особенности</h2>
-        <div class="features-grid">
-            <div class="feature-card tilt"><h3>Мини-игры</h3><p>Взлом, расшифровка, логика — каждая задача уникальна.</p></div>
-            <div class="feature-card tilt"><h3>Сюжет</h3><p>Многослойная история с выборами, которые меняют финал.</p></div>
-            <div class="feature-card tilt"><h3>Атмосфера</h3><p>Неоновый нуар, матричный дождь, живые диалоги.</p></div>
-        </div>
-    </section>
+		<script src="index.js"></script>
+		<script>
+const GODOT_CONFIG = {"args":[],"canvasResizePolicy":2,"emscriptenPoolSize":8,"ensureCrossOriginIsolationHeaders":true,"executable":"index","experimentalVK":false,"fileSizes":{"index.pck":114106900,"index.wasm":39514754},"focusCanvas":true,"gdextensionLibs":[],"godotPoolSize":4};
+const GODOT_THREADS_ENABLED = false;
+const engine = new Engine(GODOT_CONFIG);
 
-    <!-- ДОСЬЕ -->
-    <section id="dossier" class="section glass">
-        <h2 class="split-title">Досье</h2>
-        <div class="dossier-intro">
-            <p class="dossier-header-line">🔒 <strong>ДОСЬЕ ЗАСЕКРЕЧЕНО</strong></p>
-            <p class="dossier-desc">Все профили заблокированы. По мере прохождения сюжета вы будете открывать новые имена, новые тайны и новые тени прошлого.</p>
-        </div>
-        
-        <div class="dossier-filters-wrapper">
-            <h3 class="episode-title-filters">EPISODE 1</h3>
-            <div class="dossier-tabs">
-                <button class="dossier-tab active" onclick="filterDossiers('all')" id="tab-dossier-all">Общее</button>
-                <button class="dossier-tab" onclick="filterDossiers('alive')" id="tab-dossier-alive">Живые</button>
-                <button class="dossier-tab" onclick="filterDossiers('missing')" id="tab-dossier-missing">Пропавшие</button>
-                <button class="dossier-tab" onclick="filterDossiers('dead')" id="tab-dossier-dead">Мертвые</button>
-            </div>
-        </div>
+(function () {
+	const statusOverlay = document.getElementById('status');
+	const statusProgress = document.getElementById('status-progress');
+	const statusNotice = document.getElementById('status-notice');
 
-        <div class="dossier-progress" id="dossier-progress">Открыто 0 из 18</div>
-        <div class="dossier-grid" id="dossier-grid"></div>
-    </section>
+	let initializing = true;
+	let statusMode = '';
 
-    <!-- БЛОГЕРЫ -->
-    <section id="bloggers" class="section glass">
-        <h2 class="split-title">Блогеры игры</h2>
-        <p class="shop-desc">Люди, которые освещают THE SILENT CHAT. Подписывайтесь на их каналы!</p>
-        <div id="bloggers-grid" class="blogger-grid">
-            <p class="profile-empty">Загрузка...</p>
-        </div>
-        <p style="margin-top: 2.5rem; color: var(--neon-cyan); font-style: italic; font-size: 1.1rem; text-shadow: 0 0 10px rgba(0,240,255,0.4);">
-            Спасибо за вашу поддержку и то, что делаете THE SILENT CHAT известным!
-        </p>
-    </section>
+	function setStatusMode(mode) {
+		if (statusMode === mode || !initializing) {
+			return;
+		}
+		if (mode === 'hidden') {
+			statusOverlay.remove();
+			initializing = false;
+			return;
+		}
+		statusOverlay.style.visibility = 'visible';
+		statusProgress.style.display = mode === 'progress' ? 'block' : 'none';
+		statusNotice.style.display = mode === 'notice' ? 'block' : 'none';
+		statusMode = mode;
+	}
 
-    <!-- ОБТ ТЕСТЕРЫ -->
-    <section id="obt-testers" class="section glass">
-        <h2 class="split-title">ОБТ Тестеры</h2>
-        <p class="shop-desc">Те, кто тестирует ивенты и помогает делать игру лучше.</p>
-        <div id="obt-grid" class="blogger-grid">
-            <p class="profile-empty">Загрузка...</p>
-        </div>
-    </section>
+	function setStatusNotice(text) {
+		while (statusNotice.lastChild) {
+			statusNotice.removeChild(statusNotice.lastChild);
+		}
+		const lines = text.split('\n');
+		lines.forEach((line) => {
+			statusNotice.appendChild(document.createTextNode(line));
+			statusNotice.appendChild(document.createElement('br'));
+		});
+	}
 
-    <!-- ТЕСТЕРЫ -->
-    <section id="testers" class="section glass">
-        <h2 class="split-title">Тестеры игры</h2>
-        <p class="shop-desc">Люди, которые находят баги и помогают нам с разработкой.</p>
-        <div id="testers-grid" class="blogger-grid">
-            <p class="profile-empty">Загрузка...</p>
-        </div>
-    </section>
+	function displayFailureNotice(err) {
+		console.error(err);
+		if (err instanceof Error) {
+			setStatusNotice(err.message);
+		} else if (typeof err === 'string') {
+			setStatusNotice(err);
+		} else {
+			setStatusNotice('An unknown error occurred.');
+		}
+		setStatusMode('notice');
+		initializing = false;
+	}
 
-    <!-- ЗАЯВКИ -->
-    <section id="applications" class="section glass">
-        <h2 class="split-title">Заявки</h2>
-        <p class="shop-desc">Подай заявку на роль блогера, ОБТ-тестера или тестера.</p>
-        <div id="app-blocked-notice" class="app-status-box rejected hidden"></div>
-        <div class="app-tabs">
-            <button class="app-tab active" id="app-tab-blogger" onclick="switchAppTab('blogger')">БЛОГЕР</button>
-            <button class="app-tab" id="app-tab-obt" onclick="switchAppTab('obt')">ОБТ</button>
-            <button class="app-tab" id="app-tab-tester" onclick="switchAppTab('tester')">ТЕСТЕР</button>
-        </div>
+	const missing = Engine.getMissingFeatures({
+		threads: GODOT_THREADS_ENABLED,
+	});
 
-        <div id="app-blogger" class="app-panel">
-            <div id="app-status-blogger" class="hidden"></div>
-            <div class="input-group"><label>ФИО (полностью)</label><input type="text" id="blogger-realname" placeholder="Иванов Иван Иванович"></div>
-            <div class="input-group"><label>Возраст</label><input type="number" id="blogger-age" placeholder="25"></div>
-            <div class="input-group"><label>Платформа для связи</label>
-                <select id="blogger-contact-platform" onchange="updateContactField('blogger')">
-                    <option value="Telegram">Telegram</option><option value="Discord">Discord</option><option value="VK">VK</option><option value="Email">Email</option><option value="Телефон">Телефон</option>
-                </select>
-            </div>
-            <div class="input-group"><label id="blogger-contact-label">Контакт (Telegram)</label><input type="text" id="blogger-contact-value" placeholder="@nickname"></div>
-            <div class="socials-section">
-                <label style="color:var(--neon-cyan);font-size:0.85rem;display:block;margin-bottom:0.6rem;">Ваши соцсети</label>
-                <div id="blogger-socials-list"></div>
-                <button class="btn-small" onclick="addBloggerSocial()" id="add-social-btn">+ Добавить соцсеть</button>
-            </div>
-            <div class="input-group"><label>Комментарий (опционально)</label><textarea id="blogger-message" rows="3"></textarea></div>
-            <div class="subscribe-box">
-                <p><strong>📢 ОБЯЗАТЕЛЬНОЕ УСЛОВИЕ</strong></p>
-                <p>Подпишитесь на соцсети TSC: <a href="https://t.me/THESILENTCHAT" target="_blank">TG</a> · <a href="https://www.tiktok.com/@thesilentchat" target="_blank">TikTok</a></p>
-                <div class="input-group"><label>Юзернейм в Telegram</label><input type="text" id="blogger-tg" placeholder="@nickname"></div>
-                <div class="input-group"><label>Юзернейм в TikTok</label><input type="text" id="blogger-tt" placeholder="@nickname"></div>
-                <label class="checkbox-label"><input type="checkbox" id="blogger-subscribed"> Я подписался(ась) на соцсети</label>
-            </div>
-            <p id="blogger-error" class="error-text"></p>
-            <button class="btn auth-btn" onclick="submitBloggerApplication()">ОТПРАВИТЬ ЗАЯВКУ</button>
-        </div>
+	if (missing.length !== 0) {
+		if (GODOT_CONFIG['serviceWorker'] && GODOT_CONFIG['ensureCrossOriginIsolationHeaders'] && 'serviceWorker' in navigator) {
+			let serviceWorkerRegistrationPromise;
+			try {
+				serviceWorkerRegistrationPromise = navigator.serviceWorker.getRegistration();
+			} catch (err) {
+				serviceWorkerRegistrationPromise = Promise.reject(new Error('Service worker registration failed.'));
+			}
+			Promise.race([
+				serviceWorkerRegistrationPromise.then((registration) => {
+					if (registration != null) {
+						return Promise.reject(new Error('Service worker already exists.'));
+					}
+					return registration;
+				}).then(() => engine.installServiceWorker()),
+				new Promise((resolve) => {
+					setTimeout(() => resolve(), 2000);
+				}),
+			]).then(() => {
+				window.location.reload();
+			}).catch((err) => {
+				console.error('Error while registering service worker:', err);
+			});
+		} else {
+			const missingMsg = 'Error\nThe following features required to run Godot projects on the Web are missing:\n';
+			displayFailureNotice(missingMsg + missing.join('\n'));
+		}
+	} else {
+		setStatusMode('progress');
+		engine.startGame({
+			'onProgress': function (current, total) {
+				if (current > 0 && total > 0) {
+					statusProgress.value = current;
+					statusProgress.max = total;
+				} else {
+					statusProgress.removeAttribute('value');
+					statusProgress.removeAttribute('max');
+				}
+			},
+		}).then(() => {
+			setStatusMode('hidden');
+		}, displayFailureNotice);
+	}
+}());
+		</script>
 
-        <div id="app-obt" class="app-panel hidden">
-            <div id="app-status-obt" class="hidden"></div>
-            <div class="input-group"><label>ФИО (полностью)</label><input type="text" id="obt-realname"></div>
-            <div class="input-group"><label>Возраст</label><input type="number" id="obt-age"></div>
-            <div class="input-group"><label>Контакт</label>
-                <select id="obt-contact-platform" onchange="updateContactField('obt')">
-                    <option value="Telegram">Telegram</option><option value="Discord">Discord</option><option value="VK">VK</option><option value="Email">Email</option>
-                </select>
-            </div>
-            <div class="input-group"><label id="obt-contact-label">Контакт (Telegram)</label><input type="text" id="obt-contact-value" placeholder="@nickname"></div>
-            <div class="input-group"><label>Платформа</label>
-                <select id="obt-platform"><option value="Android">Android</option><option value="iOS">iOS</option><option value="PC">PC</option></select>
-            </div>
-            <div class="input-group"><label>Что тестировать</label>
-                <div class="radio-group">
-                    <label><input type="radio" name="obt-target" value="episode" onchange="toggleObtScope()"> Эпизод</label>
-                    <label><input type="radio" name="obt-target" value="event" onchange="toggleObtScope()"> Ивент</label>
-                </div>
-            </div>
-            <div class="input-group hidden" id="obt-scope-episode">
-                <label>Эпизоды</label>
-                <div class="checkbox-group">
-                    <label><input type="checkbox" class="obt-scope-cb" value="episode_1"> Эпизод 1</label>
-                    <label><input type="checkbox" class="obt-scope-cb" value="episode_2"> Эпизод 2</label>
-                </div>
-            </div>
-            <div class="input-group hidden" id="obt-scope-event">
-                <label>Ивенты</label>
-                <div class="checkbox-group">
-                    <label><input type="checkbox" class="obt-scope-cb" value="event_newyear"> Новогодний</label>
-                </div>
-            </div>
-            <div class="subscribe-box">
-                <p><strong>📢 ОБЯЗАТЕЛЬНОЕ УСЛОВИЕ</strong></p>
-                <p>Подпишитесь на соцсети TSC: <a href="https://t.me/THESILENTCHAT" target="_blank">TG</a> · <a href="https://www.tiktok.com/@thesilentchat" target="_blank">TikTok</a></p>
-                <div class="input-group"><label>Юзернейм в Telegram</label><input type="text" id="obt-tg"></div>
-                <div class="input-group"><label>Юзернейм в TikTok</label><input type="text" id="obt-tt"></div>
-                <label class="checkbox-label"><input type="checkbox" id="obt-subscribed"> Я подписался(ась) на соцсети</label>
-            </div>
-            <p id="obt-error" class="error-text"></p>
-            <button class="btn auth-btn" onclick="submitOBTApplication()">ОТПРАВИТЬ ЗАЯВКУ</button>
-        </div>
+		<!-- ==================================================== -->
+		<!-- КОД АВТОРИЗАЦИИ GOOGLE (РАБОТАЕТ НА СВОЕМ САЙТЕ) -->
+		<!-- ==================================================== -->
+		<script type="module">
+		  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+		  import { getAuth, signInWithPopup, GoogleAuthProvider } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 
-        <div id="app-tester" class="app-panel hidden">
-            <div id="app-status-tester" class="hidden"></div>
-            <div class="input-group"><label>ФИО (полностью)</label><input type="text" id="tester-realname"></div>
-            <div class="input-group"><label>Возраст</label><input type="number" id="tester-age"></div>
-            <div class="input-group"><label>Контакт</label>
-                <select id="tester-contact-platform" onchange="updateContactField('tester')">
-                    <option value="Telegram">Telegram</option><option value="Discord">Discord</option><option value="VK">VK</option><option value="Email">Email</option>
-                </select>
-            </div>
-            <div class="input-group"><label id="tester-contact-label">Контакт (Telegram)</label><input type="text" id="tester-contact-value" placeholder="@nickname"></div>
-            <div class="input-group"><label>Платформа</label>
-                <select id="tester-platform"><option value="Android">Android</option><option value="iOS">iOS</option><option value="PC">PC</option></select>
-            </div>
-            <div class="subscribe-box">
-                <p><strong>📢 ОБЯЗАТЕЛЬНОЕ УСЛОВИЕ</strong></p>
-                <p>Подпишитесь на соцсети TSC: <a href="https://t.me/THESILENTCHAT" target="_blank">TG</a> · <a href="https://www.tiktok.com/@thesilentchat" target="_blank">TikTok</a></p>
-                <div class="input-group"><label>Юзернейм в Telegram</label><input type="text" id="tester-tg"></div>
-                <div class="input-group"><label>Юзернейм в TikTok</label><input type="text" id="tester-tt"></div>
-                <label class="checkbox-label"><input type="checkbox" id="tester-subscribed"> Я подписался(ась) на соцсети</label>
-            </div>
-            <p id="tester-error" class="error-text"></p>
-            <button class="btn auth-btn" onclick="submitTesterApplication()">ОТПРАВИТЬ ЗАЯВКУ</button>
-        </div>
-    </section>
+		  const firebaseConfig = {
+			apiKey: "AIzaSyA24goApnS9GR3PnhKnJXqRqJN05DTG6cc",
+			authDomain: "tsc-universe.firebaseapp.com",
+			projectId: "tsc-universe",
+			storageBucket: "tsc-universe.appspot.com",
+			messagingSenderId: "537337043396",
+			appId: "1:537337043396:web:b86e9a24928eee9a0a6c91" 
+		  };
 
-    <!-- МАГАЗИН -->
-    <section id="shop" class="section glass">
-        <h2 class="split-title">Магазин</h2>
-        <p class="shop-desc">Все покупки проходят через официального Telegram-бота. Кристаллы, монеты, эксклюзивный контент.</p>
-        <div id="shop-frozen-notice" class="app-status-box rejected hidden" style="max-width:500px;margin:0 auto 1.5rem;">🛑 Покупки временно приостановлены</div>
-        <div style="text-align:center;margin-top:2rem;">
-            <a href="https://t.me/tscofficialbot" target="_blank" class="btn pulse-btn" id="shop-btn" style="font-size:1.2rem;padding:1.2rem 3rem;">💎 КУПИТЬ ЧЕРЕЗ ТГ-БОТА</a>
-        </div>
-        <p class="note">* Кнопка ведёт в официального Telegram-бота @tscofficialbot</p>
-    </section>
+		  try {
+			  const app = initializeApp(firebaseConfig);
+			  const auth = getAuth(app);
+			  const provider = new GoogleAuthProvider();
 
-    <!-- СОЦ СЕТИ -->
-    <section id="socials" class="section glass">
-        <h2 class="split-title">Соц сети</h2>
-        <p>Наши официальные каналы. Подпишитесь, чтобы не пропустить новости.</p>
-        <div class="contact-grid">
-            <a href="https://t.me/THESILENTCHAT" target="_blank" class="contact-card tilt">
-                <div class="contact-icon">📱</div><div class="contact-label">Telegram-канал</div><div class="contact-value">@THESILENTCHAT</div>
-            </a>
-            <a href="https://www.tiktok.com/@thesilentchat" target="_blank" class="contact-card tilt">
-                <div class="contact-icon">🎵</div><div class="contact-label">TikTok</div><div class="contact-value">@thesilentchat</div>
-            </a>
-            <a href="https://t.me/tscofficialbot" target="_blank" class="contact-card tilt">
-                <div class="contact-icon">🤖</div><div class="contact-label">Telegram-бот</div><div class="contact-value">@tscofficialbot</div>
-            </a>
-        </div>
-    </section>
+			  window.godot_google_token = "";
 
-    <!-- КОНТАКТЫ -->
-    <section id="contacts" class="section glass">
-        <h2 class="split-title">Контакты</h2>
-        <p>Связь с разработчиком.</p>
-        <div class="contact-grid">
-            <a href="mailto:tscstudiogame@gmail.com" class="contact-card tilt">
-                <div class="contact-icon">✉️</div><div class="contact-label">Email</div><div class="contact-value">tscstudiogame@gmail.com</div>
-            </a>
-            <a href="https://t.me/TheSilentChatgame" target="_blank" class="contact-card tilt">
-                <div class="contact-icon">✈️</div><div class="contact-label">Telegram</div><div class="contact-value">@TheSilentChatgame</div>
-            </a>
-            <a href="https://www.tiktok.com/@thesilentchat" target="_blank" class="contact-card tilt">
-                <div class="contact-icon">🎵</div><div class="contact-label">TikTok</div><div class="contact-value">@thesilentchat</div>
-            </a>
-            <div class="contact-card tilt" style="cursor:not-allowed;opacity:0.5;">
-                <div class="contact-icon">📘</div><div class="contact-label">VK</div><div class="contact-value">Скоро</div>
-            </div>
-        </div>
-    </section>
+			  window.loginWithGoogle = async function() {
+				try {
+				  console.log("Открываем окно входа Google...");
+				  const result = await signInWithPopup(auth, provider); 
+				  const idToken = await result.user.getIdToken();
+				  
+				  window.godot_google_token = idToken;
+				  console.log("✅ Успешный вход через Google (Web)");
+				} catch (error) {
+				  console.error("❌ Ошибка входа:", error);
+				  alert("Не удалось войти через Google: " + error.message);
+				}
+			  };
+		  } catch (e) {
+			  console.error("Ошибка инициализации Firebase: ", e);
+		  }
+		</script>
+		<!-- ==================================================== -->
 
-        <footer class="footer">
-        <p>© 2026 THE SILENT CHAT. Все права защищены.</p>
-        <p style="margin-top: 10px; font-size: 0.8rem;">
-            <a href="/privacy.html" style="color: var(--text-dim); text-decoration: underline;">Политика конфиденциальности</a>
-        </p>
-    </footer>
-
-<!-- МОДАЛКА СКАЧИВАНИЯ -->
-<div id="download-modal" class="modal-overlay hidden">
-    <div class="modal-content glass">
-        <button class="modal-close" onclick="closeDownloadModal()">✕</button>
-        <h2 class="modal-title glitch" data-text="ТОЧКА ВХОДА">ТОЧКА ВХОДА</h2>
-        <p class="modal-text" style="text-align:center;font-size:0.95rem;margin-bottom:1.5rem;">Система поддерживает несколько устройств. Выберите свою точку входа.</p>
-        <div class="platform-grid">
-            <a href="https://thesilentchat.itch.io/the-silent-chat" target="_blank" class="platform-btn"><span class="platform-icon">🖥</span><span class="platform-name">WINDOWS</span><span class="platform-sub">Погружение на ПК</span></a>
-            <a href="https://thesilentchat.itch.io/the-silent-chat" target="_blank" class="platform-btn"><span class="platform-icon">🍎</span><span class="platform-name">macOS</span><span class="platform-sub">Погружение на Mac</span></a>
-            <a href="https://thesilentchat.itch.io/the-silent-chat" target="_blank" class="platform-btn"><span class="platform-icon">🐧</span><span class="platform-name">LINUX</span><span class="platform-sub">Погружение на Linux</span></a>
-            <a href="https://thesilentchat.itch.io/the-silent-chat" target="_blank" class="platform-btn"><span class="platform-icon">📱</span><span class="platform-name">iOS</span><span class="platform-sub">Погружение на iPhone</span></a>
-            <a href="#" onclick="alert('RuStore — на модерации. Скоро!'); return false;" class="platform-btn platform-btn-disabled"><span class="platform-icon">🤖</span><span class="platform-name">ANDROID</span><span class="platform-sub">RuStore — скоро</span></a>
-        </div>
-    </div>
-</div>
-
-<!-- ПРОФИЛЬ -->
-<div id="profile-modal" class="modal-overlay hidden" onclick="closeProfileModal(event)">
-    <div class="modal-content profile-content glass" onclick="event.stopPropagation()">
-        <button class="modal-close" onclick="closeProfileModal(event)">✕</button>
-        <h2 class="modal-title glitch" data-text="ПРОФИЛЬ">ПРОФИЛЬ</h2>
-        <div class="profile-header">
-            <div class="avatar-large" id="profile-avatar-large" onclick="showImagePreview()">?</div>
-            <input type="file" id="avatar-upload" accept="image/*" style="display:none;" onchange="uploadAvatar(event)">
-            <button class="btn-small" onclick="document.getElementById('avatar-upload').click()">Загрузить аватар</button>
-        </div>
-        <div class="profile-roles" id="profile-roles"></div>
-               <!-- Блок с информацией (будет меняться в зависимости от настроек) -->
-        <div class="profile-info" id="profile-info-block">
-            <!-- Сюда JS будет вставлять данные -->
-        </div>
-        <div class="profile-section">
-            <h3 class="profile-section-title">Мои заявки</h3>
-            <div id="profile-apps-active"><p class="profile-empty">Нет активных заявок.</p></div>
-        </div>
-        <div class="profile-section">
-            <h3 class="profile-section-title">История <span id="history-count" style="color:var(--text-dim);font-size:0.8rem;"></span></h3>
-            <div id="profile-apps-history"><p class="profile-empty">Пока пусто.</p></div>
-        </div>
-        <div class="profile-actions">
-            <button class="btn" id="link-game-btn" onclick="linkGame()">🎮 ПРИВЯЗАТЬ ИГРУ</button>
-            <button class="btn" id="link-tg-btn" onclick="linkTelegram()">✈️ ПРИВЯЗАТЬ TSC-БОТА</button>
-            <button class="btn" onclick="openSettingsModal()">⚙️ НАСТРОЙКИ</button>
-            <button class="btn btn-admin hidden" id="admin-panel-btn" onclick="openAdminPanel()">👑 АДМИН-ПАНЕЛЬ</button>
-        </div>
-    </div>
-</div>
-
-<!-- МОДАЛКА ПРОФИЛЯ ТЕСТЕРА/БЛОГЕРА -->
-<div id="tester-profile-modal" class="modal-overlay hidden" onclick="closeTesterProfileModal(event)">
-    <div class="modal-content glass" onclick="event.stopPropagation()" style="max-width: 500px; text-align: left;">
-        <button class="modal-close" onclick="closeTesterProfileModal(event)">✕</button>
-        <h2 class="modal-title glitch" data-text="ПРОФИЛЬ" style="text-align: center; margin-bottom: 2rem;">ПРОФИЛЬ</h2>
-        
-        <div id="tester-profile-body">
-            <!-- Заполняется через JS -->
-        </div>
-    </div>
-</div>
-
-<!-- ДОСЬЕ -->
-<div id="dossier-modal" class="modal-overlay hidden" onclick="closeDossierModal(event)">
-    <div class="modal-content dossier-detail-content glass" onclick="event.stopPropagation()">
-        <button class="modal-close" onclick="closeDossierModal(event)">✕</button>
-        <div id="dossier-detail-body"></div>
-    </div>
-</div>
-
-<!-- КОЛОКОЛЬЧИК -->
-<div id="notif-panel" class="notif-panel glass hidden">
-    <div class="notif-header">
-        <h3>УВЕДОМЛЕНИЯ</h3>
-        <button class="modal-close" style="position:static;" onclick="closeNotifPanel()">✕</button>
-    </div>
-    <div id="notif-list" class="notif-list"><p class="profile-empty">Пока тихо. Система молчит.</p></div>
-    <div class="notif-footer"><button class="btn-small" onclick="markAllNotifRead()">Отметить всё прочитанным</button></div>
-</div>
-
-<!-- АДМИН-ПАНЕЛЬ -->
-<div id="admin-modal" class="modal-overlay hidden" onclick="closeAdminPanel(event)">
-    <div class="modal-content admin-content glass" onclick="event.stopPropagation()">
-        <button class="modal-close" onclick="closeAdminPanel(event)">✕</button>
-        <h2 class="modal-title glitch" data-text="ADMIN">ADMIN</h2>
-        <div class="admin-tabs">
-            <button class="admin-tab active" onclick="switchAdminTab('apps')">ЗАЯВКИ</button>
-            <button class="admin-tab" onclick="switchAdminTab('promo')">ПРОМОКОДЫ</button>
-            <button class="admin-tab" onclick="switchAdminTab('notif')">УВЕДОМЛЕНИЯ</button>
-            <button class="admin-tab" onclick="switchAdminTab('settings')">НАСТРОЙКИ</button>
-        </div>
-        <div id="admin-apps" class="admin-panel">
-            <div class="admin-filters">
-                <select id="admin-app-filter" onchange="loadAdminApplications()">
-                    <option value="pending">⏳ На рассмотрении</option>
-                    <option value="approved">✅ Одобренные</option>
-                    <option value="rejected">❌ Отклонённые</option>
-                    <option value="revoked">🚫 Отозванные</option>
-                </select>
-                <button class="btn-small" onclick="loadAdminApplications()">Обновить</button>
-            </div>
-            <div id="admin-app-list"></div>
-        </div>
-        <div id="admin-promo" class="admin-panel hidden">
-            <h3 style="color:var(--neon-cyan);margin-bottom:1rem;font-size:1rem;">Сгенерировать промокод</h3>
-            <div class="input-group"><label>💎 Кристаллы (оставь 0, если не нужны)</label><input type="number" id="promo-value-crystals" placeholder="100" value="0" min="0"></div>
-            <div class="input-group"><label>🪙 Монеты (оставь 0, если не нужны)</label><input type="number" id="promo-value-coins" placeholder="100" value="0" min="0"></div>
-            <div class="input-group"><label>Кому</label><select id="promo-scope" onchange="togglePromoScope()"><option value="global">🌍 Общий</option><option value="user">👤 Для юзера</option><option value="admin">👑 Для себя</option></select></div>
-            <div class="input-group hidden" id="promo-token-field"><label>TSC-Token пользователя</label><input type="text" id="promo-token-input" placeholder="TSC-XXXX-XXXX"></div>
-            <div class="input-group"><label>Максимум активаций (0 = безлимит)</label><input type="number" id="promo-maxuses" value="0"></div>
-            <div class="input-group"><label>Срок действия</label><input type="datetime-local" id="promo-expires"></div>
-            <div class="input-group"><label>Комментарий</label><input type="text" id="promo-comment" placeholder="Для новогоднего ивента"></div>
-            <button class="btn auth-btn" onclick="generatePromocode()">СГЕНЕРИРОВАТЬ</button>
-            <div id="promo-result" style="margin-top:1rem;"></div>
-            <h3 style="color:var(--neon-cyan);margin:2rem 0 1rem;font-size:1rem;">Существующие промокоды</h3>
-            <div id="promo-list"></div>
-        </div>
-        <div id="admin-notif" class="admin-panel hidden">
-            <h3 style="color:var(--neon-cyan);margin-bottom:1rem;font-size:1rem;">Массовая рассылка</h3>
-            <div class="input-group"><label>Заголовок</label><input type="text" id="notif-title-input" placeholder="ОБНОВЛЕНИЕ"></div>
-            <div class="input-group"><label>Текст</label><textarea id="notif-text-input" rows="4" placeholder="Вышло обновление 1.1!"></textarea></div>
-            <button class="btn auth-btn" onclick="sendMassNotification()">ОТПРАВИТЬ ВСЕМ</button>
-            <div id="notif-send-result" style="margin-top:1rem;"></div>
-        </div>
-        <div id="admin-settings" class="admin-panel hidden">
-            <h3 style="color:var(--neon-cyan);margin-bottom:1rem;font-size:1rem;">Глобальные настройки</h3>
-            <label class="checkbox-label" style="margin-bottom:1rem;"><input type="checkbox" id="frozen-purchases-toggle" onchange="togglePurchasesFrozen()"> 🛑 Заморозить покупки</label>
-            <div id="settings-status" style="color:var(--text-dim);font-size:0.85rem;"></div>
-        </div>
-    </div>
-</div>
-
-<!-- МОДАЛКА НАСТРОЕК -->
-<div id="settings-modal" class="modal-overlay hidden" onclick="closeSettingsModal(event)">
-    <div class="modal-content glass" onclick="event.stopPropagation()" style="max-width: 400px;">
-        <button class="modal-close" onclick="closeSettingsModal(event)">✕</button>
-        <h2 class="modal-title glitch" data-text="НАСТРОЙКИ">НАСТРОЙКИ</h2>
-        
-        <div style="text-align: left; max-height: 50vh; overflow-y: auto; padding-right: 10px;">
-            <div class="input-group"><label>Никнейм (Отображаемое имя)</label><input type="text" id="set-nickname" placeholder="Например: Призрак"></div>
-            <div class="input-group"><label>Реальное Имя</label><input type="text" id="set-name" placeholder="Иван"></div>
-            <div class="input-group"><label>Возраст</label><input type="number" id="set-age" placeholder="20"></div>
-            <div class="input-group"><label>Пол</label>
-                <select id="set-gender"><option value="Мужской">Мужской</option><option value="Женский">Женский</option><option value="Другое">Другое</option></select>
-            </div>
-            <div class="input-group"><label>Юзернейм</label><input type="text" id="set-username" placeholder="@nickname"></div>
-            
-            <label class="checkbox-label" style="margin: 1.5rem 0; background: rgba(255,0,170,0.1); padding: 1rem; border-radius: 10px; border: 1px solid var(--neon-magenta);">
-                <input type="checkbox" id="set-hide-all" style="accent-color: var(--neon-magenta);"> <strong>Скрыть всю личную информацию</strong> (Имя, Возраст, Пол)
-            </label>
-            
-            <button class="btn auth-btn" onclick="saveSettings()" style="margin-bottom: 1rem;">СОХРАНИТЬ ИЗМЕНЕНИЯ</button>
-        </div>
-
-        <hr style="border-color: rgba(255,255,255,0.1); margin: 1rem 0;">
-
-        <div class="profile-actions">
-            <button class="btn btn-danger" onclick="switchAccount()">🔄 Сменить / Добавить аккаунт</button>
-            <button class="btn" onclick="changePassword()">Сменить пароль</button>
-            <button class="btn" onclick="changeToken()">Сменить токен</button>
-            <button class="btn btn-danger" onclick="logoutUser()">Выйти</button>
-            <button class="btn" style="border-color: #555; color: #888; font-size: 0.8rem; margin-top: 1rem;" onclick="deleteAccount()">Удалить аккаунт</button>
-        </div>
-    </div>
-</div>
-
-<div id="image-preview-modal" class="image-preview hidden" onclick="closeImagePreview()">
-    <img id="preview-img" src="" alt="Avatar">
-</div>
-
-<div id="toast-container" class="toast-container"></div>
-
-<!-- МУЗЫКАЛЬНЫЙ ПЛЕЕР С ТАЙМЕРОМ -->
-<div id="tsc-audio-player" class="music-player glass">
-    <div class="music-visualizer" id="music-visualizer">
-        <span></span><span></span><span></span><span></span>
-    </div>
-    
-    <button id="music-toggle-btn" class="music-btn pulse-play" onclick="toggleMusic()">▶</button>
-    
-    <div class="music-info">
-        <div class="music-title" id="music-title">TSC — Саундтрек</div>
-        <div class="music-status">
-            <span id="music-status-text">Нажми Play</span> 
-            <span id="music-time" style="color: var(--neon-cyan); margin-left: 5px;">0:00 / 0:00</span>
-        </div>
-    </div>
-
-    <div class="music-playlists">
-        <button id="btn-playlist-friends" class="playlist-btn active" onclick="switchPlaylist('friends')">ДРУЗЬЯ</button>
-        <button id="btn-playlist-game" class="playlist-btn" onclick="switchPlaylist('game')">ИГРА</button>
-    </div>
-
-    <button class="music-btn next-btn" onclick="nextTrack()" title="Следующий трек">⏭</button>
-    
-    <input type="range" id="music-volume" class="music-volume" min="0" max="1" step="0.05" value="0.4" oninput="changeVolume(this.value)">
-</div>
-
-<audio id="bg-music"></audio>
-    
-<!-- ТЕРМИНАЛ -->
-<div id="terminal" class="terminal glass hidden">
-    <div class="terminal-header">
-        <span class="dot dot-red"></span><span class="dot dot-yellow"></span><span class="dot dot-green"></span>
-        <span class="terminal-title">root@silent_chat:~$</span>
-        <button id="terminal-close" class="terminal-close">✕</button>
-    </div>
-    <div id="terminal-output" class="terminal-output">
-        <p class="term-line">Добро пожаловать, оператор.</p>
-        <p class="term-line">Введи <span class="term-cmd">help</span> для списка команд.</p>
-    </div>
-    <div class="terminal-input-line">
-        <span class="term-prompt">&gt;</span>
-        <input type="text" id="terminal-input" autocomplete="off" spellcheck="false" />
-    </div>
-</div>
-
-<script type="module" src="script.js"></script>
-</body>
+	</body>
 </html>
