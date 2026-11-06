@@ -60,8 +60,16 @@
                     <select id="reg-gender"><option value="Мужской">Мужской</option><option value="Женский">Женский</option><option value="Другое">Другое</option></select>
                 </div>
             </div>
-            <div class="input-group"><label>Пароль</label><input type="password" id="reg-password" placeholder="••••••••"></div>
+             <div class="input-group"><label>Пароль</label><input type="password" id="reg-password" placeholder="••••••••"></div>
             <div class="input-group"><label>Повторите пароль</label><input type="password" id="reg-password-confirm" placeholder="••••••••"></div>
+            
+            <!-- ЧЕКБОКС ПОЛИТИКИ -->
+            <div class="input-group" style="margin-top: 1rem;">
+                <label class="checkbox-label" style="font-size: 0.8rem;">
+                    <input type="checkbox" id="reg-privacy-check"> Я согласен с <a href="/privacy.html" target="_blank" style="color: var(--neon-cyan);">политикой конфиденциальности</a> и даю согласие на обработку персональных данных.
+                </label>
+            </div>
+
             <p id="reg-error" class="error-text"></p>
             <button class="btn auth-btn" id="reg-submit-btn" onclick="registerUser()">ПРОДОЛЖИТЬ</button>
         </div>
@@ -435,8 +443,11 @@
         </div>
     </section>
 
-    <footer class="footer">
+        <footer class="footer">
         <p>© 2026 THE SILENT CHAT. Все права защищены.</p>
+        <p style="margin-top: 10px; font-size: 0.8rem;">
+            <a href="/privacy.html" style="color: var(--text-dim); text-decoration: underline;">Политика конфиденциальности</a>
+        </p>
     </footer>
 </div>
 
