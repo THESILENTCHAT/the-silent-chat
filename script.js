@@ -1323,4 +1323,20 @@ function renderProfileApps() {
 
 function renderAppItem(app) {
     let badge = '', extra = '';
-    if (app.status === 'pending') badge = '<span class="profile-app-status-badge pending">⏳ НА РАССМОТРЕНИИ</span>';
+    if (app.status === 'pending') {
+        badge = '<span class="profile-app-status-badge pending">⏳ НА РАССМОТРЕНИИ</span>';
+    } else if (app.status === 'approved') {
+        if (app.typeLabel === 'БЛОГЕР') {
+            badge = '<span class="profile-app-status-badge approved">✅ ОДОБРЕНО</span>';
+            extra = '<div class="profile-app-expires">⚪ бессрочно</div>';
+        } else {
+            const t = getTimeLeft(app.expiresAt);
+            badge = t?.expired ? '<span class="profile-app-status-badge rejected">⌛ ИСТЁК</span>' : '<span class="profile-app-status-badge approved">✅ АКТИВНО</span>';
+            extra = `<div class="profile-app-expires">${t?.expired ? '🔴 истёк' : (t?.color === 'yellow' ? '🟡' : '🟢') + ' до ' + formatDateTime(t?.date)}</div>`;
+        }
+    } else {
+        badge = '<span class="profile-app-status-badge rejected">❌ ОТКЛОНЕНО</span>';
+        extra = app.adminComment ? `<div class="profile-app-comment">Причина: ${escapeHtml(app.adminComment)}</div>` : '';
+    }
+    return `<div class="profile-app-item ${app.status}"><div class="profile-app-header"><span class="profile-app-type">${app.typeLabel}</span>${badge}</div>${extra}</div>`;
+}
