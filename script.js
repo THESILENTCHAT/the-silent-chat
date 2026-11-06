@@ -292,6 +292,10 @@ window.registerUser = async function() {
     if (pass.length < 6) return showError(err, box, "Пароль должен быть не менее 6 символов.");
     if (pass !== confirmPass) return showError(err, box, "Пароли не совпадают.");
 
+    if (!document.getElementById('reg-privacy-check').checked) {
+        return showError(err, box, "Вы должны согласиться с политикой конфиденциальности.");
+    }
+
     btn.disabled = true; btn.textContent = 'ЗАГРУЗКА...';
 
     try {
