@@ -1809,6 +1809,9 @@ window.resetPassword = async function() {
     }
 };
 
+// ============================================================
+// ФУНКЦИЯ ПОЯВЛЕНИЯ САЙТА
+// ============================================================
 function launchSiteReveal() {
     const title = document.getElementById('hero-title');
     if (title) splitLetters(title, 0.06);
