@@ -1737,65 +1737,17 @@ window.sendMassNotification = async function() {
 };
 
 // ============================================================
-// СИСТЕМА ЛОКАЛИЗАЦИИ (RU/EN)
+// СМЕНА ЯЗЫКА (ВРЕМЕННАЯ ЗАГЛУШКА)
 // ============================================================
 window.changeLang = function(lang) {
+    // Просто переключаем кнопочку визуально
     document.querySelectorAll('.lang-btn').forEach(b => b.classList.remove('active'));
     const activeBtn = document.getElementById(`btn-${lang}`);
     if (activeBtn) activeBtn.classList.add('active');
     
-    localStorage.setItem('tsc_lang', lang);
-
-    if (lang === 'ru') {
-        location.reload(); 
-        return;
-    }
-
-    const dictionary = {
-        "О игре": "About", "Версия": "Version", "Трекер": "Tracker", "Особенности": "Features",
-        "Досье": "Dossiers", "Блогеры": "Bloggers", "ОБТ": "CBT", "Тестеры": "Testers",
-        "Заявки": "Applications", "Магазин": "Shop", "Соц сети": "Socials", "Контакты": "Contacts",
-        "ВОЙТИ В THE SILENT CHAT": "ENTER THE SILENT CHAT",
-        "Тишина — это не отсутствие звука. Это присутствие тьмы.": "Silence is not the absence of sound. It is the presence of darkness.",
-        "О игре": "About the game", "Версия: 1.0": "Version: 1.0", "ЧТО НОВОГО": "WHAT'S NEW",
-        "В БУДУЩИХ ОБНОВЛЕНИЯХ": "IN FUTURE UPDATES", "TSC TRACKER": "TSC TRACKER",
-        "ТОЧКА ВХОДА": "ENTRY POINT", "НАЗАД К ВЫБОРУ": "BACK TO SELECTION",
-        "На данный момент тут пусто. Ожидайте обновлений!": "Currently empty here. Wait for updates!",
-        "ПРОФИЛЬ": "PROFILE", "НАСТРОЙКИ": "SETTINGS", "Мои заявки": "My applications",
-        "История": "History", "Выйти": "Logout", "Сменить пароль": "Change password",
-        "Сменить токен": "Change token", "Удалить аккаунт": "Delete account",
-        "СОХРАНИТЬ ИЗМЕНЕНИЯ": "SAVE CHANGES", "Загрузить аватар": "Upload avatar",
-        "Всего:": "Total:", "За год:": "This year:", "За месяц:": "This month:", "Сегодня:": "Today:",
-        "Массовая рассылка": "Mass Broadcast", "Заголовок": "Title", "Текст": "Text", "ОТПРАВИТЬ ВСЕМ": "SEND TO ALL"
-    };
-
-    document.querySelectorAll('h1, h2, h3, h4, p, span, a, button, label, div, li').forEach(el => {
-        if (el.children.length === 0) { 
-            const text = el.textContent.trim();
-            if (dictionary[text]) {
-                el.textContent = el.textContent.replace(text, dictionary[text]);
-            }
-        }
-    });
-
-    document.querySelectorAll('input, textarea').forEach(el => {
-        if (el.placeholder && dictionary[el.placeholder.trim()]) {
-            el.placeholder = dictionary[el.placeholder.trim()];
-        }
-    });
-
-    showToast('approved', 'Language', 'English translation applied.');
+    // Показываем сообщение, что в разработке
+    showToast('approved', 'Язык / Language', 'Смена языка в разработке.');
 };
-
-// ============================================================
-// ПРОВЕРКА ЯЗЫКА ПРИ ЗАГРУЗКЕ
-// ============================================================
-window.addEventListener('load', () => {
-    const savedLang = localStorage.getItem('tsc_lang');
-    if (savedLang === 'en') {
-        setTimeout(() => window.changeLang('en'), 500);
-    }
-});
 
         // Показываем виджет
         widget.classList.remove('hidden');
