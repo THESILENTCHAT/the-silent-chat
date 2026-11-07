@@ -9,8 +9,7 @@ import {
 } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 import { 
     getFirestore, doc, setDoc, getDoc, updateDoc, deleteDoc,
-    addDoc, collection, query, where, getDocs, serverTimestamp, orderBy, increment, writeBatch,
-    getCountFromServer
+    addDoc, collection, query, where, getDocs, serverTimestamp, orderBy, increment, writeBatch
 } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
 const firebaseConfig = {
@@ -490,22 +489,6 @@ function startBreach() {
         }
     }
     requestAnimationFrame(draw);
-}
-
-function launchSiteReveal() {
-    const title = document.getElementById('hero-title');
-    if (title) splitLetters(title, 0.06);
-    setTimeout(() => document.getElementById('hero-tagline')?.classList.add('in'), 400);
-    setTimeout(() => document.querySelector('.hero .btn.pulse-btn')?.classList.add('in'), 800);
-    document.querySelectorAll('.section').forEach(s => observer.observe(s));
-    renderTokenSection();
-    loadDossiers();
-    loadTeam(); 
-    loadApplicationStatus();
-    loadNotifications();
-    loadShopStatus();
-    startNotificationPolling();
-    loadUserStats();
 }
 
 // ============================================================
@@ -1750,38 +1733,6 @@ window.backToCategories = function() {
     document.getElementById('platform-details').classList.add('hidden');
     document.getElementById('platform-categories').classList.remove('hidden');
 };
-
-// ============================================================
-// СТАТИСТИКА ПОЛЬЗОВАТЕЛЕЙ (ВИДЖЕТ)
-// ============================================================
-async function loadUserStats() {
-    const widget = document.getElementById('user-stats-widget');
-    if (!widget) return;
-
-    const usersRef = collection(db, "users");
-    const now = new Date();
-    const startOfDay = new Date(now.getFullYear(), now.getMonth(), now.getDate()).toISOString();
-    const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1).toISOString();
-    const startOfYear = new Date(now.getFullYear(), 0, 1).toISOString();
-
-    try {
-        const [totalSnap, yearSnap, monthSnap, daySnap] = await Promise.all([
-            getCountFromServer(usersRef),
-            getCountFromServer(query(usersRef, where("createdAt", ">=", startOfYear))),
-            getCountFromServer(query(usersRef, where("createdAt", ">=", startOfMonth))),
-            getCountFromServer(query(usersRef, where("createdAt", ">=", startOfDay)))
-        ]);
-
-        document.getElementById('stat-total').innerText = totalSnap.data().count;
-        document.getElementById('stat-year').innerText = yearSnap.data().count;
-        document.getElementById('stat-month').innerText = monthSnap.data().count;
-        document.getElementById('stat-today').innerText = daySnap.data().count;
-
-        widget.classList.remove('hidden');
-    } catch (e) {
-        console.error("Ошибка загрузки статистики:", e);
-    }
-}
 
 // ============================================================
 // РАССЫЛКА В БОТА
