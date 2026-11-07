@@ -1619,11 +1619,26 @@ async function loadAdminApplications() {
         const q = query(collection(db, "applications"), where("status", "==", status));
         const snap = await getDocs(q);
         if (snap.empty) {
-            list.innerHTML = '<p class="profile-empty">Заявок нет</p>';
+            list.innerHTML = '<p class="profile-empty">Заявок с таким статусом нет</p>';
             return;
         }
         list.innerHTML = snap.docs.map(doc => {
             const d = doc.data();
+            
+            // Генерируем кнопки в зависимости от текущего статуса
+            let actionButtons = '';
+            if (status === 'pending') {
+                actionButtons = `
+                    <button class="btn-small" onclick="adminAction('${doc.id}', 'approved')">Одобрить</button>
+                    <button class="btn-small btn-danger" onclick="adminAction('${doc.id}', 'rejected')">Отклонить</button>`;
+            } else if (status === 'approved') {
+                actionButtons = `
+                    <button class="btn-small btn-danger" onclick="adminAction('${doc.id}', 'revoked')">🚫 Отозвать (Забрать роль)</button>`;
+            } else if (status === 'rejected' || status === 'revoked') {
+                actionButtons = `
+                    <button class="btn-small" onclick="adminAction('${doc.id}', 'approved')">✅ Одобрить снова</button>`;
+            }
+
             return `<div class="admin-app-item ${status}">
                 <div class="admin-app-head">
                     <span class="admin-app-type">${d.type}</span>
@@ -1634,14 +1649,15 @@ async function loadAdminApplications() {
                     <dt>ФИО:</dt><dd>${escapeHtml(d.realName)}</dd>
                     <dt>Контакт:</dt><dd>${escapeHtml(d.contactValue)}</dd>
                 </dl>
-                ${status === 'pending' ? `
                 <div class="admin-app-actions">
-                    <button class="btn-small" onclick="adminAction('${doc.id}', 'approved')">Одобрить</button>
-                    <button class="btn-small btn-danger" onclick="adminAction('${doc.id}', 'rejected')">Отклонить</button>
-                </div>` : ''}
+                    ${actionButtons}
+                </div>
             </div>`;
         }).join('');
-    } catch(e) { list.innerHTML = 'Ошибка загрузки'; }
+    } catch(e) { 
+        console.error(e);
+        list.innerHTML = 'Ошибка загрузки заявок'; 
+    }
 }
 
 window.adminAction = async function(id, act) {
@@ -1763,9 +1779,13 @@ async function loadUserStats() {
 window.sendMassNotification = async function() {
     const title = document.getElementById('notif-title-input').value.trim();
     const text = document.getElementById('notif-text-input').value.trim();
-    if (!title || !text) return alert("Заполните оба поля");
+    if(!title || !text) return alert("Заполните оба поля");
     
+    const resultDiv = document.getElementById('notif-send-result');
+    resultDiv.innerHTML = '<span style="color:var(--neon-yellow)">⏳ Отправка в БД и пробуждение бота...</span>';
+
     try {
+        // 1. Сохраняем в БД (для колокольчика)
         const users = await getDocs(collection(db, "users"));
         const batch = writeBatch(db); 
         users.forEach(u => {
@@ -1774,22 +1794,33 @@ window.sendMassNotification = async function() {
         });
         await batch.commit();
 
+        // 2. Отправляем боту с таймаутом (ждем до 15 секунд, пока он проснется)
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 15000);
+
         const response = await fetch('https://silent-bot-es3x.onrender.com/api/broadcast', {
             method: 'POST',
+            mode: 'cors', // Разрешаем кросс-доменный запрос
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ title: title, text: text })
+            body: JSON.stringify({ title: title, text: text }),
+            signal: controller.signal
         });
+        clearTimeout(timeoutId);
         
         if (response.ok) {
-            document.getElementById('notif-send-result').innerHTML = '<span style="color:var(--neon-green)">✅ Рассылка отправлена в БД и в Telegram!</span>';
+            resultDiv.innerHTML = '<span style="color:var(--neon-green)">✅ Рассылка отправлена в БД и в Telegram!</span>';
             document.getElementById('notif-title-input').value = '';
             document.getElementById('notif-text-input').value = '';
         } else {
-            throw new Error("Бот вернул ошибку");
+            throw new Error("Бот вернул ошибку " + response.status);
         }
     } catch(e) { 
         console.error(e);
-        document.getElementById('notif-send-result').innerHTML = '<span style="color:var(--neon-red)">❌ Ошибка: ' + e.message + '</span>'; 
+        if (e.name === 'AbortError') {
+            resultDiv.innerHTML = '<span style="color:var(--neon-red)">❌ Бот слишком долго просыпался. Попробуй еще раз.</span>';
+        } else {
+            resultDiv.innerHTML = '<span style="color:var(--neon-red)">❌ Ошибка: ' + e.message + '</span>'; 
+        }
     }
 };
 
