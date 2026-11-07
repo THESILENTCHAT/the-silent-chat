@@ -1741,7 +1741,9 @@ window.sendMassNotification = async function() {
 // ============================================================
 window.changeLang = function(lang) {
     document.querySelectorAll('.lang-btn').forEach(b => b.classList.remove('active'));
-    document.getElementById(`btn-${lang}`).classList.add('active');
+    const activeBtn = document.getElementById(`btn-${lang}`);
+    if (activeBtn) activeBtn.classList.add('active');
+    
     localStorage.setItem('tsc_lang', lang);
 
     if (lang === 'ru') {
@@ -1784,6 +1786,16 @@ window.changeLang = function(lang) {
 
     showToast('approved', 'Language', 'English translation applied.');
 };
+
+// ============================================================
+// ПРОВЕРКА ЯЗЫКА ПРИ ЗАГРУЗКЕ
+// ============================================================
+window.addEventListener('load', () => {
+    const savedLang = localStorage.getItem('tsc_lang');
+    if (savedLang === 'en') {
+        setTimeout(() => window.changeLang('en'), 500);
+    }
+});
 
         // Показываем виджет
         widget.classList.remove('hidden');
