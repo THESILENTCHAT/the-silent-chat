@@ -828,3 +828,47 @@ a.contact-card:hover .contact-value { color: var(--neon-cyan); text-shadow: 0 0 
 @media (max-width: 768px) {
     #user-stats-widget { display: none; }
 }
+
+/* ===== НОВАЯ МОДАЛКА СКАЧИВАНИЯ ===== */
+.platform-grid-4 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    margin-top: 1rem;
+}
+
+.platform-category {
+    cursor: pointer;
+    padding: 2rem 1rem;
+    transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.platform-category:hover {
+    transform: translateY(-5px) scale(1.02);
+    border-color: var(--neon-cyan);
+    box-shadow: 0 0 20px rgba(0, 240, 255, 0.3);
+}
+
+/* Внутренний экран */
+.platform-details-content {
+    padding: 2rem;
+    background: rgba(0, 0, 0, 0.3);
+    border-radius: var(--radius-md);
+    border: 1px dashed rgba(0, 240, 255, 0.3);
+    text-align: center;
+    min-height: 150px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.platform-details-content p {
+    margin-bottom: 1.5rem;
+    font-size: 1.05rem;
+    color: var(--text-dim);
+}
+
+@media (max-width: 500px) {
+    .platform-grid-4 { grid-template-columns: 1fr; }
+}
