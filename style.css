@@ -872,3 +872,21 @@ a.contact-card:hover .contact-value { color: var(--neon-cyan); text-shadow: 0 0 
 @media (max-width: 500px) {
     .platform-grid-4 { grid-template-columns: 1fr; }
 }
+
+/* ===== КАСТОМНЫЙ КУРСОР (НЕОНОВАЯ СТРЕЛКА) ===== */
+@media (pointer: fine) {
+    /* Обычный курсор (стрелка) */
+    body, html {
+        cursor: url("data:image/svg+xml,%3Csvg width='24' height='24' viewBox='0 0 24 24' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M5 3L19 12L12 13L9 20L5 3Z' fill='%2300f0ff' stroke='%230a0a0f' stroke-width='2' stroke-linejoin='round'/%3E%3C/svg%3E") 5 3, auto;
+    }
+
+    /* Курсор при наведении на кнопки, ссылки и инпуты (прицел) */
+    a, button, input, select, textarea, .btn, .btn-small, .platform-btn, .nav-profile, .nav-bell, .dossier-card, .platform-category {
+        cursor: url("data:image/svg+xml,%3Csvg width='32' height='32' viewBox='0 0 32 32' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Ccircle cx='16' cy='16' r='4' fill='%23ff00aa'/%3E%3Cpath d='M16 2V10M16 22V30M2 16H10M22 16H30' stroke='%23ff00aa' stroke-width='2' stroke-linecap='round'/%3E%3C/svg%3E") 16 16, pointer;
+    }
+
+    /* Убираем стандартную руку у кнопок */
+    button, a, .btn {
+        cursor: url("data:image/svg+xml,%3Csvg width='32' height='32' viewBox='0 0 32 32' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Ccircle cx='16' cy='16' r='4' fill='%23ff00aa'/%3E%3Cpath d='M16 2V10M16 22V30M2 16H10M22 16H30' stroke='%23ff00aa' stroke-width='2' stroke-linecap='round'/%3E%3C/svg%3E") 16 16, pointer;
+    }
+}
