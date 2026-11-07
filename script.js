@@ -5,7 +5,8 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
 import { 
     getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut,
-    setPersistence, browserLocalPersistence, onAuthStateChanged, updatePassword, deleteUser
+    setPersistence, browserLocalPersistence, onAuthStateChanged, updatePassword, deleteUser,
+    sendPasswordResetEmail
 } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 import { 
     getFirestore, doc, setDoc, getDoc, updateDoc, deleteDoc,
@@ -1794,4 +1795,16 @@ window.changeLang = function(lang) {
     if (activeBtn) activeBtn.classList.add('active');
     
     showToast('approved', 'Язык / Language', 'Смена языка в разработке.');
+};
+
+window.resetPassword = async function() {
+    const email = document.getElementById('login-email').value.trim();
+    if (!email) return alert("Введите Email в поле выше, чтобы сбросить пароль.");
+    
+    try {
+        await sendPasswordResetEmail(auth, email);
+        showToast('approved', 'Письмо отправлено', 'Проверьте почту (и папку Спам) для сброса пароля.');
+    } catch (e) {
+        showToast('rejected', 'Ошибка', 'Не удалось отправить письмо: ' + e.message);
+    }
 };
