@@ -10,6 +10,7 @@ import {
 import { 
     getFirestore, doc, setDoc, getDoc, updateDoc, deleteDoc,
     addDoc, collection, query, where, getDocs, serverTimestamp, orderBy, increment, writeBatch
+    getCountFromServer
 } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
 const firebaseConfig = {
@@ -504,6 +505,7 @@ function launchSiteReveal() {
     loadNotifications();
     loadShopStatus();
     startNotificationPolling();
+    loadUserStats();
 }
 
 // ============================================================
@@ -1742,3 +1744,41 @@ window.changeLang = function(lang) {
     document.getElementById(`btn-${lang}`).classList.add('active');
     showToast('approved', 'Язык', 'Смена языка в разработке.');
 };
+
+// ============================================================
+// СТАТИСТИКА ПОЛЬЗОВАТЕЛЕЙ
+// ============================================================
+async function loadUserStats() {
+    const widget = document.getElementById('user-stats-widget');
+    if (!widget) return;
+
+    const usersRef = collection(db, "users");
+    
+    // Вычисляем даты
+    const now = new Date();
+    const startOfDay = new Date(now.getFullYear(), now.getMonth(), now.getDate()).toISOString();
+    const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1).toISOString();
+    const startOfYear = new Date(now.getFullYear(), 0, 1).toISOString();
+
+    try {
+        // Запускаем 4 запроса параллельно для скорости
+        const [totalSnap, yearSnap, monthSnap, daySnap] = await Promise.all([
+            getCountFromServer(usersRef),
+            getCountFromServer(query(usersRef, where("createdAt", ">=", startOfYear))),
+            getCountFromServer(query(usersRef, where("createdAt", ">=", startOfMonth))),
+            getCountFromServer(query(usersRef, where("createdAt", ">=", startOfDay)))
+        ]);
+
+        // Записываем результаты в HTML
+        document.getElementById('stat-total').innerText = totalSnap.data().count;
+        document.getElementById('stat-year').innerText = yearSnap.data().count;
+        document.getElementById('stat-month').innerText = monthSnap.data().count;
+        document.getElementById('stat-today').innerText = daySnap.data().count;
+
+        // Показываем виджет
+        widget.classList.remove('hidden');
+
+    } catch (e) {
+        console.error("Ошибка загрузки статистики:", e);
+    }
+}
