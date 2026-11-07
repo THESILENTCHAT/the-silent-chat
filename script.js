@@ -1706,6 +1706,7 @@ window.sendMassNotification = async function() {
     if(!title || !text) return alert("Заполните оба поля");
     
     try {
+        // 1. Создаем уведомления в БД (для колокольчика на сайте)
         const users = await getDocs(collection(db, "users"));
         const batch = writeBatch(db); 
         users.forEach(u => {
@@ -1713,10 +1714,25 @@ window.sendMassNotification = async function() {
             batch.set(notifRef, { uid: u.id, title, text, read: false, createdAt: serverTimestamp() });
         });
         await batch.commit();
-        document.getElementById('notif-send-result').innerHTML = '<span style="color:var(--neon-green)">✅ Рассылка отправлена!</span>';
-        document.getElementById('notif-title-input').value = '';
-        document.getElementById('notif-text-input').value = '';
-    } catch(e) { alert("Ошибка: " + e.message); }
+
+        // 2. Отправляем запрос твоему боту на Render
+        const response = await fetch('https://silent-bot-es3x.onrender.com/api/broadcast', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ title: title, text: text })
+        });
+        
+        if (response.ok) {
+            document.getElementById('notif-send-result').innerHTML = '<span style="color:var(--neon-green)">✅ Рассылка отправлена в БД и в Telegram!</span>';
+            document.getElementById('notif-title-input').value = '';
+            document.getElementById('notif-text-input').value = '';
+        } else {
+            throw new Error("Бот вернул ошибку");
+        }
+    } catch(e) { 
+        console.error(e);
+        document.getElementById('notif-send-result').innerHTML = '<span style="color:var(--neon-red)">❌ Ошибка: ' + e.message + '</span>'; 
+    }
 };
 
 async function loadAdminSettings() {
@@ -1794,82 +1810,56 @@ const langDictionary = {
 };
 
 window.changeLang = function(lang) {
-    // Переключаем визуальные кнопки
     document.querySelectorAll('.lang-btn').forEach(b => b.classList.remove('active'));
     document.getElementById(`btn-${lang}`).classList.add('active');
-    
-    // Сохраняем выбор в память браузера
     localStorage.setItem('tsc_lang', lang);
 
     if (lang === 'ru') {
-        // Если переключили на русский, просто перезагружаем страницу (самый чистый способ)
         location.reload(); 
         return;
     }
 
-    // Функция обхода всех текстовых узлов на странице
-    function walk(node) {
-        if (node.nodeType === 3) { // Если это текст
-            const text = node.nodeValue.trim();
-            if (langDictionary[text]) {
-                node.nodeValue = node.nodeValue.replace(text, langDictionary[text]);
-            }
-        } else if (node.nodeType === 1 && node.tagName !== 'SCRIPT' && node.tagName !== 'STYLE') {
-            node.childNodes.forEach(walk);
-        }
-    }
-    walk(document.body);
+    // Словарь с фразами (добавь сюда остальные тексты, если нужно)
+    const dictionary = {
+        // Навигация
+        "О игре": "About", "Версия": "Version", "Трекер": "Tracker", "Особенности": "Features",
+        "Досье": "Dossiers", "Блогеры": "Bloggers", "ОБТ": "CBT", "Тестеры": "Testers",
+        "Заявки": "Applications", "Магазин": "Shop", "Соц сети": "Socials", "Контакты": "Contacts",
+        // Кнопки и заголовки
+        "ВОЙТИ В THE SILENT CHAT": "ENTER THE SILENT CHAT",
+        "Тишина — это не отсутствие звука. Это присутствие тьмы.": "Silence is not the absence of sound. It is the presence of darkness.",
+        "О игре": "About the game", "Версия: 1.0": "Version: 1.0", "ЧТО НОВОГО": "WHAT'S NEW",
+        "В БУДУЩИХ ОБНОВЛЕНИЯХ": "IN FUTURE UPDATES", "TSC TRACKER": "TSC TRACKER",
+        // Остальные заголовки
+        "ТОЧКА ВХОДА": "ENTRY POINT", "НАЗАД К ВЫБОРУ": "BACK TO SELECTION",
+        "На данный момент тут пусто. Ожидайте обновлений!": "Currently empty here. Wait for updates!",
+        "ПРОФИЛЬ": "PROFILE", "НАСТРОЙКИ": "SETTINGS", "Мои заявки": "My applications",
+        "История": "History", "Выйти": "Logout", "Сменить пароль": "Change password",
+        "Сменить токен": "Change token", "Удалить аккаунт": "Delete account",
+        "СОХРАНИТЬ ИЗМЕНЕНИЯ": "SAVE CHANGES", "Загрузить аватар": "Upload avatar",
+        "Всего:": "Total:", "За год:": "This year:", "За месяц:": "This month:", "Сегодня:": "Today:"
+    };
 
-    // Переводим placeholder (текст внутри полей ввода)
-    document.querySelectorAll('input, textarea').forEach(el => {
-        if (el.placeholder) {
-            const text = el.placeholder.trim();
-            if (langDictionary[text]) {
-                el.placeholder = el.placeholder.replace(text, langDictionary[text]);
+    // Обходим все элементы (включая параграфы)
+    document.querySelectorAll('h1, h2, h3, h4, p, span, a, button, label, div, li').forEach(el => {
+        // Меняем текст, если он есть в словаре
+        if (el.children.length === 0) { // Работаем только с элементами без вложенных тегов
+            const text = el.textContent.trim();
+            if (dictionary[text]) {
+                el.textContent = el.textContent.replace(text, dictionary[text]);
             }
+        }
+    });
+
+    // Переводим тексты внутри input и textarea
+    document.querySelectorAll('input, textarea').forEach(el => {
+        if (el.placeholder && dictionary[el.placeholder.trim()]) {
+            el.placeholder = dictionary[el.placeholder.trim()];
         }
     });
 
     showToast('approved', 'Language', 'English translation applied.');
 };
-
-// Автоматически включаем английский, если он был выбран ранее
-window.addEventListener('load', () => {
-    const savedLang = localStorage.getItem('tsc_lang');
-    if (savedLang === 'en') {
-        setTimeout(() => window.changeLang('en'), 500); // Ждем полной загрузки DOM
-    }
-});
-
-// ============================================================
-// СТАТИСТИКА ПОЛЬЗОВАТЕЛЕЙ
-// ============================================================
-async function loadUserStats() {
-    const widget = document.getElementById('user-stats-widget');
-    if (!widget) return;
-
-    const usersRef = collection(db, "users");
-    
-    // Вычисляем даты
-    const now = new Date();
-    const startOfDay = new Date(now.getFullYear(), now.getMonth(), now.getDate()).toISOString();
-    const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1).toISOString();
-    const startOfYear = new Date(now.getFullYear(), 0, 1).toISOString();
-
-    try {
-        // Запускаем 4 запроса параллельно для скорости
-        const [totalSnap, yearSnap, monthSnap, daySnap] = await Promise.all([
-            getCountFromServer(usersRef),
-            getCountFromServer(query(usersRef, where("createdAt", ">=", startOfYear))),
-            getCountFromServer(query(usersRef, where("createdAt", ">=", startOfMonth))),
-            getCountFromServer(query(usersRef, where("createdAt", ">=", startOfDay)))
-        ]);
-
-        // Записываем результаты в HTML
-        document.getElementById('stat-total').innerText = totalSnap.data().count;
-        document.getElementById('stat-year').innerText = yearSnap.data().count;
-        document.getElementById('stat-month').innerText = monthSnap.data().count;
-        document.getElementById('stat-today').innerText = daySnap.data().count;
 
         // Показываем виджет
         widget.classList.remove('hidden');
