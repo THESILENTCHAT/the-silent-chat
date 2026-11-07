@@ -509,7 +509,7 @@ function launchSiteReveal() {
 }
 
 // ============================================================
-// ИНИЦИАЛИЗАЦИЯ
+// ИНИЦИАЛИЗАЦИЯ И ЗАГРУЗКА ДАННЫХ
 // ============================================================
 window.addEventListener('load', () => {
     onAuthStateChanged(auth, async (user) => {
@@ -532,14 +532,24 @@ window.addEventListener('load', () => {
 async function loadUserData() {
     const user = auth.currentUser;
     if (!user) return null;
-    const snap = await getDoc(doc(db, "users", user.uid));
+    
+    const userRef = doc(db, "users", user.uid);
+    const snap = await getDoc(userRef);
+    
     if (snap.exists()) {
         window.currentUserData = snap.data();
         window.isAdmin = window.currentUserData.role === 'admin';
+        
+        // ⚡️ ОБНОВЛЯЕМ ВРЕМЯ ЗАХОДА ПРИ КАЖДОМ ВХОДЕ
+        try {
+            await updateDoc(userRef, { lastLogin: new Date().toISOString() });
+        } catch (e) {
+            console.error("Ошибка обновления lastLogin:", e);
+        }
+
         return window.currentUserData;
     }
 }
-
 // ============================================================
 // СЕКЦИЯ С ТОКЕНОМ И ПРОМОКОДОМ
 // ============================================================
