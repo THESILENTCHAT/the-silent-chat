@@ -1808,3 +1808,18 @@ window.resetPassword = async function() {
         showToast('rejected', 'Ошибка', 'Не удалось отправить письмо: ' + e.message);
     }
 };
+
+function launchSiteReveal() {
+    const title = document.getElementById('hero-title');
+    if (title) splitLetters(title, 0.06);
+    setTimeout(() => document.getElementById('hero-tagline')?.classList.add('in'), 400);
+    setTimeout(() => document.querySelector('.hero .btn.pulse-btn')?.classList.add('in'), 800);
+    document.querySelectorAll('.section').forEach(s => observer.observe(s));
+    renderTokenSection();
+    loadDossiers();
+    loadTeam(); 
+    loadApplicationStatus();
+    loadNotifications();
+    loadShopStatus();
+    startNotificationPolling();
+}
