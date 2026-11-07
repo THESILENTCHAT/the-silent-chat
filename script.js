@@ -1700,13 +1700,15 @@ window.generatePromocode = async function() {
     } catch(e) { alert("Ошибка: " + e.message); }
 };
 
+// ============================================================
+// РАССЫЛКА В БОТА
+// ============================================================
 window.sendMassNotification = async function() {
     const title = document.getElementById('notif-title-input').value.trim();
     const text = document.getElementById('notif-text-input').value.trim();
-    if(!title || !text) return alert("Заполните оба поля");
+    if (!title || !text) return alert("Заполните оба поля");
     
     try {
-        // 1. Создаем уведомления в БД (для колокольчика на сайте)
         const users = await getDocs(collection(db, "users"));
         const batch = writeBatch(db); 
         users.forEach(u => {
@@ -1715,7 +1717,6 @@ window.sendMassNotification = async function() {
         });
         await batch.commit();
 
-        // 2. Отправляем запрос твоему боту на Render
         const response = await fetch('https://silent-bot-es3x.onrender.com/api/broadcast', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -1735,80 +1736,9 @@ window.sendMassNotification = async function() {
     }
 };
 
-async function loadAdminSettings() {
-    try {
-        const snap = await getDoc(doc(db, "settings", "global"));
-        const toggle = document.getElementById('frozen-purchases-toggle');
-        if(snap.exists() && toggle) {
-            toggle.checked = snap.data().shopFrozen || false;
-        }
-    } catch(e) { console.error(e); }
-}
-
-window.togglePurchasesFrozen = async function() {
-    const checked = document.getElementById('frozen-purchases-toggle').checked;
-    try {
-        await setDoc(doc(db, "settings", "global"), { shopFrozen: checked }, { merge: true });
-        document.getElementById('settings-status').textContent = 'Статус обновлен';
-        setTimeout(() => document.getElementById('settings-status').textContent = '', 3000);
-        loadShopStatus();
-    } catch(e) { alert("Ошибка: " + e.message); }
-};
-
 // ============================================================
 // СИСТЕМА ЛОКАЛИЗАЦИИ (RU/EN)
 // ============================================================
-const langDictionary = {
-    // Навигация
-    "О игре": "About",
-    "Версия": "Version",
-    "Трекер": "Tracker",
-    "Особенности": "Features",
-    "Досье": "Dossiers",
-    "Блогеры": "Bloggers",
-    "ОБТ": "CBT",
-    "Тестеры": "Testers",
-    "Заявки": "Applications",
-    "Магазин": "Shop",
-    "Соц сети": "Socials",
-    "Контакты": "Contacts",
-    // Главный экран
-    "Тишина — это не отсутствие звука. Это присутствие тьмы.": "Silence is not the absence of sound. It is the presence of darkness.",
-    "ВОЙТИ В THE SILENT CHAT": "ENTER THE SILENT CHAT",
-    "нажми": "press",
-    "чтобы открыть терминал": "to open terminal",
-    // Авторизация
-    "ВХОД": "LOGIN",
-    "РЕГИСТРАЦИЯ": "REGISTER",
-    "Вход в систему": "System Login",
-    "Создайте учетную запись оператора": "Create an operator account",
-    "Пароль": "Password",
-    "ВОЙТИ": "LOGIN",
-    "ПРОДОЛЖИТЬ": "CONTINUE",
-    // Модалка скачивания
-    "ТОЧКА ВХОДА": "ENTRY POINT",
-    "Выберите платформу, чтобы увидеть доступные версии.": "Select a platform to see available versions.",
-    "На данный момент тут пусто. Ожидайте обновлений!": "Currently empty here. Wait for updates!",
-    "НАЗАД К ВЫБОРУ": "BACK TO SELECTION",
-    // Профиль и настройки
-    "ПРОФИЛЬ": "PROFILE",
-    "НАСТРОЙКИ": "SETTINGS",
-    "Мои заявки": "My applications",
-    "История": "History",
-    "Выйти": "Logout",
-    "Сменить пароль": "Change password",
-    "Сменить токен": "Change token",
-    "Удалить аккаунт": "Delete account",
-    "Скрыть всю личную информацию": "Hide all personal info",
-    "СОХРАНИТЬ ИЗМЕНЕНИЯ": "SAVE CHANGES",
-    "Загрузить аватар": "Upload avatar",
-    // Виджет статистики
-    "Всего:": "Total:",
-    "За год:": "This year:",
-    "За месяц:": "This month:",
-    "Сегодня:": "Today:"
-};
-
 window.changeLang = function(lang) {
     document.querySelectorAll('.lang-btn').forEach(b => b.classList.remove('active'));
     document.getElementById(`btn-${lang}`).classList.add('active');
@@ -1819,31 +1749,26 @@ window.changeLang = function(lang) {
         return;
     }
 
-    // Словарь с фразами (добавь сюда остальные тексты, если нужно)
     const dictionary = {
-        // Навигация
         "О игре": "About", "Версия": "Version", "Трекер": "Tracker", "Особенности": "Features",
         "Досье": "Dossiers", "Блогеры": "Bloggers", "ОБТ": "CBT", "Тестеры": "Testers",
         "Заявки": "Applications", "Магазин": "Shop", "Соц сети": "Socials", "Контакты": "Contacts",
-        // Кнопки и заголовки
         "ВОЙТИ В THE SILENT CHAT": "ENTER THE SILENT CHAT",
         "Тишина — это не отсутствие звука. Это присутствие тьмы.": "Silence is not the absence of sound. It is the presence of darkness.",
         "О игре": "About the game", "Версия: 1.0": "Version: 1.0", "ЧТО НОВОГО": "WHAT'S NEW",
         "В БУДУЩИХ ОБНОВЛЕНИЯХ": "IN FUTURE UPDATES", "TSC TRACKER": "TSC TRACKER",
-        // Остальные заголовки
         "ТОЧКА ВХОДА": "ENTRY POINT", "НАЗАД К ВЫБОРУ": "BACK TO SELECTION",
         "На данный момент тут пусто. Ожидайте обновлений!": "Currently empty here. Wait for updates!",
         "ПРОФИЛЬ": "PROFILE", "НАСТРОЙКИ": "SETTINGS", "Мои заявки": "My applications",
         "История": "History", "Выйти": "Logout", "Сменить пароль": "Change password",
         "Сменить токен": "Change token", "Удалить аккаунт": "Delete account",
         "СОХРАНИТЬ ИЗМЕНЕНИЯ": "SAVE CHANGES", "Загрузить аватар": "Upload avatar",
-        "Всего:": "Total:", "За год:": "This year:", "За месяц:": "This month:", "Сегодня:": "Today:"
+        "Всего:": "Total:", "За год:": "This year:", "За месяц:": "This month:", "Сегодня:": "Today:",
+        "Массовая рассылка": "Mass Broadcast", "Заголовок": "Title", "Текст": "Text", "ОТПРАВИТЬ ВСЕМ": "SEND TO ALL"
     };
 
-    // Обходим все элементы (включая параграфы)
     document.querySelectorAll('h1, h2, h3, h4, p, span, a, button, label, div, li').forEach(el => {
-        // Меняем текст, если он есть в словаре
-        if (el.children.length === 0) { // Работаем только с элементами без вложенных тегов
+        if (el.children.length === 0) { 
             const text = el.textContent.trim();
             if (dictionary[text]) {
                 el.textContent = el.textContent.replace(text, dictionary[text]);
@@ -1851,7 +1776,6 @@ window.changeLang = function(lang) {
         }
     });
 
-    // Переводим тексты внутри input и textarea
     document.querySelectorAll('input, textarea').forEach(el => {
         if (el.placeholder && dictionary[el.placeholder.trim()]) {
             el.placeholder = dictionary[el.placeholder.trim()];
