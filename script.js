@@ -1739,11 +1739,107 @@ window.togglePurchasesFrozen = async function() {
     } catch(e) { alert("Ошибка: " + e.message); }
 };
 
+// ============================================================
+// СИСТЕМА ЛОКАЛИЗАЦИИ (RU/EN)
+// ============================================================
+const langDictionary = {
+    // Навигация
+    "О игре": "About",
+    "Версия": "Version",
+    "Трекер": "Tracker",
+    "Особенности": "Features",
+    "Досье": "Dossiers",
+    "Блогеры": "Bloggers",
+    "ОБТ": "CBT",
+    "Тестеры": "Testers",
+    "Заявки": "Applications",
+    "Магазин": "Shop",
+    "Соц сети": "Socials",
+    "Контакты": "Contacts",
+    // Главный экран
+    "Тишина — это не отсутствие звука. Это присутствие тьмы.": "Silence is not the absence of sound. It is the presence of darkness.",
+    "ВОЙТИ В THE SILENT CHAT": "ENTER THE SILENT CHAT",
+    "нажми": "press",
+    "чтобы открыть терминал": "to open terminal",
+    // Авторизация
+    "ВХОД": "LOGIN",
+    "РЕГИСТРАЦИЯ": "REGISTER",
+    "Вход в систему": "System Login",
+    "Создайте учетную запись оператора": "Create an operator account",
+    "Пароль": "Password",
+    "ВОЙТИ": "LOGIN",
+    "ПРОДОЛЖИТЬ": "CONTINUE",
+    // Модалка скачивания
+    "ТОЧКА ВХОДА": "ENTRY POINT",
+    "Выберите платформу, чтобы увидеть доступные версии.": "Select a platform to see available versions.",
+    "На данный момент тут пусто. Ожидайте обновлений!": "Currently empty here. Wait for updates!",
+    "НАЗАД К ВЫБОРУ": "BACK TO SELECTION",
+    // Профиль и настройки
+    "ПРОФИЛЬ": "PROFILE",
+    "НАСТРОЙКИ": "SETTINGS",
+    "Мои заявки": "My applications",
+    "История": "History",
+    "Выйти": "Logout",
+    "Сменить пароль": "Change password",
+    "Сменить токен": "Change token",
+    "Удалить аккаунт": "Delete account",
+    "Скрыть всю личную информацию": "Hide all personal info",
+    "СОХРАНИТЬ ИЗМЕНЕНИЯ": "SAVE CHANGES",
+    "Загрузить аватар": "Upload avatar",
+    // Виджет статистики
+    "Всего:": "Total:",
+    "За год:": "This year:",
+    "За месяц:": "This month:",
+    "Сегодня:": "Today:"
+};
+
 window.changeLang = function(lang) {
+    // Переключаем визуальные кнопки
     document.querySelectorAll('.lang-btn').forEach(b => b.classList.remove('active'));
     document.getElementById(`btn-${lang}`).classList.add('active');
-    showToast('approved', 'Язык', 'Смена языка в разработке.');
+    
+    // Сохраняем выбор в память браузера
+    localStorage.setItem('tsc_lang', lang);
+
+    if (lang === 'ru') {
+        // Если переключили на русский, просто перезагружаем страницу (самый чистый способ)
+        location.reload(); 
+        return;
+    }
+
+    // Функция обхода всех текстовых узлов на странице
+    function walk(node) {
+        if (node.nodeType === 3) { // Если это текст
+            const text = node.nodeValue.trim();
+            if (langDictionary[text]) {
+                node.nodeValue = node.nodeValue.replace(text, langDictionary[text]);
+            }
+        } else if (node.nodeType === 1 && node.tagName !== 'SCRIPT' && node.tagName !== 'STYLE') {
+            node.childNodes.forEach(walk);
+        }
+    }
+    walk(document.body);
+
+    // Переводим placeholder (текст внутри полей ввода)
+    document.querySelectorAll('input, textarea').forEach(el => {
+        if (el.placeholder) {
+            const text = el.placeholder.trim();
+            if (langDictionary[text]) {
+                el.placeholder = el.placeholder.replace(text, langDictionary[text]);
+            }
+        }
+    });
+
+    showToast('approved', 'Language', 'English translation applied.');
 };
+
+// Автоматически включаем английский, если он был выбран ранее
+window.addEventListener('load', () => {
+    const savedLang = localStorage.getItem('tsc_lang');
+    if (savedLang === 'en') {
+        setTimeout(() => window.changeLang('en'), 500); // Ждем полной загрузки DOM
+    }
+});
 
 // ============================================================
 // СТАТИСТИКА ПОЛЬЗОВАТЕЛЕЙ
