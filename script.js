@@ -1701,6 +1701,38 @@ window.generatePromocode = async function() {
 };
 
 // ============================================================
+// СТАТИСТИКА ПОЛЬЗОВАТЕЛЕЙ
+// ============================================================
+async function loadUserStats() {
+    const widget = document.getElementById('user-stats-widget');
+    if (!widget) return;
+
+    const usersRef = collection(db, "users");
+    const now = new Date();
+    const startOfDay = new Date(now.getFullYear(), now.getMonth(), now.getDate()).toISOString();
+    const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1).toISOString();
+    const startOfYear = new Date(now.getFullYear(), 0, 1).toISOString();
+
+    try {
+        const [totalSnap, yearSnap, monthSnap, daySnap] = await Promise.all([
+            getCountFromServer(usersRef),
+            getCountFromServer(query(usersRef, where("createdAt", ">=", startOfYear))),
+            getCountFromServer(query(usersRef, where("createdAt", ">=", startOfMonth))),
+            getCountFromServer(query(usersRef, where("createdAt", ">=", startOfDay)))
+        ]);
+
+        document.getElementById('stat-total').innerText = totalSnap.data().count;
+        document.getElementById('stat-year').innerText = yearSnap.data().count;
+        document.getElementById('stat-month').innerText = monthSnap.data().count;
+        document.getElementById('stat-today').innerText = daySnap.data().count;
+
+        widget.classList.remove('hidden');
+    } catch (e) {
+        console.error("Ошибка загрузки статистики:", e);
+    }
+}
+
+// ============================================================
 // РАССЫЛКА В БОТА
 // ============================================================
 window.sendMassNotification = async function() {
@@ -1737,21 +1769,15 @@ window.sendMassNotification = async function() {
 };
 
 // ============================================================
-// СМЕНА ЯЗЫКА (ВРЕМЕННАЯ ЗАГЛУШКА)
+// СМЕНА ЯЗЫКА (ЗАГЛУШКА)
 // ============================================================
 window.changeLang = function(lang) {
-    // Просто переключаем кнопочку визуально
     document.querySelectorAll('.lang-btn').forEach(b => b.classList.remove('active'));
     const activeBtn = document.getElementById(`btn-${lang}`);
     if (activeBtn) activeBtn.classList.add('active');
     
-    // Показываем сообщение, что в разработке
     showToast('approved', 'Язык / Language', 'Смена языка в разработке.');
 };
-
-        // Показываем виджет
-        widget.classList.remove('hidden');
-
         // ============================================================
 // УМНАЯ МОДАЛКА СКАЧИВАНИЯ
 // ============================================================
