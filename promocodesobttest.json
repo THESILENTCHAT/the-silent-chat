@@ -1,0 +1,14 @@
+{
+  "TEST-KALLISTRO": {
+    "phone": "+7 7 478 551",
+    "achievement": "obt_tester",
+    "coins": 500,
+    "gems": 50
+  },
+  "TEST-OBT117": {
+    "phone": "+7 7 206 289",
+    "achievement": "obt_tester",
+    "coins": 500,
+    "gems": 50
+  }
+}
