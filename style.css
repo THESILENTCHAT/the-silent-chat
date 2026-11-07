@@ -768,3 +768,63 @@ a.contact-card:hover .contact-value { color: var(--neon-cyan); text-shadow: 0 0 
     text-decoration: underline;
     color: var(--neon-cyan);
 }
+
+/* ===== ВИДЖЕТ СТАТИСТИКИ ===== */
+#user-stats-widget {
+    position: fixed;
+    bottom: 100px; /* Поднял выше музыкального плеера */
+    right: 25px;
+    padding: 15px 20px;
+    background: rgba(10, 10, 15, 0.85);
+    border: 1px solid rgba(0, 240, 255, 0.3);
+    border-radius: var(--radius-lg);
+    z-index: 800;
+    backdrop-filter: blur(10px);
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.8);
+    font-size: 0.85rem;
+    min-width: 180px;
+    transition: opacity 0.3s;
+}
+
+#user-stats-widget:hover {
+    border-color: var(--neon-cyan);
+    box-shadow: 0 0 20px rgba(0, 240, 255, 0.2);
+}
+
+.stats-title {
+    color: var(--neon-cyan);
+    font-weight: bold;
+    margin-bottom: 10px;
+    text-align: center;
+    letter-spacing: 2px;
+    border-bottom: 1px dashed rgba(0, 240, 255, 0.3);
+    padding-bottom: 5px;
+    text-shadow: 0 0 10px var(--neon-cyan);
+}
+
+.stats-row {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 5px;
+    color: var(--text-dim);
+}
+
+.stats-row strong {
+    color: var(--text);
+    font-family: inherit;
+}
+
+.stats-row:last-child {
+    margin-bottom: 0;
+    color: var(--neon-magenta);
+}
+
+.stats-row:last-child strong {
+    color: var(--neon-magenta);
+    text-shadow: 0 0 10px var(--neon-magenta);
+}
+
+/* Скрываем на мобилках, чтобы не мешал */
+@media (max-width: 768px) {
+    #user-stats-widget { display: none; }
+}
