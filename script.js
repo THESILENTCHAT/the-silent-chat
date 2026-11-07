@@ -1701,7 +1701,32 @@ window.generatePromocode = async function() {
 };
 
 // ============================================================
-// СТАТИСТИКА ПОЛЬЗОВАТЕЛЕЙ
+// УМНАЯ МОДАЛКА СКАЧИВАНИЯ
+// ============================================================
+const platformData = {
+    android: { title: "ANDROID", content: `<p>На данный момент тут пусто. Ожидайте обновлений!</p>` },
+    pc: { title: "PC (WINDOWS)", content: `<p>На данный момент тут пусто. Ожидайте обновлений!</p>` },
+    apple: { title: "APPLE (iOS / macOS)", content: `<p>На данный момент тут пусто. Ожидайте обновлений!</p>` },
+    linux: { title: "LINUX", content: `<p>На данный момент тут пусто. Ожидайте обновлений!</p>` }
+};
+
+window.showPlatform = function(platformId) {
+    const data = platformData[platformId];
+    if (!data) return;
+    document.getElementById('platform-details-title').innerText = data.title;
+    document.getElementById('platform-details-title').setAttribute('data-text', data.title);
+    document.getElementById('platform-details-content').innerHTML = data.content;
+    document.getElementById('platform-categories').classList.add('hidden');
+    document.getElementById('platform-details').classList.remove('hidden');
+};
+
+window.backToCategories = function() {
+    document.getElementById('platform-details').classList.add('hidden');
+    document.getElementById('platform-categories').classList.remove('hidden');
+};
+
+// ============================================================
+// СТАТИСТИКА ПОЛЬЗОВАТЕЛЕЙ (ВИДЖЕТ)
 // ============================================================
 async function loadUserStats() {
     const widget = document.getElementById('user-stats-widget');
@@ -1778,49 +1803,3 @@ window.changeLang = function(lang) {
     
     showToast('approved', 'Язык / Language', 'Смена языка в разработке.');
 };
-        // ============================================================
-// УМНАЯ МОДАЛКА СКАЧИВАНИЯ
-// ============================================================
-const platformData = {
-    android: {
-        title: "ANDROID",
-        content: `<p>На данный момент тут пусто. Ожидайте обновлений!</p>`
-    },
-    pc: {
-        title: "PC (WINDOWS)",
-        content: `<p>На данный момент тут пусто. Ожидайте обновлений!</p>`
-    },
-    apple: {
-        title: "APPLE (iOS / macOS)",
-        content: `<p>На данный момент тут пусто. Ожидайте обновлений!</p>`
-    },
-    linux: {
-        title: "LINUX",
-        content: `<p>На данный момент тут пусто. Ожидайте обновлений!</p>`
-    }
-};
-
-window.showPlatform = function(platformId) {
-    const data = platformData[platformId];
-    if (!data) return;
-
-    // Заполняем данные
-    document.getElementById('platform-details-title').innerText = data.title;
-    document.getElementById('platform-details-title').setAttribute('data-text', data.title);
-    document.getElementById('platform-details-content').innerHTML = data.content;
-
-    // Переключаем экраны
-    document.getElementById('platform-categories').classList.add('hidden');
-    document.getElementById('platform-details').classList.remove('hidden');
-};
-
-window.backToCategories = function() {
-    // Возвращаемся к 4 секциям
-    document.getElementById('platform-details').classList.add('hidden');
-    document.getElementById('platform-categories').classList.remove('hidden');
-};
-
-    } catch (e) {
-        console.error("Ошибка загрузки статистики:", e);
-    }
-}
