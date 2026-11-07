@@ -455,15 +455,41 @@
 <div id="download-modal" class="modal-overlay hidden">
     <div class="modal-content glass">
         <button class="modal-close" onclick="closeDownloadModal()">✕</button>
-        <h2 class="modal-title glitch" data-text="ТОЧКА ВХОДА">ТОЧКА ВХОДА</h2>
-        <p class="modal-text" style="text-align:center;font-size:0.95rem;margin-bottom:1.5rem;">Система поддерживает несколько устройств. Выберите свою точку входа.</p>
-        <div class="platform-grid">
-            <a href="https://thesilentchat.itch.io/the-silent-chat" target="_blank" class="platform-btn"><span class="platform-icon">🖥</span><span class="platform-name">WINDOWS</span><span class="platform-sub">Погружение на ПК</span></a>
-            <a href="https://thesilentchat.itch.io/the-silent-chat" target="_blank" class="platform-btn"><span class="platform-icon">🍎</span><span class="platform-name">macOS</span><span class="platform-sub">Погружение на Mac</span></a>
-            <a href="https://thesilentchat.itch.io/the-silent-chat" target="_blank" class="platform-btn"><span class="platform-icon">🐧</span><span class="platform-name">LINUX</span><span class="platform-sub">Погружение на Linux</span></a>
-            <a href="https://thesilentchat.itch.io/the-silent-chat" target="_blank" class="platform-btn"><span class="platform-icon">📱</span><span class="platform-name">iOS</span><span class="platform-sub">Погружение на iPhone</span></a>
-            <a href="#" onclick="alert('RuStore — на модерации. Скоро!'); return false;" class="platform-btn platform-btn-disabled"><span class="platform-icon">🤖</span><span class="platform-name">ANDROID</span><span class="platform-sub">RuStore — скоро</span></a>
+        
+        <!-- ЭКРАН 1: 4 Категории -->
+        <div id="platform-categories">
+            <h2 class="modal-title glitch" data-text="ТОЧКА ВХОДА">ТОЧКА ВХОДА</h2>
+            <p class="modal-text" style="text-align:center;font-size:0.95rem;margin-bottom:1.5rem;">Выберите платформу, чтобы увидеть доступные версии.</p>
+            
+            <div class="platform-grid-4">
+                <div class="platform-btn platform-category" onclick="showPlatform('android')">
+                    <span class="platform-icon">🤖</span>
+                    <span class="platform-name">ANDROID</span>
+                </div>
+                <div class="platform-btn platform-category" onclick="showPlatform('pc')">
+                    <span class="platform-icon">🖥</span>
+                    <span class="platform-name">PC (WINDOWS)</span>
+                </div>
+                <div class="platform-btn platform-category" onclick="showPlatform('apple')">
+                    <span class="platform-icon">🍎</span>
+                    <span class="platform-name">APPLE (iOS / macOS)</span>
+                </div>
+                <div class="platform-btn platform-category" onclick="showPlatform('linux')">
+                    <span class="platform-icon">🐧</span>
+                    <span class="platform-name">LINUX</span>
+                </div>
+            </div>
         </div>
+
+        <!-- ЭКРАН 2: Информация о выбранной платформе -->
+        <div id="platform-details" class="hidden">
+            <button class="btn-small" style="margin-bottom: 2rem;" onclick="backToCategories()">⬅ НАЗАД К ВЫБОРУ</button>
+            <h2 class="modal-title glitch" id="platform-details-title" data-text="ПЛАТФОРМА">ПЛАТФОРМА</h2>
+            <div id="platform-details-content" class="platform-details-content">
+                <!-- Сюда JS вставит текст -->
+            </div>
+        </div>
+
     </div>
 </div>
 
