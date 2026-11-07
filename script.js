@@ -1784,33 +1784,19 @@ async function loadUserStats() {
 const platformData = {
     android: {
         title: "ANDROID",
-        content: `
-            <p>На данный момент для Android игра доступна в виде APK-файла.</p>
-            <p style="color: var(--neon-yellow);">В RuStore модерация еще идет!</p>
-            <a href="https://t.me/THESILENTCHAT" target="_blank" class="btn">СКАЧАТЬ APK В ТГ-КАНАЛЕ</a>
-        `
+        content: `<p>На данный момент тут пусто. Ожидайте обновлений!</p>`
     },
     pc: {
         title: "PC (WINDOWS)",
-        content: `
-            <p>Игра полностью доступна на Windows.</p>
-            <a href="https://thesilentchat.itch.io/the-silent-chat" target="_blank" class="btn pulse-btn">СКАЧАТЬ С ITCH.IO</a>
-        `
+        content: `<p>На данный момент тут пусто. Ожидайте обновлений!</p>`
     },
     apple: {
         title: "APPLE (iOS / macOS)",
-        content: `
-            <p style="color: var(--neon-red); font-weight: bold; font-size: 1.2rem; margin-bottom: 1rem;">НА ДАННЫЙ МОМЕНТ ТУТ ПУСТО</p>
-            <p>Разработка версии для устройств Apple находится в процессе. Следите за новостями в нашем Telegram-канале!</p>
-            <a href="https://t.me/THESILENTCHAT" target="_blank" class="btn">СЛЕДИТЬ ЗА НОВОСТЯМИ</a>
-        `
+        content: `<p>На данный момент тут пусто. Ожидайте обновлений!</p>`
     },
     linux: {
         title: "LINUX",
-        content: `
-            <p>Игра доступна для Linux.</p>
-            <a href="https://thesilentchat.itch.io/the-silent-chat" target="_blank" class="btn pulse-btn">СКАЧАТЬ С ITCH.IO</a>
-        `
+        content: `<p>На данный момент тут пусто. Ожидайте обновлений!</p>`
     }
 };
 
