@@ -10,7 +10,7 @@ import {
 import { 
     getFirestore, doc, setDoc, getDoc, updateDoc, deleteDoc,
     addDoc, collection, query, where, getDocs, serverTimestamp, orderBy, increment, writeBatch
-    getCountFromServer
+    getCountFromServer,
 } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
 const firebaseConfig = {
