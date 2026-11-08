@@ -543,13 +543,28 @@ window.renderTokenSection = function() {
     const display = document.getElementById('my-token-display');
     if (!box || !err || !display) return;
 
-    const token = window.currentUserData?.tscToken;
-    if (token) {
-        display.textContent = token;
-        box.classList.remove('hidden'); err.classList.add('hidden');
-    } else {
-        box.classList.add('hidden'); err.classList.remove('hidden');
+    // Если данных нет, но мы в системе, пробуем подождать и перезапросить их
+    if (!window.currentUserData || !window.currentUserData.tscToken) {
+        box.classList.add('hidden'); 
+        err.classList.remove('hidden');
+        
+        // Если пользователь авторизован, но данных нет (зависла сеть) — пробуем перезагрузить
+        if (auth.currentUser) {
+            console.warn("Данные профиля не загрузились. Пробуем перезапросить...");
+            setTimeout(async () => {
+                await loadUserData(); // Пробуем скачать еще раз
+                if (window.currentUserData?.tscToken) {
+                    renderTokenSection(); // Если получилось — перерисовываем
+                }
+            }, 2000); // Ждем 2 секунды и стучимся в базу снова
+        }
+        return;
     }
+
+    // Если токен есть — показываем его
+    display.textContent = window.currentUserData.tscToken;
+    box.classList.remove('hidden'); 
+    err.classList.add('hidden');
 };
 
 window.redeemPromo = async function() {
