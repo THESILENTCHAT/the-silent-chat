@@ -517,22 +517,27 @@ async function loadUserData() {
     const user = auth.currentUser;
     if (!user) return null;
     
-    const userRef = doc(db, "users", user.uid);
-    const snap = await getDoc(userRef);
-    
-    if (snap.exists()) {
-        window.currentUserData = snap.data();
-        window.isAdmin = window.currentUserData.role === 'admin';
+    try {
+        const userRef = doc(db, "users", user.uid);
+        const snap = await getDoc(userRef);
         
-        // ⚡️ ОБНОВЛЯЕМ ВРЕМЯ ЗАХОДА ПРИ КАЖДОМ ВХОДЕ
-        try {
-            await updateDoc(userRef, { lastLogin: new Date().toISOString() });
-        } catch (e) {
-            console.error("Ошибка обновления lastLogin:", e);
-        }
+        if (snap.exists()) {
+            window.currentUserData = snap.data();
+            window.isAdmin = window.currentUserData.role === 'admin';
+            
+            // Обновляем lastLogin
+            try {
+                await updateDoc(userRef, { lastLogin: new Date().toISOString() });
+            } catch (e) {
+                console.error("Ошибка обновления lastLogin:", e);
+            }
 
-        return window.currentUserData;
+            return window.currentUserData;
+        }
+    } catch (e) {
+        console.error("Ошибка загрузки данных:", e);
     }
+    return null;
 }
 // ============================================================
 // СЕКЦИЯ С ТОКЕНОМ И ПРОМОКОДОМ
@@ -543,21 +548,34 @@ window.renderTokenSection = function() {
     const display = document.getElementById('my-token-display');
     if (!box || !err || !display) return;
 
-    // Если данных нет, но мы в системе, пробуем подождать и перезапросить их
-    if (!window.currentUserData || !window.currentUserData.tscToken) {
+    // Если пользователь даже не залогинен
+    if (!auth.currentUser) {
         box.classList.add('hidden'); 
         err.classList.remove('hidden');
+        err.innerHTML = '<p style="color: var(--neon-red);">Вы не авторизованы. Пожалуйста, войдите в аккаунт.</p>';
+        return;
+    }
+
+    // Если залогинен, но токена нет в базе — создаем его!
+    if (!window.currentUserData || !window.currentUserData.tscToken) {
+        console.warn("Токен не найден в профиле. Генерируем новый...");
         
-        // Если пользователь авторизован, но данных нет (зависла сеть) — пробуем перезагрузить
-        if (auth.currentUser) {
-            console.warn("Данные профиля не загрузились. Пробуем перезапросить...");
-            setTimeout(async () => {
-                await loadUserData(); // Пробуем скачать еще раз
-                if (window.currentUserData?.tscToken) {
-                    renderTokenSection(); // Если получилось — перерисовываем
-                }
-            }, 2000); // Ждем 2 секунды и стучимся в базу снова
-        }
+        const chars = 'ABCDEFGHJKMNPQRSTUVWXYZ23456789'; 
+        let t1 = '', t2 = '';
+        for (let i = 0; i < 4; i++) t1 += chars.charAt(Math.floor(Math.random() * chars.length));
+        for (let i = 0; i < 4; i++) t2 += chars.charAt(Math.floor(Math.random() * chars.length));
+        const newToken = `TSC-${t1}-${t2}`;
+
+        // Сохраняем его в базу и в память
+        if (window.currentUserData) window.currentUserData.tscToken = newToken;
+        localStorage.setItem('tsc_token', newToken);
+        
+        updateDoc(doc(db, "users", auth.currentUser.uid), { tscToken: newToken }).catch(e => console.error(e));
+
+        // Показываем его
+        display.textContent = newToken;
+        box.classList.remove('hidden'); 
+        err.classList.add('hidden');
         return;
     }
 
