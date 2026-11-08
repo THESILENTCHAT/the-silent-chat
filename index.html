@@ -50,6 +50,11 @@
             </div>
             <p id="login-error" class="error-text"></p>
             <button class="btn auth-btn" onclick="loginUser()">ВОЙТИ</button>
+            <div style="margin-top: 1rem; text-align: center; color: var(--text-dim); font-size: 0.85rem;">или</div>
+            <button class="btn auth-btn" style="border-color: #fff; color: #fff; margin-top: 1rem; display: flex; align-items: center; justify-content: center; gap: 10px;" onclick="loginWithGoogle()">
+                <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" width="20" height="20" alt="G">
+                ВОЙТИ ЧЕРЕЗ GOOGLE
+            </button>
         </div>
 
         <div id="auth-register" class="auth-panel hidden">
@@ -65,6 +70,11 @@
             </div>
              <div class="input-group"><label>Пароль</label><input type="password" id="reg-password" placeholder="••••••••"></div>
             <div class="input-group"><label>Повторите пароль</label><input type="password" id="reg-password-confirm" placeholder="••••••••"></div>
+            <div style="margin-top: 1rem; text-align: center; color: var(--text-dim); font-size: 0.85rem;">или</div>
+            <button class="btn auth-btn" style="border-color: #fff; color: #fff; margin-top: 1rem; display: flex; align-items: center; justify-content: center; gap: 10px;" onclick="loginWithGoogle()">
+                <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" width="20" height="20" alt="G">
+                ВОЙТИ ЧЕРЕЗ GOOGLE
+            </button>
             
             <!-- ЧЕКБОКС ПОЛИТИКИ -->
             <div class="input-group" style="margin-top: 1rem;">
