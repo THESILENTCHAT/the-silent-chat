@@ -149,19 +149,23 @@
         <p class="hint">▸ нажми <kbd>~</kbd> чтобы открыть терминал</p>
     </header>
 
-    <!-- СЕКЦИЯ С ТОКЕНОМ И ПРОМОКОДОМ -->
+       <!-- СЕКЦИЯ С ТОКЕНОМ (ПРОМОКОД ВРЕМЕННО СКРЫТ) -->
     <section id="token" class="section glass">
         <h2 class="split-title">Ваш TSC-Токен</h2>
         <p class="shop-desc">Ваш уникальный ключ для входа в игру. <strong>Никому не передавайте его.</strong></p>
+        
+        <!-- БЛОК С ТОКЕНОМ И КНОПКОЙ КОПИРОВАНИЯ (РАБОТАЕТ) -->
         <div id="token-box" class="hidden" style="max-width: 400px; margin: 0 auto;">
             <div class="token-display" id="my-token-display">TSC-XXXX-XXXX</div>
             <button class="btn" onclick="copyToken('my-token-display')" style="margin-top: 1rem;">📋 КОПИРОВАТЬ ТОКЕН</button>
         </div>
-                <div id="token-error" class="hidden">
+        
+        <div id="token-error" class="hidden">
             <p style="color: var(--neon-red);">Вы не авторизованы. Пожалуйста, войдите в аккаунт.</p>
         </div>
 
-        <!-- ВРЕМЕННО СКРЫТО ИЗ-ЗА БАГА С СИНХРОНИЗАЦИЕЙ БАЛАНСА
+        <!-- 
+        ВРЕМЕННО СКРЫТО ИЗ-ЗА БАГА С СИНХРОНИЗАЦИЕЙ БАЛАНСА
         <hr style="border-color: rgba(255,255,255,0.1); margin: 2.5rem 0;">
         
         <h3 style="color: var(--neon-magenta); margin-bottom: 1rem; letter-spacing: 2px; text-shadow: 0 0 10px var(--neon-magenta);">АКТИВАЦИЯ ПРОМОКОДА</h3>
