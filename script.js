@@ -6,7 +6,8 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebas
 import { 
     getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut,
     setPersistence, browserLocalPersistence, onAuthStateChanged, updatePassword, deleteUser,
-    sendPasswordResetEmail
+    sendPasswordResetEmail,
+    GoogleAuthProvider, signInWithPopup
 } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 import { 
     getFirestore, doc, setDoc, getDoc, updateDoc, deleteDoc,
@@ -369,6 +370,56 @@ window.loginUser = async function() {
     } catch (error) {
         if (error.code === 'auth/wrong-password' || error.code === 'auth/user-not-found') showError(err, box, "Неверный Email или пароль.");
         else showError(err, box, "Ошибка: " + error.message);
+    }
+};
+
+window.loginWithGoogle = async function() {
+    const provider = new GoogleAuthProvider();
+    const err = document.getElementById('login-error');
+    
+    try {
+        // Открываем окно выбора аккаунта Google
+        const result = await signInWithPopup(auth, provider);
+        const user = result.user;
+        
+        // Проверяем, есть ли этот юзер в базе данных
+        const userRef = doc(db, "users", user.uid);
+        const userSnap = await getDoc(userRef);
+        
+        if (!userSnap.exists()) {
+            // Если зашел впервые — создаем ему профиль и генерируем токен
+            const chars = 'ABCDEFGHJKMNPQRSTUVWXYZ23456789';
+            let t1 = '', t2 = '';
+            for (let i = 0; i < 4; i++) t1 += chars.charAt(Math.floor(Math.random() * chars.length));
+            for (let i = 0; i < 4; i++) t2 += chars.charAt(Math.floor(Math.random() * chars.length));
+            const token = `TSC-${t1}-${t2}`;
+
+            await setDoc(userRef, {
+                email: user.email,
+                username: "@" + (user.email.split('@')[0]), // Берем ник из почты
+                name: user.displayName || "Оператор",
+                role: "player",
+                tscToken: token,
+                isProfileCreated: true,
+                unlockedDossiers: ["player"],
+                crystals: 0,
+                coins: 0,
+                createdAt: new Date().toISOString()
+            });
+            
+            showToast('approved', 'Аккаунт создан', 'Добро пожаловать в TSC!');
+        }
+        
+        // Дальше сработает onAuthStateChanged, и сайт сам тебя пустит
+        // (Он вызовет startBreach и покажет главную страницу)
+        
+    } catch (error) {
+        console.error("Ошибка входа через Google:", error);
+        if (error.code === 'auth/popup-closed-by-user') {
+            showError(err, document.querySelector('.auth-box'), "Вы закрыли окно входа.");
+        } else {
+            showError(err, document.querySelector('.auth-box'), "Ошибка: " + error.message);
+        }
     }
 };
 
