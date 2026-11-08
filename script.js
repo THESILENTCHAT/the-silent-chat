@@ -549,113 +549,33 @@ window.renderTokenSection = function() {
     const display = document.getElementById('my-token-display');
     if (!box || !err || !display) return;
 
-    // Если пользователь даже не залогинен
     if (!auth.currentUser) {
         box.classList.add('hidden'); 
         err.classList.remove('hidden');
-        err.innerHTML = '<p style="color: var(--neon-red);">Вы не авторизованы. Пожалуйста, войдите в аккаунт.</p>';
         return;
     }
 
-    // Если залогинен, но токена нет в базе — создаем его!
-    if (!window.currentUserData || !window.currentUserData.tscToken) {
-        console.warn("Токен не найден в профиле. Генерируем новый...");
-        
+    if (!window.currentUserData) return;
+
+    if (!window.currentUserData.tscToken) {
         const chars = 'ABCDEFGHJKMNPQRSTUVWXYZ23456789'; 
         let t1 = '', t2 = '';
         for (let i = 0; i < 4; i++) t1 += chars.charAt(Math.floor(Math.random() * chars.length));
         for (let i = 0; i < 4; i++) t2 += chars.charAt(Math.floor(Math.random() * chars.length));
         const newToken = `TSC-${t1}-${t2}`;
 
-        // Сохраняем его в базу и в память
-        if (window.currentUserData) window.currentUserData.tscToken = newToken;
+        window.currentUserData.tscToken = newToken;
         localStorage.setItem('tsc_token', newToken);
         
-        updateDoc(doc(db, "users", auth.currentUser.uid), { tscToken: newToken }).catch(e => console.error(e));
-
-        // Показываем его
-        display.textContent = newToken;
-        box.classList.remove('hidden'); 
-        err.classList.add('hidden');
-        return;
+        // Используем setDoc с merge: true, чтобы 100% сохранить токен, даже если документа нет
+        setDoc(doc(db, "users", auth.currentUser.uid), { tscToken: newToken }, { merge: true })
+            .catch(e => console.error("Ошибка сохранения токена:", e));
     }
 
-    // Если токен есть — показываем его
     display.textContent = window.currentUserData.tscToken;
     box.classList.remove('hidden'); 
     err.classList.add('hidden');
 };
-
-window.redeemPromo = async function() {
-    const input = document.getElementById('promo-input');
-    const status = document.getElementById('promo-status');
-    const code = input.value.trim().toUpperCase();
-    
-    if (!code) return alert("Введи промокод!");
-    if (!auth.currentUser) return alert("Сначала авторизуйся!");
-    
-    status.style.color = "var(--neon-yellow)";
-    status.textContent = "Проверка...";
-    
-    try {
-        const promoRef = doc(db, "promocodes", code);
-        const promoSnap = await getDoc(promoRef);
-        
-        if (!promoSnap.exists()) {
-            status.style.color = "var(--neon-red)";
-            status.textContent = "❌ Такого промокода не существует.";
-            return;
-        }
-        
-        const promo = promoSnap.data();
-        
-        if (!promo.active) {
-            status.style.color = "var(--neon-red)"; status.textContent = "❌ Промокод деактивирован."; return;
-        }
-        if (promo.maxUses > 0 && promo.usedCount >= promo.maxUses) {
-            status.style.color = "var(--neon-red)"; status.textContent = "❌ Лимит активаций исчерпан."; return;
-        }
-        if (promo.expiresAt && new Date() > new Date(promo.expiresAt)) {
-            status.style.color = "var(--neon-red)"; status.textContent = "❌ Срок действия истек."; return;
-        }
-        
-        if (promo.usedBy && promo.usedBy.includes(auth.currentUser.uid)) {
-            status.style.color = "var(--neon-red)"; status.textContent = "❌ Ты уже активировал этот промокод."; return;
-        }
-        
-        const userRef = doc(db, "users", auth.currentUser.uid);
-        const updates = {};
-        let rewardMessage = "✅ Успешно! Получено: ";
-        
-        if (promo.crystals && promo.crystals > 0) {
-            updates.crystals = increment(promo.crystals);
-            rewardMessage += `${promo.crystals} 💎 `;
-        }
-        if (promo.coins && promo.coins > 0) {
-            updates.coins = increment(promo.coins);
-            rewardMessage += `${promo.coins} 🪙`;
-        }
-
-        if (!promo.crystals && !promo.coins && promo.type && promo.value) {
-            const rewardField = promo.type === 'crystals' ? 'crystals' : 'coins';
-            updates[rewardField] = increment(promo.value);
-            rewardMessage += `${promo.value} ${promo.type === 'crystals' ? '💎' : '🪙'}`;
-        }
-        
-        await updateDoc(userRef, updates);
-        await updateDoc(promoRef, { usedCount: increment(1), usedBy: [...(promo.usedBy || []), auth.currentUser.uid] });
-        
-        status.style.color = "var(--neon-green)";
-        status.textContent = rewardMessage;
-        input.value = '';
-        
-    } catch(e) {
-        console.error(e);
-        status.style.color = "var(--neon-red)";
-        status.textContent = "❌ Ошибка: " + e.message;
-    }
-};
-
 // ============================================================
 // КОМАНДА: БЛОГЕРЫ, ОБТ, ТЕСТЕРЫ
 // ============================================================
