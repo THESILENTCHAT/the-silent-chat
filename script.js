@@ -43,6 +43,38 @@ window.currentDossierFilter = 'all';
 window.allTeamMembers = []; 
 
 // ============================================================
+// БЛОКИРОВКА САЙТА ДО 18:00
+// ============================================================
+function checkMaintenanceMode() {
+    const now = new Date();
+    const targetTime = new Date();
+    targetTime.setHours(18, 0, 0, 0); // 18:00 сегодня
+
+    if (now < targetTime) {
+        const overlay = document.getElementById('maintenance-overlay');
+        if (overlay) {
+            overlay.classList.remove('hidden');
+            
+            setInterval(() => {
+                const current = new Date();
+                const diff = targetTime - current;
+                if (diff <= 0) {
+                    location.reload(); // Перезагрузка, когда время выйдет
+                } else {
+                    const hours = Math.floor(diff / (1000 * 60 * 60));
+                    const minutes = Math.floor((diff / (1000 * 60)) % 60);
+                    const seconds = Math.floor((diff / 1000) % 60);
+                    const timerEl = document.getElementById('maintenance-timer');
+                    if (timerEl) {
+                        timerEl.textContent = `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+                    }
+                }
+            }, 1000);
+        }
+    }
+}
+
+// ============================================================
 // УТИЛИТЫ
 // ============================================================
 function escapeHtml(str) {
@@ -497,6 +529,7 @@ function startBreach() {
 // ИНИЦИАЛИЗАЦИЯ И ЗАГРУЗКА ДАННЫХ
 // ============================================================
 window.addEventListener('load', () => {
+    checkMaintenanceMode();
     onAuthStateChanged(auth, async (user) => {
         if (user) {
             await loadUserData();
@@ -1744,8 +1777,20 @@ window.generatePromocode = async function() {
 // УМНАЯ МОДАЛКА СКАЧИВАНИЯ
 // ============================================================
 const platformData = {
-    android: { title: "ANDROID", content: `<p>На данный момент тут пусто. Ожидайте обновлений!</p>` },
-    pc: { title: "PC (WINDOWS)", content: `<p>На данный момент тут пусто. Ожидайте обновлений!</p>` },
+    android: { 
+        title: "ANDROID", 
+        content: `
+            <p>Скачайте фирменный магазин <strong>TSC Store</strong>, чтобы установить игру!</p>
+            <a href="https://github.com/ТВОЙ_НИК/ТВОЙ_РЕПО/releases/download/v1.1/TSC_Store.apk" class="btn" style="margin-top: 1rem; display: inline-block;">СКАЧАТЬ TSC STORE (APK)</a>
+        ` 
+    },
+    pc: { 
+        title: "PC (WINDOWS)", 
+        content: `
+            <p>Скачайте фирменный магазин <strong>TSC Store</strong> для ПК!</p>
+            <a href="https://github.com/ТВОЙ_НИК/ТВОЙ_РЕПО/releases/download/v1.1/TSC_Store.zip" class="btn" style="margin-top: 1rem; display: inline-block;">СКАЧАТЬ TSC STORE (ZIP)</a>
+        ` 
+    },
     apple: { title: "APPLE (iOS / macOS)", content: `<p>На данный момент тут пусто. Ожидайте обновлений!</p>` },
     linux: { title: "LINUX", content: `<p>На данный момент тут пусто. Ожидайте обновлений!</p>` }
 };
