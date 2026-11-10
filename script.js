@@ -46,6 +46,12 @@ window.allTeamMembers = [];
 // БЛОКИРОВКА САЙТА ДО 18:00
 // ============================================================
 function checkMaintenanceMode() {
+    // СЕКРЕТНЫЙ ВХОД ДЛЯ ТЕБЯ: если в ссылке есть ?test, блокировка отключается
+    if (window.location.search.includes('test')) {
+        console.log("Тестовый режим: блокировка отключена.");
+        return; 
+    }
+
     const now = new Date();
     const targetTime = new Date();
     targetTime.setHours(18, 0, 0, 0); // 18:00 сегодня
