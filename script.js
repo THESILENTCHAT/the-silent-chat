@@ -43,7 +43,7 @@ window.currentDossierFilter = 'all';
 window.allTeamMembers = []; 
 
 // ============================================================
-// БЛОКИРОВКА САЙТА ДО 18:00 (С СЕКРЕТНЫМ ТОКЕНОМ)
+// БЛОКИРОВКА САЙТА ДО 20:00 (С СЕКРЕТНЫМ ТОКЕНОМ)
 // ============================================================
 function checkMaintenanceMode() {
     // 1. Проверяем, есть ли токен в ссылке (например: сайт.ru/?token=TSC-E257-AMHM)
@@ -73,10 +73,11 @@ function checkMaintenanceMode() {
         if (overlay) {
             overlay.classList.remove('hidden');
             
-            setInterval(() => {
+            const timerInterval = setInterval(() => {
                 const current = new Date();
                 const diff = targetTime - current;
                 if (diff <= 0) {
+                    clearInterval(timerInterval);
                     location.reload(); // Перезагрузка, когда время выйдет
                 } else {
                     const hours = Math.floor(diff / (1000 * 60 * 60));
@@ -91,7 +92,6 @@ function checkMaintenanceMode() {
         }
     }
 }
-
 // ============================================================
 // УТИЛИТЫ
 // ============================================================
