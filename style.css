@@ -812,3 +812,18 @@ a.contact-card:hover .contact-value { color: var(--neon-cyan); text-shadow: 0 0 
 @media (max-width: 500px) {
     .platform-grid-4 { grid-template-columns: 1fr; }
 }
+
+/* ===== ЭКРАН БЛОКИРОВКИ ===== */
+.maintenance-overlay {
+    position: fixed; inset: 0; background: #050508; z-index: 999999;
+    display: flex; justify-content: center; align-items: center; text-align: center;
+    padding: 2rem;
+}
+.maintenance-overlay.hidden { display: none !important; }
+.maintenance-content {
+    padding: 3rem 2rem; max-width: 600px; width: 100%; border-radius: var(--radius-xl);
+}
+.maintenance-content h1 {
+    color: var(--neon-magenta); font-size: 2.5rem; letter-spacing: 4px; margin-bottom: 1rem;
+    text-shadow: 0 0 20px var(--neon-magenta);
+}
