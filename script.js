@@ -66,7 +66,7 @@ function checkMaintenanceMode() {
     // 3. Если токена нет, включаем блокировку по времени
     const now = new Date();
     const targetTime = new Date();
-    targetTime.setHours(18, 0, 0, 0); // 18:00 сегодня
+    targetTime.setHours(20, 0, 0, 0); // 18:00 сегодня
 
     if (now < targetTime) {
         const overlay = document.getElementById('maintenance-overlay');
