@@ -1799,14 +1799,14 @@ const platformData = {
         title: "ANDROID", 
         content: `
             <p>Скачайте фирменный магазин <strong>TSC Store</strong>, чтобы установить игру!</p>
-            <a href="1https://github.com/THESILENTCHAT/TSC-Store-Files/releases/download/v1.1/TSC_Store.apk" class="btn" style="margin-top: 1rem; display: inline-block;">СКАЧАТЬ TSC STORE (APK)</a>
+            <a href="" class="btn" style="margin-top: 1rem; display: inline-block;">СКАЧАТЬ TSC STORE (APK)</a>
         ` 
     },
     pc: { 
         title: "PC (WINDOWS)", 
         content: `
             <p>Скачайте фирменный магазин <strong>TSC Store</strong> для ПК!</p>
-            <a href="1https://github.com/THESILENTCHAT/TSC-Store-Files/releases/download/v1.1/TSC_Store.zip" class="btn" style="margin-top: 1rem; display: inline-block;">СКАЧАТЬ TSC STORE (ZIP)</a>
+            <a href="" class="btn" style="margin-top: 1rem; display: inline-block;">СКАЧАТЬ TSC STORE (ZIP)</a>
         ` 
     },
     apple: { title: "APPLE (iOS / macOS)", content: `<p>На данный момент тут пусто. Ожидайте обновлений!</p>` },
