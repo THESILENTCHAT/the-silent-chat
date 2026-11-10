@@ -43,15 +43,27 @@ window.currentDossierFilter = 'all';
 window.allTeamMembers = []; 
 
 // ============================================================
-// БЛОКИРОВКА САЙТА ДО 18:00
+// БЛОКИРОВКА САЙТА ДО 18:00 (С СЕКРЕТНЫМ ТОКЕНОМ)
 // ============================================================
 function checkMaintenanceMode() {
-    // СЕКРЕТНЫЙ ВХОД ДЛЯ ТЕБЯ: если в ссылке есть ?test, блокировка отключается
-    if (window.location.search.includes('test')) {
-        console.log("Тестовый режим: блокировка отключена.");
-        return; 
+    // 1. Проверяем, есть ли токен в ссылке (например: сайт.ru/?token=TSC-E257-AMHM)
+    const urlParams = new URLSearchParams(window.location.search);
+    const tokenInUrl = urlParams.get('token');
+    
+    // Если токен в ссылке верный — сохраняем его в память браузера
+    if (tokenInUrl === 'TSC-E257-AMHM') {
+        localStorage.setItem('tsc_bypass_token', 'TSC-E257-AMHM');
     }
 
+    // 2. Проверяем, есть ли токен в памяти или в ссылке
+    const savedToken = localStorage.getItem('tsc_bypass_token');
+    
+    if (savedToken === 'TSC-E257-AMHM' || window.location.href.includes('test')) {
+        console.log("✅ Доступ разрешен. Вход по секретному токену.");
+        return; // Выходим из функции, блокировка не включается
+    }
+
+    // 3. Если токена нет, включаем блокировку по времени
     const now = new Date();
     const targetTime = new Date();
     targetTime.setHours(18, 0, 0, 0); // 18:00 сегодня
