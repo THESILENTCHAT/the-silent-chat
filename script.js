@@ -43,56 +43,6 @@ window.currentDossierFilter = 'all';
 window.allTeamMembers = []; 
 
 // ============================================================
-// БЛОКИРОВКА САЙТА ДО 20:00 (С СЕКРЕТНЫМ ТОКЕНОМ)
-// ============================================================
-function checkMaintenanceMode() {
-    // 1. Проверяем, есть ли токен в ссылке (например: сайт.ru/?token=TSC-E257-AMHM)
-    const urlParams = new URLSearchParams(window.location.search);
-    const tokenInUrl = urlParams.get('token');
-    
-    // Если токен в ссылке верный — сохраняем его в память браузера
-    if (tokenInUrl === 'TSC-E257-AMHM') {
-        localStorage.setItem('tsc_bypass_token', 'TSC-E257-AMHM');
-    }
-
-    // 2. Проверяем, есть ли токен в памяти или в ссылке
-    const savedToken = localStorage.getItem('tsc_bypass_token');
-    
-    if (savedToken === 'TSC-E257-AMHM' || window.location.href.includes('test')) {
-        console.log("✅ Доступ разрешен. Вход по секретному токену.");
-        return; // Выходим из функции, блокировка не включается
-    }
-
-    // 3. Если токена нет, включаем блокировку по времени
-    const now = new Date();
-    const targetTime = new Date();
-    targetTime.setHours(20, 0, 0, 0); // 20:00 сегодня
-
-    if (now < targetTime) {
-        const overlay = document.getElementById('maintenance-overlay');
-        if (overlay) {
-            overlay.classList.remove('hidden');
-            
-            const timerInterval = setInterval(() => {
-                const current = new Date();
-                const diff = targetTime - current;
-                if (diff <= 0) {
-                    clearInterval(timerInterval);
-                    location.reload(); // Перезагрузка, когда время выйдет
-                } else {
-                    const hours = Math.floor(diff / (1000 * 60 * 60));
-                    const minutes = Math.floor((diff / (1000 * 60)) % 60);
-                    const seconds = Math.floor((diff / 1000) % 60);
-                    const timerEl = document.getElementById('maintenance-timer');
-                    if (timerEl) {
-                        timerEl.textContent = `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
-                    }
-                }
-            }, 1000);
-        }
-    }
-}
-// ============================================================
 // УТИЛИТЫ
 // ============================================================
 function escapeHtml(str) {
@@ -547,7 +497,6 @@ function startBreach() {
 // ИНИЦИАЛИЗАЦИЯ И ЗАГРУЗКА ДАННЫХ
 // ============================================================
 window.addEventListener('load', () => {
-    checkMaintenanceMode();
     onAuthStateChanged(auth, async (user) => {
         if (user) {
             await loadUserData();
